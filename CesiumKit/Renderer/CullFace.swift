@@ -12,7 +12,7 @@ enum CullFace {
     case none
     case front
     case back
-    
+
     func toMetal() -> MTLCullMode {
         switch self {
         case .none:

@@ -33,20 +33,20 @@ public struct Cartographic {
     * @default 0.0
     */
     public var latitude: Double = 0.0
-    
+
     /**
     * The height, in meters, above the ellipsoid.
     * @type {Number}
     * @default 0.0
     */
     public var height: Double = 0.0
-    
+
     public init(longitude: Double = 0.0, latitude: Double = 0.0, height: Double = 0.0) {
         self.longitude = longitude
         self.latitude = latitude
         self.height = height
     }
-    
+
     /**
     * Creates a new Cartographic instance from longitude and latitude
     * specified in radians.
@@ -58,10 +58,10 @@ public struct Cartographic {
     * @returns {Cartographic} The modified result parameter or a new Cartographic instance if one was not provided.
     */
     static func fromRadians(_ longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
-        
+
         return Cartographic(longitude: longitude, latitude: latitude, height: height)
     }
-    
+
     /**
     * Creates a new Cartographic instance from longitude and latitude
     * specified in degrees.  The values in the resulting object will
@@ -76,10 +76,10 @@ public struct Cartographic {
     static func fromDegreees(_ longitude: Double, latitude: Double, height: Double = 0.0) -> Cartographic {
         let lon = Math.toRadians(longitude)
         let lat = Math.toRadians(latitude)
-        
+
         return Cartographic.fromRadians(lon, latitude: lat, height: height);
     }
-    
+
     /*
      +    var cartesianToCartographicN = new Cartesian3();
      +    var cartesianToCartographicP = new Cartesian3();
@@ -126,9 +126,9 @@ public struct Cartographic {
      +        result.height = height;
      +        return result;
      +    };
-     +  
+     +
     */
-    
+
     /**
     * Compares the provided cartographics componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -138,12 +138,12 @@ public struct Cartographic {
     * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
     */
     /* @infix func == (left: Cartographic, right: Cartographic) -> Bool {
-    
+
     return (left.longitude == right.longitude) &&
     (left.latitude == right.latitude) &&
     (left.height == right.height))
     }*/
-    
+
     /**
     * Compares the provided cartographics componentwise and returns
     * <code>true</code> if they are within the provided epsilon,
@@ -159,7 +159,7 @@ public struct Cartographic {
             (abs(self.latitude - other.latitude) <= epsilon) &&
             (abs(self.height - other.height) <= epsilon)
     }
-    
+
     /**
     * Creates a string representing the provided cartographic in the format '(longitude, latitude, height)'.
     *
@@ -169,7 +169,7 @@ public struct Cartographic {
     func toString() -> String {
         return "(\(longitude)), (\(latitude)), (\(height))";
     }
-    
+
     /**
     * An immutable Cartographic instance initialized to (0.0, 0.0, 0.0).
     *
@@ -179,5 +179,5 @@ public struct Cartographic {
     static func zero() -> Cartographic {
         return Cartographic(longitude: 0.0, latitude: 0.0, height: 0.0)
     }
-    
+
 }

@@ -22,15 +22,15 @@ struct Ray {
     * @default {@link Cartesian3.ZERO}
     */
     var origin: Cartesian3
-    
+
     /**
     * The direction of the ray.
     * @type {Cartesian3}
     */
     var direction: Cartesian3
-    
+
     init(origin: Cartesian3 = Cartesian3.zero, direction: Cartesian3 = Cartesian3.zero) {
-        
+
         if direction == Cartesian3.zero {
             self.direction = direction.normalize()
         }
@@ -39,7 +39,7 @@ struct Ray {
         }
         self.origin = origin
     }
-    
+
     /**
     * Computes the point along the ray given by r(t) = o + t*d,
     * where o is the origin of the ray and d is the direction.
@@ -56,5 +56,5 @@ struct Ray {
     func getPoint(_ t: Double) -> Cartesian3 {
         return direction.multiplyBy(scalar: t).add(origin)
     }
-    
+
 }

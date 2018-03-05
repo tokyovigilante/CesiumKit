@@ -15,12 +15,12 @@ class FXAA {
     */
     fileprivate var _texture: Texture? = nil
     fileprivate var _depthTexture: Texture? = nil
-    
+
     fileprivate var _fbo: Framebuffer? = nil
     fileprivate var _command: DrawCommand? = nil
-    
+
     fileprivate var _clearCommand: ClearCommand
-    
+
     init () {
         _clearCommand = ClearCommand(
             color : Cartesian4(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
@@ -32,11 +32,11 @@ class FXAA {
     func update (_ context: Context) {
         let width = context.width
         let height = context.height
-        
+
         let textureChanged = _texture == nil || _texture!.width != width || _texture!.height != height
         if textureChanged {
             _depthTexture = nil
-            
+
             _texture = Texture(
                 context: context,
                 options: TextureOptions(
@@ -44,7 +44,7 @@ class FXAA {
                     height: height,
                     usage: [.ShaderRead, .RenderTarget])
                 )
-            
+
             if context.depthTexture {
                 _depthTexture = Texture(
                     context: context,
@@ -56,16 +56,16 @@ class FXAA {
                 )
             }
         }
-        
+
         if _fbo == nil || textureChanged {
-            
+
             _fbo = Framebuffer(
                 maximumColorAttachments: 1,
                 colorTextures : [_texture!],
                 depthTexture : _depthTexture
             )
         }
-        
+
         if _command == nil {
             var overrides = ViewportQuadOverrides()
             overrides.renderState =  RenderState(device: context.device)
@@ -75,7 +75,7 @@ class FXAA {
                 overrides: overrides
             )
         }
-        
+
         if textureChanged {
             let uniformMap = FXAAUniformMap()
             uniformMap.texture = _texture
@@ -88,18 +88,18 @@ class FXAA {
     func execute (_ context: Context, renderPass: RenderPass) {
         _command!.execute(context, renderPass: renderPass)
     }
-    
+
     func clear (_ context: Context, passState: PassState, clearColor: Cartesian4) {
         let framebuffer = passState.framebuffer
-        
+
         passState.framebuffer = _fbo
         _clearCommand.color = clearColor
         _clearCommand.execute(context, passState: passState)
-        
+
         passState.framebuffer = framebuffer
     }
-    
-    
+
+
     func getColorFramebuffer() -> Framebuffer? {
         return _fbo
     }
@@ -111,7 +111,7 @@ private struct FXAAUniformStruct: UniformStruct {
 }
 
 class FXAAUniformMap: NativeUniformMap {
-    
+
     var step: Cartesian2 {
         get {
             return Cartesian2(simd: vector_double(_uniformStruct.step))
@@ -120,17 +120,17 @@ class FXAAUniformMap: NativeUniformMap {
             _uniformStruct.step = newValue.floatRepresentation
         }
     }
-    
+
     var texture : Texture?
-    
+
     var uniformBufferProvider: UniformBufferProvider! = nil
-    
+
     fileprivate var _uniformStruct = FXAAUniformStruct()
-    
+
     var uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name: "u_step", type: .floatVec2, count: 1)
     ]
-    
+
     lazy var  uniformUpdateBlock: UniformUpdateBlock = { buffer in
         buffer.write(from: &self._uniformStruct, length: MemoryLayout<FXAAUniformStruct>.size)
         return [self.texture!]

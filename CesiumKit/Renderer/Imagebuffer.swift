@@ -12,12 +12,12 @@ class Imagebuffer {
     let width: Int
     let height: Int
     let bytesPerPixel: Int
-    
+
     init(array: [UInt8], width: Int, height: Int, bytesPerPixel bpp: Int = 4) {
         self.array = array
         self.width = width
         self.height = height
         self.bytesPerPixel = bpp
     }
-    
+
 }

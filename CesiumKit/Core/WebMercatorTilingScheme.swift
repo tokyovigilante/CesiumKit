@@ -39,38 +39,38 @@ class WebMercatorTilingScheme: TilingScheme {
     * @type {Ellipsoid}
     */
     var ellipsoid: Ellipsoid
-    
+
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof WebMercatorTilingScheme.prototype
     * @type {Rectangle}
     */
     var rectangle: Rectangle
-    
+
     /**
     * Gets the map projection used by this tiling scheme.
     * @memberof WebMercatorTilingScheme.prototype
     * @type {Projection}
     */
     var projection: MapProjection
-    
+
     var numberOfLevelZeroTilesX: Int
     var numberOfLevelZeroTilesY: Int
-    
+
     var rectangleSouthwestInMeters: Cartesian3
     var rectangleNortheastInMeters: Cartesian3
-    
+
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         numberOfLevelZeroTilesX: Int = 1,
         numberOfLevelZeroTilesY: Int = 1,
         rectangleSouthwestInMeters: Cartesian3? = nil,
         rectangleNortheastInMeters: Cartesian3? = nil) {
-            
+
             self.ellipsoid = ellipsoid
             self.projection = WebMercatorProjection(ellipsoid: ellipsoid)
             self.numberOfLevelZeroTilesX = numberOfLevelZeroTilesX
             self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
-            
+
             if (rectangleSouthwestInMeters != nil && rectangleNortheastInMeters != nil) {
                 self.rectangleSouthwestInMeters = rectangleSouthwestInMeters!
                 self.rectangleNortheastInMeters = rectangleNortheastInMeters!
@@ -85,8 +85,8 @@ class WebMercatorTilingScheme: TilingScheme {
             self.rectangle = Rectangle(west: southwest.longitude, south: southwest.latitude,
                 east: northeast.longitude, north: northeast.latitude)
     }
-    
-    
+
+
     /**
     * Gets the total number of tiles in the X direction at a specified level-of-detail.
     *
@@ -96,7 +96,7 @@ class WebMercatorTilingScheme: TilingScheme {
     func numberOfXTilesAt(level: Int) -> Int {
         return self.numberOfLevelZeroTilesX << level
     }
-    
+
     /**
     * Gets the total number of tiles in the Y direction at a specified level-of-detail.
     *
@@ -106,7 +106,7 @@ class WebMercatorTilingScheme: TilingScheme {
     func numberOfYTilesAt(level: Int) -> Int {
         return self.numberOfLevelZeroTilesY << level
     }
-    
+
     /**
     * Transforms an rectangle specified in geodetic radians to the native coordinate system
     * of this tiling scheme.
@@ -120,11 +120,11 @@ class WebMercatorTilingScheme: TilingScheme {
     func rectangleToNativeRectangle(rectangle: Rectangle) -> Rectangle {
         let southwest = projection.project(rectangle.southwest)
         let northeast = projection.project(rectangle.northeast)
-        
+
         return Rectangle(west: southwest.x, south: southwest.y, east: northeast.x, north: northeast.y)
-        
+
     }
-    
+
     /**
     * Converts tile x, y coordinates and level to an rectangle expressed in the native coordinates
     * of the tiling scheme.
@@ -140,18 +140,18 @@ class WebMercatorTilingScheme: TilingScheme {
     func tileXYToNativeRectangle(x: Int, y: Int, level: Int) -> Rectangle {
         let xTiles = numberOfXTilesAt(level: level)
         let yTiles = numberOfYTilesAt(level: level)
-        
+
         let xTileWidth = (rectangleNortheastInMeters.x - rectangleSouthwestInMeters.x) / Double(xTiles)
         let west = rectangleSouthwestInMeters.x + Double(x) * xTileWidth
         let east = rectangleSouthwestInMeters.x + Double(x + 1) * xTileWidth
-        
+
         let yTileHeight = (rectangleNortheastInMeters.y - rectangleSouthwestInMeters.y) / Double(yTiles)
         let north = rectangleNortheastInMeters.y - Double(y) * yTileHeight
         let south = rectangleNortheastInMeters.y - Double(y + 1) * yTileHeight
-        
+
         return Rectangle(west: west, south: south, east: east, north: north)
     }
-    
+
     /**
     * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
     *
@@ -165,17 +165,17 @@ class WebMercatorTilingScheme: TilingScheme {
     */
     func tileXYToRectangle(x: Int, y: Int, level: Int) -> Rectangle {
         var nativeRectangle = tileXYToNativeRectangle(x: x, y: y, level: level)
-        
+
         let southwest = projection.unproject(Cartesian3(x: nativeRectangle.west, y: nativeRectangle.south, z: 0.0))
         let northeast = projection.unproject(Cartesian3(x: nativeRectangle.east, y: nativeRectangle.north, z: 0.0))
-        
+
         nativeRectangle.west = southwest.longitude
         nativeRectangle.south = southwest.latitude
         nativeRectangle.east = northeast.longitude
         nativeRectangle.north = northeast.latitude
         return nativeRectangle
     }
-    
+
     /**
     * Calculates the tile x, y coordinates of the tile containing
     * a given cartographic position.
@@ -188,24 +188,24 @@ class WebMercatorTilingScheme: TilingScheme {
     *          if 'result' is undefined.
     */
     func positionToTileXY(position: Cartographic, level: Int) -> (x: Int, y: Int)? {
-        
+
         if !rectangle.contains(position) {
                 // outside the bounds of the tiling scheme
                 return nil
         }
-        
+
         let xTiles = numberOfXTilesAt(level: level)
         let yTiles = numberOfYTilesAt(level: level)
-        
+
         let overallWidth = rectangleNortheastInMeters.x - rectangleSouthwestInMeters.x
         let xTileWidth = overallWidth / Double(xTiles)
         let overallHeight = rectangleNortheastInMeters.y - rectangleSouthwestInMeters.y
         let yTileHeight = overallHeight / Double(yTiles)
-        
+
         let webMercatorPosition = projection.project(position)
         let distanceFromWest = webMercatorPosition.x - rectangleSouthwestInMeters.x
         let distanceFromNorth = rectangleNortheastInMeters.y - webMercatorPosition.y
-        
+
         var xTileCoordinate = Int(distanceFromWest / xTileWidth) | 0
         if (xTileCoordinate >= xTiles) {
             xTileCoordinate = xTiles - 1
@@ -214,8 +214,8 @@ class WebMercatorTilingScheme: TilingScheme {
         if (yTileCoordinate >= yTiles) {
             yTileCoordinate = yTiles - 1
         }
-        
+
         return (x: xTileCoordinate, y: yTileCoordinate)
     }
-    
+
 }

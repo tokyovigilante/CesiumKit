@@ -35,7 +35,7 @@ protocol Frustum {
     * @default undefined
     */
     var fov: Double { get set }
-    
+
     var fovy: Double { get set }
 
     /**
@@ -44,28 +44,28 @@ protocol Frustum {
     * @default undefined
     */
     var aspectRatio: Double { get set }
-    
+
     /**
     * Defines the left clipping plane.
     * @type {Number}
     * @default undefined
     */
     var left: Double { get set }
-    
+
     /**
     * Defines the right clipping plane.
     * @type {Number}
     * @default undefined
     */
     var right: Double { get set }
-    
+
     /**
     * Defines the top clipping plane.
     * @type {Number}
     * @default undefined
     */
     var top: Double { get set }
-    
+
     /**
     * Defines the bottom clipping plane.
     * @type {Number}
@@ -79,16 +79,16 @@ protocol Frustum {
     * @default 1.0
     */
     var near: Double { get set }
-    
+
     /**
     * The distance of the far plane.
     * @type {Number}
     * @default 500000000.0
     */
     var far: Double { get set }
-    
+
     mutating func update ()
-        
+
     /**
     * Gets the perspective projection matrix computed from the view frustum.
     * @memberof PerspectiveFrustum.prototype
@@ -106,7 +106,7 @@ protocol Frustum {
     * @see PerspectiveFrustum#projectionMatrix
     */
     var infiniteProjectionMatrix: Matrix4? { get }
-    
+
     /**
     * Creates a culling volume for this frustum.
     *
@@ -121,7 +121,7 @@ protocol Frustum {
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
     func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume
-    
+
     /**
     * Returns the pixel's width and height in meters.
     *
@@ -156,7 +156,7 @@ protocol Frustum {
     * }, distance);
     */
     func pixelDimensions (drawingBufferWidth width: Int, drawingBufferHeight height: Int, distance: Double) -> Cartesian2
-    
+
     /**
     * Returns a duplicate of a PerspectiveFrustum instance.
     *
@@ -164,7 +164,7 @@ protocol Frustum {
     * @returns {PerspectiveFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
     func clone (_ target: Frustum?) -> Frustum
-    
+
     /**
     * Compares the provided PerspectiveFrustum componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.

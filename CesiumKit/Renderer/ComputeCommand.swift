@@ -14,7 +14,7 @@ import Foundation
 * @private
 */
 class ComputeCommand: Command {
-    
+
     /**
     * The vertex array. If none is provided, a viewport quad will be used.
     *
@@ -22,7 +22,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var vertexArray: VertexArray?
-    
+
     /**
     * The fragment shader source. The default vertex shader is ViewportQuadVS.
     *
@@ -30,7 +30,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var fragmentShaderSource: ShaderSource?
-    
+
     /**
     * The shader program to apply.
     *
@@ -38,7 +38,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var pipeline: RenderPipeline?
-    
+
     /**
     * An object with functions whose names match the uniforms in the shader program
     * and return values to set those uniforms.
@@ -47,7 +47,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var uniformMap: UniformMap?
-    
+
     /**
     * Texture to use for offscreen rendering.
     *
@@ -55,7 +55,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var outputTexture: Texture?
-    
+
     /**
     * Function that is called immediately before the ComputeCommand is executed. Used to
     * update any renderer resources. Takes the ComputeCommand as its single argument.
@@ -64,7 +64,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var preExecute: ((ComputeCommand) -> ())?
-    
+
     /**
     * Function that is called after the ComputeCommand is executed. Takes the output
     * texture as its single argument.
@@ -73,7 +73,7 @@ class ComputeCommand: Command {
     * @default undefined
     */
     var postExecute: ((Texture) -> ())?
-    
+
     /**
     * Whether the renderer resources will persist beyond this call. If not, they
     * will be destroyed after completion.
@@ -82,7 +82,7 @@ class ComputeCommand: Command {
     * @default false
     */
     var persists: Bool
-    
+
     /**
     * The pass when to render. Always compute pass.
     *
@@ -90,7 +90,7 @@ class ComputeCommand: Command {
     * @default Pass.COMPUTE;
     */
     let pass: Pass = .compute
-    
+
     /**
     * The object who created this command.  This is useful for debugging command
     * execution; it allows us to see who created a command when we only have a
@@ -103,7 +103,7 @@ class ComputeCommand: Command {
     * @see Scene#debugCommandFilter
     */
     var owner: AnyObject? = nil
-    
+
     init(
         vertexArray: VertexArray? = nil,
         fragmentShaderSource: ShaderSource? = nil,
@@ -124,7 +124,7 @@ class ComputeCommand: Command {
             self.persists = persists
             self.owner = owner
     }
-    
+
     /**
     * Executes the compute command.
     *
@@ -133,5 +133,5 @@ class ComputeCommand: Command {
     func execute (_ computeEngine: ComputeEngine) {
         computeEngine.execute(self)
     }
-    
+
 }

@@ -36,7 +36,7 @@ public protocol ImageryProvider {
     * @default undefined
     */
     var defaultAlpha: Float { get }
-    
+
     /**
     * The default brightness of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0
     * makes the imagery darker while greater than 1.0 makes it brighter.
@@ -45,7 +45,7 @@ public protocol ImageryProvider {
     * @default undefined
     */
     var defaultBrightness: Float { get }
-    
+
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
     * the contrast while greater than 1.0 increases it.
@@ -54,7 +54,7 @@ public protocol ImageryProvider {
     * @default undefined
     */
     var defaultContrast: Float { get }
-    
+
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
     *
@@ -62,7 +62,7 @@ public protocol ImageryProvider {
     * @default undefined
     */
     var defaultHue: Float { get }
-    
+
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
     * saturation while greater than 1.0 increases it.
@@ -71,7 +71,7 @@ public protocol ImageryProvider {
     * @default undefined
     */
     var defaultSaturation: Float { get }
-    
+
     /**
     * The default gamma correction to apply to this provider.  1.0 uses the unmodified imagery color.
     *
@@ -79,14 +79,14 @@ public protocol ImageryProvider {
     * @default undefined
     */
     var defaultGamma: Float { get }
-    
+
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
     * @type {Boolean}
     */
     var ready: Bool { get }
-    
+
     /**
     * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -94,7 +94,7 @@ public protocol ImageryProvider {
     * @type {Rectangle}
     */
     var rectangle: Rectangle { get }
-    
+
     /**
     * Gets the width of each tile, in pixels.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -102,7 +102,7 @@ public protocol ImageryProvider {
     * @type {Number}
     */
     var tileWidth: Int { get }
-    
+
     /**
     * Gets the height of each tile, in pixels.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -111,7 +111,7 @@ public protocol ImageryProvider {
     */
     var tileHeight: Int { get }
 
-    
+
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -131,7 +131,7 @@ public protocol ImageryProvider {
     * @type {Number}
     */
     var minimumLevel: Int? { get }
-    
+
     /**
     * Gets the tiling scheme used by the provider.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -149,7 +149,7 @@ public protocol ImageryProvider {
     * @type {TileDiscardPolicy}
     */
     var tileDiscardPolicy: TileDiscardPolicy? { get }
-    
+
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -158,7 +158,7 @@ public protocol ImageryProvider {
     * @type {Event}
     */
     var errorEvent: Event { get }
-    
+
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     * the source of the imagery. This function should
@@ -167,7 +167,7 @@ public protocol ImageryProvider {
     * @type {Credit}
     */
     var credit: Credit? { get }
-    
+
     /**
     * Gets the proxy used by this provider.
     * @memberof ImageryProvider.prototype
@@ -175,7 +175,7 @@ public protocol ImageryProvider {
     */
     // FIXME: Disabled
     //var proxy: Proxy { get }
-    
+
     /**
     * Gets a value indicating whether or not the images provided by this imagery provider
     * include an alpha channel.  If this property is false, an alpha channel, if present, will
@@ -186,7 +186,7 @@ public protocol ImageryProvider {
     * @type {Boolean}
     */
     var hasAlphaChannel: Bool { get }
-        
+
     /**
     * Gets the credits to be displayed when a given tile is displayed.
     * @function
@@ -199,7 +199,7 @@ public protocol ImageryProvider {
     * @exception {DeveloperError} <code>getTileCredits</code> must not be called before the imagery provider is ready.
     */
     func tileCredits (x: Int, y: Int, level: Int) -> [Credit]
-    
+
     /**
     * Requests the image for a given tile.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -223,7 +223,7 @@ public protocol ImageryProvider {
     * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
     */
     func requestImage(x: Int, y: Int, level: Int, completionBlock: @escaping ((CGImage?) -> Void))
-    
+
     /**
      * Asynchronously determines what features, if any, are located at a given longitude and latitude within
      * a tile.  This function should not be called before {@link ImageryProvider#ready} returns true.

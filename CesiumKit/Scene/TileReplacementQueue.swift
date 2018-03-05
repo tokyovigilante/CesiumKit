@@ -15,17 +15,17 @@
 * @private
 */
 class TileReplacementQueue {
-    
+
     var head: QuadtreeTile? = nil
-    
+
     var tail: QuadtreeTile? = nil
-    
+
     var count = 0
-    
+
     fileprivate var _lastBeforeStartOfFrame: QuadtreeTile? = nil
-    
+
     fileprivate var _tileProvider: GlobeSurfaceTileProvider
-    
+
     init (tileProvider: GlobeSurfaceTileProvider) {
         _tileProvider = tileProvider
     }
@@ -37,7 +37,7 @@ class TileReplacementQueue {
     func markStartOfRenderFrame() {
         _lastBeforeStartOfFrame = head
     }
-    
+
     /**
     * Reduces the size of the queue to a specified size by unloading the least-recently used
     * tiles.  Tiles that were used last frame will not be unloaded, even if that puts the number
@@ -52,9 +52,9 @@ class TileReplacementQueue {
             // Stop trimming after we process the last tile not used in the
             // current frame.
             keepTrimming = tileToTrim! != _lastBeforeStartOfFrame
-            
+
             let previous = tileToTrim!.replacementPrevious
-            
+
             if tileToTrim!.eligibleForUnloading {
                 tileToTrim!.freeResources(_tileProvider)
                 remove(tileToTrim!)
@@ -62,33 +62,33 @@ class TileReplacementQueue {
             tileToTrim = previous
         }
     }
-    
+
     func remove(_ item: QuadtreeTile) {
         let previous = item.replacementPrevious
         let next = item.replacementNext
-        
+
         if item == _lastBeforeStartOfFrame {
             _lastBeforeStartOfFrame = next
         }
-        
+
         if (item == head) {
             head = next
         } else {
             previous!.replacementNext = next
         }
-        
+
         if (item == tail) {
             tail = previous
         } else {
             next!.replacementPrevious = previous
         }
-        
+
         item.replacementPrevious = nil
         item.replacementNext = nil
-        
+
         count -= 1
     }
-    
+
     /**
     * Marks a tile as rendered this frame and moves it before the first tile that was not rendered
     * this frame.
@@ -102,9 +102,9 @@ class TileReplacementQueue {
             }
             return;
         }
-        
+
         count += 1
-        
+
         if head == nil {
             // no other tiles in the list
             item.replacementPrevious = nil
@@ -113,17 +113,17 @@ class TileReplacementQueue {
             tail = item
             return
         }
-        
+
         if item.replacementPrevious != nil || item.replacementNext != nil {
             // tile already in the list, remove from its current location
             remove(item)
         }
-        
+
         item.replacementPrevious = nil
         item.replacementNext = head
         head!.replacementPrevious = item
-        
+
         head = item
     }
-    
+
 }

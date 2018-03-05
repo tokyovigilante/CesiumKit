@@ -21,7 +21,7 @@ import Foundation
 * @param {Number} [upsampleDetails.level] The level coordinate of the tile being upsampled.
 */
 class TileTerrain {
-    
+
     /**
     * The current state of the terrain in the terrain processing pipeline.
     * @type {TerrainState}
@@ -30,19 +30,19 @@ class TileTerrain {
     var state: TerrainState = .unloaded
 
     var data: TerrainData? = nil
-    
+
     var mesh: TerrainMesh? = nil
-    
+
     var vertexArray: VertexArray? = nil
 
     var upsampleDetails: (data: TerrainData, x: Int, y: Int, level: Int)?
-    
+
     private var _pendingRequests = [NetworkOperation]()
 
     init (upsampleDetails: (data: TerrainData, x: Int, y: Int, level: Int)? = nil) {
         self.upsampleDetails = upsampleDetails
     }
-    
+
     func publishToTile(_ tile: QuadtreeTile) {
         let surfaceTile = tile.data!
         guard let mesh = mesh else {
@@ -60,20 +60,20 @@ class TileTerrain {
             minimumHeight: mesh.minimumHeight,
             maximumHeight: mesh.maximumHeight
         )
-        
+
         tile.data!.occludeePointInScaledSpace = mesh.occludeePointInScaledSpace
-        
+
         // Free the tile's existing vertex array, if any.
         surfaceTile.freeVertexArray()
-        
+
         // Transfer ownership of the vertex array to the tile itself.
         surfaceTile.vertexArray = vertexArray
         vertexArray = nil
-        
+
         // update cached draw commands
         tile.invalidateCommandCache = true
     }
-    
+
     func processLoadStateMachine (frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state == .unloaded {
             requestTileGeometry(terrainProvider: terrainProvider, x: x, y: y, level: level)
@@ -83,9 +83,9 @@ class TileTerrain {
             createResources(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
         }
     }
-    
+
     func requestTileGeometry(terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        
+
         self.state = .receiving
         var request: NetworkOperation?
         request = terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: true) { terrainData in
@@ -97,14 +97,14 @@ class TileTerrain {
                 // Initially assume failure.  handleError may retry, in which case the state will
                 // change to RECEIVING or UNLOADED.
                 self.state = TerrainState.failed
-                
+
                 let message = "Failed to obtain terrain tile X: \(x) Y: \(y) Level: \(level) - terrain data request failed"
                 logPrint(.error, message)
             }
         }
         _pendingRequests.append(request!)
     }
-    
+
     func processUpsampleStateMachine (frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
         if state != .unloaded {
             return
@@ -113,14 +113,14 @@ class TileTerrain {
             assertionFailure("TileTerrain cannot upsample unless provided upsampleDetails")
             return
         }
-        
+
         let sourceData = upsampleDetails.data
         let sourceX = upsampleDetails.x
         let sourceY = upsampleDetails.y
         let sourceLevel = upsampleDetails.level
-        
+
         state = .receiving
-        
+
         QueueManager.sharedInstance.upsampleQueue.async(execute: {
             sourceData.upsample(
                 tilingScheme: terrainProvider.tilingScheme,
@@ -146,7 +146,7 @@ class TileTerrain {
         if state == .received {
             transform(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
          }
-         
+
          if state == .transformed {
             createResources(frameState: frameState, terrainProvider: terrainProvider, x: x, y: y, level: level)
          }
@@ -161,10 +161,10 @@ class TileTerrain {
             logPrint(.error, message)
             return
         }
-                
+
         QueueManager.sharedInstance.processorQueue.async(execute: {
             data.createMesh(tilingScheme: terrainProvider.tilingScheme, x: x, y: y, level: level, exaggeration: frameState.terrainExaggeration, completionBlock: { mesh in
-                
+
                 guard let mesh = mesh else {
                     DispatchQueue.main.async(execute: {
                         self.state = .failed
@@ -180,31 +180,31 @@ class TileTerrain {
             })
         })
     }
-    
+
     func createResources(frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
-        
+
         guard let context = frameState.context else {
             return
         }
-        
+
         self.state = .buffering
         var terrainMesh = self.mesh!
-        
+
         QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
             let datatype = ComponentDatatype.float32
             let meshBufferSize = terrainMesh.vertices.sizeInBytes
-            
+
             let stride: Int
             if terrainProvider.hasVertexNormals {
                 stride = 7 * datatype.elementSize
             } else {
                 stride = 6 * datatype.elementSize
             }
-            
+
             let vertexCount = meshBufferSize / stride
-            
+
             let vertexBuffer = Buffer(device: context.device, array: terrainMesh.vertices, componentDatatype: ComponentDatatype.float32, sizeInBytes: meshBufferSize)
-            
+
             var indexBuffer = terrainMesh.indexBuffer
             if indexBuffer == nil {
                 let indices = terrainMesh.indices
@@ -234,21 +234,21 @@ class TileTerrain {
             })
         })
     }
-    
+
     deinit {
         logPrint(.debug, "deinit tileterrain")
         for operation in _pendingRequests {
             operation.cancel()
         }
     }
-    
+
     func freeResources (context: Context? = nil) {
         self.state = .unloaded
-        
+
         let freeResourcesRaw = { () -> () in
             self.data = nil
             self.mesh = nil
-            
+
             //var indexBuffer: Buffer? = nil
             if self.vertexArray != nil {
                 //let indexBuffer = self.vertexArray!.indexBuffer
@@ -269,5 +269,5 @@ class TileTerrain {
          }*/
     }
 
-    
+
 }

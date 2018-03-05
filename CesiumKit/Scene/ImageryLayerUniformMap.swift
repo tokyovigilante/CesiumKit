@@ -15,7 +15,7 @@ private struct ImageryLayerUniformStruct: UniformStruct {
 }
 
 class ImageryLayerUniformMap: NativeUniformMap {
-    
+
     var textureDimensions: Cartesian2 {
         get {
             return Cartesian2(simd: vector_double(_uniformStruct.textureDimensions))
@@ -24,7 +24,7 @@ class ImageryLayerUniformMap: NativeUniformMap {
             _uniformStruct.textureDimensions = newValue.floatRepresentation
         }
     }
-    
+
     var viewportOrthographic: Matrix4 {
         get {
             return Matrix4(simd: double4x4([
@@ -38,18 +38,18 @@ class ImageryLayerUniformMap: NativeUniformMap {
             _uniformStruct.viewportOrthographic = newValue.floatRepresentation
         }
     }
-    
+
     var texture : Texture?
- 
+
     var uniformBufferProvider: UniformBufferProvider! = nil
 
     let uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name: "u_viewportOrthographic", type: .floatMatrix4, count: 1),
         UniformDescriptor(name: "u_textureDimensions", type: .floatVec2, count: 1)
     ]
-    
+
     fileprivate var _uniformStruct = ImageryLayerUniformStruct()
-    
+
     lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
         buffer.write(from: &self._uniformStruct, length: MemoryLayout<ImageryLayerUniformStruct>.size)
         return [self.texture!]

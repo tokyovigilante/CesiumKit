@@ -31,11 +31,11 @@ struct OrthographicFrustum: Frustum {
 
     var fov: Double = Double.nan
     var fovy: Double = Double.nan
-    
+
     var aspectRatio: Double = Double.nan
-    
+
     let infiniteProjectionMatrix: Matrix4? = nil
-    
+
     var projectionMatrix: Matrix4 {
         get {
             return _orthographicMatrix
@@ -50,7 +50,7 @@ struct OrthographicFrustum: Frustum {
     */
     var left = Double.nan
     fileprivate var _left = Double.nan
-    
+
     /**
     * Defines the right clipping plane.
     * @type {Number}
@@ -58,7 +58,7 @@ struct OrthographicFrustum: Frustum {
     */
     var right = Double.nan
     fileprivate var _right = Double.nan
-    
+
     /**
     * Defines the top clipping plane.
     * @type {Number}
@@ -66,7 +66,7 @@ struct OrthographicFrustum: Frustum {
     */
     var top = Double.nan
     fileprivate var _top = Double.nan
-    
+
     /**
     * Defines the bottom clipping plane.
     * @type {Number}
@@ -74,7 +74,7 @@ struct OrthographicFrustum: Frustum {
     */
     var bottom = Double.nan
     fileprivate var _bottom = Double.nan
-    
+
     /**
     * The distance of the near plane.
     * @type {Number}
@@ -82,7 +82,7 @@ struct OrthographicFrustum: Frustum {
     */
     var near = 1.0
     fileprivate var _near = 1.0
-    
+
     /**
     * The distance of the far plane.
     * @type {Number}
@@ -90,9 +90,9 @@ struct OrthographicFrustum: Frustum {
     */
     var far = 500000000.0
     fileprivate var _far = 500000000.0
-    
+
     fileprivate var _cullingVolume = CullingVolume()
-    
+
     // FIXME: OrthographicFrustum
     /*
     this._cullingVolume = new CullingVolume();
@@ -107,11 +107,11 @@ struct OrthographicFrustum: Frustum {
     throw new DeveloperError('right, left, top, bottom, near, or far parameters are not set.');
     }
     //>>includeEnd('debug');
-    
+
     if (frustum.top !== frustum._top || frustum.bottom !== frustum._bottom ||
     frustum.left !== frustum._left || frustum.right !== frustum._right ||
     frustum.near !== frustum._near || frustum.far !== frustum._far) {
-    
+
     //>>includeStart('debug', pragmas.debug);
     if (frustum.left > frustum.right) {
     throw new DeveloperError('right must be greater than left.');
@@ -123,7 +123,7 @@ struct OrthographicFrustum: Frustum {
     throw new DeveloperError('near must be greater than zero and less than far.');
     }
     //>>includeEnd('debug');
-    
+
     frustum._left = frustum.left;
     frustum._right = frustum.right;
     frustum._top = frustum.top;
@@ -173,7 +173,7 @@ struct OrthographicFrustum: Frustum {
     throw new DeveloperError('up is required.');
     }
     //>>includeEnd('debug');
-    
+
     var planes = this._cullingVolume.planes;
     var t = this.top;
     var b = this.bottom;
@@ -181,18 +181,18 @@ struct OrthographicFrustum: Frustum {
     var l = this.left;
     var n = this.near;
     var f = this.far;
-    
+
     var right = Cartesian3.cross(direction, up, getPlanesRight);
     var nearCenter = getPlanesNearCenter;
     Cartesian3.multiplyBy(scalar: direction, n, nearCenter);
     Cartesian3.add(position, nearCenter, nearCenter);
-    
+
     var point = getPlanesPoint;
-    
+
     // Left plane
     Cartesian3.multiplyBy(scalar: right, l, point);
     Cartesian3.add(nearCenter, point, point);
-    
+
     var plane = planes[0];
     if (!defined(plane)) {
     plane = planes[0] = new Cartesian4();
@@ -201,11 +201,11 @@ struct OrthographicFrustum: Frustum {
     plane.y = right.y;
     plane.z = right.z;
     plane.w = -Cartesian3.dot(right, point);
-    
+
     // Right plane
     Cartesian3.multiplyBy(scalar: right, r, point);
     Cartesian3.add(nearCenter, point, point);
-    
+
     plane = planes[1];
     if (!defined(plane)) {
     plane = planes[1] = new Cartesian4();
@@ -214,11 +214,11 @@ struct OrthographicFrustum: Frustum {
     plane.y = -right.y;
     plane.z = -right.z;
     plane.w = -Cartesian3.dot(Cartesian3.negate(right, negateScratch), point);
-    
+
     // Bottom plane
     Cartesian3.multiplyBy(scalar: up, b, point);
     Cartesian3.add(nearCenter, point, point);
-    
+
     plane = planes[2];
     if (!defined(plane)) {
     plane = planes[2] = new Cartesian4();
@@ -227,11 +227,11 @@ struct OrthographicFrustum: Frustum {
     plane.y = up.y;
     plane.z = up.z;
     plane.w = -Cartesian3.dot(up, point);
-    
+
     // Top plane
     Cartesian3.multiplyBy(scalar: up, t, point);
     Cartesian3.add(nearCenter, point, point);
-    
+
     plane = planes[3];
     if (!defined(plane)) {
     plane = planes[3] = new Cartesian4();
@@ -240,7 +240,7 @@ struct OrthographicFrustum: Frustum {
     plane.y = -up.y;
     plane.z = -up.z;
     plane.w = -Cartesian3.dot(Cartesian3.negate(up, negateScratch), point);
-    
+
     // Near plane
     plane = planes[4];
     if (!defined(plane)) {
@@ -250,11 +250,11 @@ struct OrthographicFrustum: Frustum {
     plane.y = direction.y;
     plane.z = direction.z;
     plane.w = -Cartesian3.dot(direction, nearCenter);
-    
+
     // Far plane
     Cartesian3.multiplyBy(scalar: direction, f, point);
     Cartesian3.add(position, point, point);
-    
+
     plane = planes[5];
     if (!defined(plane)) {
     plane = planes[5] = new Cartesian4();
@@ -263,11 +263,11 @@ struct OrthographicFrustum: Frustum {
     plane.y = -direction.y;
     plane.z = -direction.z;
     plane.w = -Cartesian3.dot(Cartesian3.negate(direction, negateScratch), point);
-    
+
     return this._cullingVolume*/
         return _cullingVolume
     }
-    
+
     /**
     * Returns the pixel's width and height in meters.
     *
@@ -287,21 +287,21 @@ struct OrthographicFrustum: Frustum {
     func pixelDimensions (drawingBufferWidth width: Int, drawingBufferHeight height: Int, distance: Double) -> Cartesian2 {
 /*    update(this);
 
-    
+
     var frustumWidth = this.right - this.left;
     var frustumHeight = this.top - this.bottom;
     var pixelWidth = frustumWidth / drawingBufferDimensions.x;
     var pixelHeight = frustumHeight / drawingBufferDimensions.y;
-    
+
     if (!defined(result)) {
     return new Cartesian2(pixelWidth, pixelHeight);
     }
-    
+
     result.x = pixelWidth;
     result.y = pixelHeight;
     return result;*/return Cartesian2()
     }
-    
+
     /**
     * Returns a duplicate of a OrthographicFrustum instance.
     *
@@ -309,16 +309,16 @@ struct OrthographicFrustum: Frustum {
     * @returns {OrthographicFrustum} The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
     */
     func clone (_ target: Frustum?) -> Frustum {
-        
+
         var result = target ?? OrthographicFrustum()
-        
+
         result.left = left
         result.right = right
         result.top = top
         result.bottom = bottom
         result.near = near
         result.far = far
-        
+
         // force update of clone to compute matrices
         /*result._left = undefined;
         result._right = undefined;
@@ -326,10 +326,10 @@ struct OrthographicFrustum: Frustum {
         result._bottom = undefined;
         result._near = undefined;
         result._far = undefined;*/
-        
+
         return result
     }
-    
+
     /**
     * Compares the provided OrthographicFrustum componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -347,7 +347,7 @@ struct OrthographicFrustum: Frustum {
     this.near === other.near &&
     this.far === other.far);
     };
-    
+
     return OrthographicFrustum;
     });
 

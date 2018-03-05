@@ -10,7 +10,7 @@ import Foundation
 
 #if os(OSX)
     import AppKit.NSImage
-    
+
     extension NSImage {
         var cgImage: CGImage? {
             get {
@@ -31,7 +31,7 @@ import Foundation
 
 extension CGImage {
     class func loadFromURL (_ url: String, completionBlock: @escaping (CGImage?, NSError?) -> ()) {
-        
+
         let imageOperation = NetworkOperation(url: url)
         imageOperation.completionBlock = {
             if let error = imageOperation.error {
@@ -41,7 +41,7 @@ extension CGImage {
         }
         imageOperation.enqueue()
     }
-    
+
     class func from(_ data: Data) -> CGImage? {
         #if os(OSX)
             let nsImage = NSImage(data: data)
@@ -51,7 +51,7 @@ extension CGImage {
             return uiImage?.cgImage
         #endif
     }
-    
+
     func renderToPixelArray (colorSpace cs: CGColorSpace, premultiplyAlpha: Bool, flipY: Bool) -> (array: [UInt8], bytesPerRow: Int)? {
 
         let width = self.width
@@ -60,9 +60,9 @@ extension CGImage {
         let numberOfComponents = 4
 
         let bytesPerPixel = (bitsPerComponent * numberOfComponents + 7)/8
-        
+
         let bytesPerRow = bytesPerPixel * width
-        
+
         let alphaInfo: CGImageAlphaInfo
         if bytesPerPixel == 1 {
             // no alpha info in single byte pixel array
@@ -72,18 +72,18 @@ extension CGImage {
         } else {
             alphaInfo = .last
         }
-        
+
         let bitmapInfo: CGBitmapInfo = [CGBitmapInfo(rawValue: alphaInfo.rawValue)]
 
         let pixelBuffer = [UInt8](repeating: 0, count: bytesPerRow * height) // if 4 components per pixel (RGBA)
-        
+
         guard let bitmapContext = CGContext(data: UnsafeMutableRawPointer(mutating: pixelBuffer), width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: cs, bitmapInfo: bitmapInfo.rawValue) else {
                 assertionFailure("bitmapContext == nil")
                 return nil
         }
-        
+
         let imageRect = CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height))
-        
+
         if flipY {
             let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: CGFloat(height))
             bitmapContext.concatenate(flipVertical)

@@ -11,15 +11,15 @@ import Foundation
 // Protocol for bounding volumes
 
 protocol BoundingVolume {
-    
+
     var center: Cartesian3 { get }
-    
+
     func intersectPlane(_ plane: Plane) -> Intersect
-    
+
     func isOccluded (_ occluder: Occluder) -> Bool
-    
+
     func distanceSquaredTo(_ cartesian: Cartesian3) -> Double
-    
-    func computePlaneDistances(_ position: Cartesian3, direction: Cartesian3) -> Interval 
+
+    func computePlaneDistances(_ position: Cartesian3, direction: Cartesian3) -> Interval
 
 }

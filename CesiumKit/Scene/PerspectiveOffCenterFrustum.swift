@@ -29,7 +29,7 @@
 // FIXME: Frustum protocol
 // FIXME: Struct
 class PerspectiveOffCenterFrustum: Frustum {
-    
+
     var fov = Double.nan
     var fovy = Double.nan
 
@@ -42,7 +42,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var left = Double.nan
     fileprivate var _left = Double.nan
-    
+
     /**
     * Defines the right clipping plane.
     * @type {Number}
@@ -50,7 +50,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var right = Double.nan
     fileprivate var _right = Double.nan
-    
+
     /**
     * Defines the top clipping plane.
     * @type {Number}
@@ -58,7 +58,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var top = Double.nan
     fileprivate var _top = Double.nan
-    
+
     /**
     * Defines the bottom clipping plane.
     * @type {Number}
@@ -66,25 +66,25 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     var bottom = Double.nan
     fileprivate var _bottom = Double.nan
-    
+
     /**
     * The distance of the near plane.
     * @type {Number}
     * @default 1.0
     */
     var near = 1.0
-    
+
     fileprivate var _near = Double.nan
-    
+
     /**
     * The distance of the far plane.
     * @type {Number}
     * @default 500000000.0
     */
     var far = 500000000.0
-    
+
     fileprivate var _far = Double.nan
-    
+
     fileprivate var _cullingVolume = CullingVolume()
 
     fileprivate var _perspectiveMatrix = Matrix4()
@@ -92,11 +92,11 @@ class PerspectiveOffCenterFrustum: Frustum {
     fileprivate var _infinitePerspective = Matrix4()
 
     func update () {
-        
+
         if top != _top || bottom != _bottom || left != _left ||
             right != _right || near != _near || far != _far {
                 assert(near > 0 && near < far, "near must be greater than zero and less than far")
-                
+
                 _left = left
                 _right = right
                 _top = top
@@ -107,7 +107,7 @@ class PerspectiveOffCenterFrustum: Frustum {
                 _infinitePerspective = Matrix4.computeInfinitePerspectiveOffCenter(left: left, right: right, bottom: bottom, top: top, near: near)
         }
     }
-    
+
     /**
     * Gets the perspective projection matrix computed from the view frustum.
     * @memberof PerspectiveOffCenterFrustum.prototype
@@ -121,7 +121,7 @@ class PerspectiveOffCenterFrustum: Frustum {
             return _perspectiveMatrix
         }
     }
-    
+
     /**
     * Gets the perspective projection matrix computed from the view frustum with an infinite far plane.
     * @memberof PerspectiveOffCenterFrustum.prototype
@@ -135,7 +135,7 @@ class PerspectiveOffCenterFrustum: Frustum {
             return _infinitePerspective
         }
     }
-    
+
     /**
     * Creates a culling volume for this frustum.
     *
@@ -150,39 +150,39 @@ class PerspectiveOffCenterFrustum: Frustum {
     * var intersect = cullingVolume.computeVisibility(boundingVolume);
     */
     func computeCullingVolume (position: Cartesian3, direction: Cartesian3, up: Cartesian3) -> CullingVolume {
-        
+
         let right2 = direction.cross(up)
-        
+
         let nearCenter = direction.multiplyBy(scalar: near).add(position)
-        
+
         let farCenter = direction.multiplyBy(scalar: far).add(position)
-        
+
         var planes = [Cartesian4]()
-        
+
         //Left plane computation
         let leftPlane = right2.multiplyBy(scalar: left).add(nearCenter).subtract(position).normalize().cross(up)
         planes.append(Cartesian4(x: leftPlane.x, y: leftPlane.y, z: leftPlane.z, w: -leftPlane.dot(position)))
-        
+
         //Right plane computation
         let rightPlane = up.cross(right2.multiplyBy(scalar: right).add(nearCenter).subtract(position).normalize())
         planes.append(Cartesian4(x: rightPlane.x, y: rightPlane.y, z: rightPlane.z, w: -rightPlane.dot(position)))
-        
+
         //Bottom plane computation
         let bottomPlane = right2.cross(up.multiplyBy(scalar: bottom).add(nearCenter).subtract(position).normalize())
         planes.append(Cartesian4(x: bottomPlane.x, y: bottomPlane.y, z: bottomPlane.z, w: -bottomPlane.dot(position)))
-        
+
         //Top plane computation
         let topPlane = up.multiplyBy(scalar: top).add(nearCenter).subtract(position).normalize().cross(right2)
         planes.append(Cartesian4(x: topPlane.x, y: topPlane.y, z: topPlane.z, w: -topPlane.dot(position)))
-        
+
         //Near plane computation
         let nearPlane = Cartesian4(x: direction.x, y: direction.y, z: direction.z, w: -direction.dot(nearCenter))
         planes.append(nearPlane)
-        
+
         //Far plane computation
         let farPlane = direction.negate()
         planes.append(Cartesian4(x: farPlane.x, y: farPlane.y, z: farPlane.z, w: -farPlane.dot(farCenter)))
-        
+
         _cullingVolume = CullingVolume(planes: planes)
         return _cullingVolume
     }
@@ -216,17 +216,17 @@ class PerspectiveOffCenterFrustum: Frustum {
     */
     func pixelDimensions (drawingBufferWidth width: Int, drawingBufferHeight height: Int, distance: Double) -> Cartesian2 {
         update()
-        
+
         assert(width > 0 && height > 0, "drawingBufferDimensions.y must be greater than zero")
-        
+
         let localDistance = distance ?? near
-        
+
         let inverseNear = 1.0 / near
         var tanTheta = top * inverseNear
         let pixelHeight = 2.0 * localDistance * tanTheta / Double(height)
         tanTheta = right * inverseNear
         let pixelWidth = 2.0 * localDistance * tanTheta / Double(width)
-        
+
         return Cartesian2(x: pixelWidth, y: pixelHeight)
     }
 
@@ -239,7 +239,7 @@ class PerspectiveOffCenterFrustum: Frustum {
     func clone(_ target: Frustum?) -> Frustum {
 
         var result = target ?? PerspectiveOffCenterFrustum()
-        
+
         // force update of clone to compute matrices
         result.right = right
         result.left = left
@@ -247,10 +247,10 @@ class PerspectiveOffCenterFrustum: Frustum {
         result.bottom = bottom
         result.near = near
         result.far = far
-        
+
         return result
     }
-    
+
     /**
     * Compares the provided PerspectiveOffCenterFrustum componentwise and returns
     * <code>true</code> if they are equal, <code>false</code> otherwise.

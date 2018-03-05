@@ -33,14 +33,14 @@ class GeographicTilingScheme: TilingScheme {
     * @type {Ellipsoid}
     */
     let ellipsoid: Ellipsoid
-    
+
     /**
     * Gets the rectangle, in radians, covered by this tiling scheme.
     * @memberof TilingScheme.prototype
     * @type {Rectangle}
     */
     let rectangle: Rectangle
-    
+
     /**
     * Gets the map projection used by the tiling scheme.
     * @memberof TilingScheme.prototype
@@ -50,13 +50,13 @@ class GeographicTilingScheme: TilingScheme {
 
     var numberOfLevelZeroTilesX: Int
     var numberOfLevelZeroTilesY: Int
-    
+
     init(
         ellipsoid: Ellipsoid = Ellipsoid.wgs84(),
         rectangle: Rectangle = Rectangle.maxValue(),
         numberOfLevelZeroTilesX: Int = 2,
         numberOfLevelZeroTilesY: Int = 1) {
-            
+
             self.ellipsoid = ellipsoid
             self.rectangle = rectangle
             self.projection = GeographicProjection(ellipsoid: ellipsoid)
@@ -64,7 +64,7 @@ class GeographicTilingScheme: TilingScheme {
             self.numberOfLevelZeroTilesX = numberOfLevelZeroTilesX
             self.numberOfLevelZeroTilesY = numberOfLevelZeroTilesY
     }
-    
+
     /**
      * Gets the total number of tiles in the X direction at a specified level-of-detail.
      *
@@ -100,7 +100,7 @@ class GeographicTilingScheme: TilingScheme {
         let south = Math.toDegrees(rectangle.south)
         let east = Math.toDegrees(rectangle.east)
         let north = Math.toDegrees(rectangle.north)
-        
+
         return Rectangle(west: west, south: south, east: east, north: north)
     }
 
@@ -153,7 +153,7 @@ class GeographicTilingScheme: TilingScheme {
         return Rectangle(west: west, south: south, east: east, north: north)
     }
 
-    
+
     /**
      * Calculates the tile x, y coordinates of the tile containing
      * a given cartographic position.
@@ -180,7 +180,7 @@ class GeographicTilingScheme: TilingScheme {
         } else {
             longitude = position.longitude
         }
-        
+
         var xTileCoordinate = Int(round((longitude - rectangle.west) / xTileWidth))
         if (xTileCoordinate >= xTiles) {
             xTileCoordinate = xTiles - 1

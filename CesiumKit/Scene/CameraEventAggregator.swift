@@ -36,9 +36,9 @@ struct MouseMovement: StartEndPosition {
 }
 
 class CameraEventAggregator {
-    
+
     let eventHandler: ScreenSpaceEventHandler
-    
+
     var _update = [String: Bool]()
     var _movement = [String: MouseMovement]()
     var _lastMovement = [String: MouseMovement]()
@@ -46,19 +46,19 @@ class CameraEventAggregator {
     var _eventStartPosition = [String: Cartesian2]()
     var _pressTime = [String: Date]()
     var _releaseTime = [String: Date]()
-    
+
     var _buttonsDown = 0
-    
+
     var _currentMousePosition = Cartesian2()
-    
+
     #if (iOS)
     private var _view: UIView!
     #elseif (OSX)
     private var _view: NSView!
     #endif
-    
+
     init (/*view: UIView*/) {
-        
+
         eventHandler = ScreenSpaceEventHandler(/*layer: layer,*/ true)
         // FIXME: eventaggregator view
         //_view = view
@@ -69,7 +69,7 @@ class CameraEventAggregator {
         //listenMouseButtonDownUp(this, undefined, CameraEventType.MIDDLE_DRAG);
         listenMouseMove()
         //listenTouchEvents()
-        
+
         // FIXME: Modifiers disabled
         for i in 0..<KeyboardEventModifier.count.rawValue {
             let modifier = KeyboardEventModifier(rawValue: i)!
@@ -82,7 +82,7 @@ class CameraEventAggregator {
         }
         //listenTouchPanStart()
     }
-    
+
     func getKey(_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> String {
         return "\(type.rawValue)" + (modifier != nil ? "\(modifier!.rawValue)" : "")
     }
@@ -90,37 +90,37 @@ class CameraEventAggregator {
     function clonePinchMovement(pinchMovement, result) {
     Cartesian2.clone(pinchMovement.distance.startPosition, result.distance.startPosition);
     Cartesian2.clone(pinchMovement.distance.endPosition, result.distance.endPosition);
-    
+
     Cartesian2.clone(pinchMovement.angleAndHeight.startPosition, result.angleAndHeight.startPosition);
     Cartesian2.clone(pinchMovement.angleAndHeight.endPosition, result.angleAndHeight.endPosition);
     }
     */
     func listenToPinch(_ modifier: KeyboardEventModifier? = nil) {
         let key = getKey(.pinch, modifier: modifier)
-        
+
         _update[key] = true
         _isDown[key] = false
         _eventStartPosition[key] = Cartesian2()
-        
+
         var movement = _movement[key]
         if movement == nil {
             movement = MouseMovement()
             _movement[key] = movement
         }
-        
+
         eventHandler.setInputAction(.pinchStart, modifier: modifier, action: { (geometry: InputEvent) in
             self._buttonsDown += 1
             self._isDown[key] = true
             self._pressTime[key] = Date()
             //self._eventStartPosition[key] = (geometry as! Touch2StartEventGeometry).position1
         })
-        
+
         eventHandler.setInputAction(.pinchEnd, modifier: modifier, action: { (geometry: InputEvent) in
             self._buttonsDown = max(self._buttonsDown - 1, 0)
             self._isDown[key] = false
             self._releaseTime[key] = Date()
         })
-        
+
         eventHandler.setInputAction(.pinchMove, modifier: modifier, action: { (geometry: InputEvent) in
             if self._isDown[key]! {
                 // Aggregate several input events into a single animation frame.
@@ -155,12 +155,12 @@ class CameraEventAggregator {
             }
         })
     }
-    
+
     func listenToWheel() {
         let key = getKey(.wheel, modifier: nil)
-        
+
         _update[key] = true
-        
+
         var movement: MouseMovement! = _movement[key]
         if movement == nil {
             movement = MouseMovement()
@@ -169,7 +169,7 @@ class CameraEventAggregator {
 
         movement.startPosition = Cartesian2()
         movement.endPosition = Cartesian2()
-        
+
         eventHandler.setInputAction(.wheel, modifier: nil) { (geometry: InputEvent) in
             // TODO: magic numbers
             let delta = geometry as! WheelEvent
@@ -185,22 +185,22 @@ class CameraEventAggregator {
             self._movement[key] = movement
         }
     }
-    
+
     func listenMouseButtonDownUp(_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) {
         let key = getKey(type, modifier: modifier)
-        
+
         _isDown[key] = false
         _eventStartPosition[key] = Cartesian2()
-        
+
         var lastMovement = _lastMovement[key]
         if lastMovement == nil {
             lastMovement = MouseMovement()
             _lastMovement[key] = lastMovement
         }
-        
+
         let down: ScreenSpaceEventType
         let up: ScreenSpaceEventType
-        
+
         if type == .leftDrag {
             down = .leftDown
             up = .leftUp
@@ -211,7 +211,7 @@ class CameraEventAggregator {
             down = .middleDown
             up = .middleUp
         }
-        
+
         eventHandler.setInputAction(down, modifier: modifier) { (geometry: InputEvent) in
             self._buttonsDown += 1
             self._lastMovement[key] = MouseMovement(
@@ -225,24 +225,24 @@ class CameraEventAggregator {
             self._pressTime[key] = Date()
             self._eventStartPosition[key] = (geometry as! MouseDownEvent).position
         }
-        
+
         eventHandler.setInputAction(up, modifier: modifier, action: { (geometry: InputEvent) in
             self._buttonsDown = max(self._buttonsDown - 1, 0)
             self._isDown[key] = false
             self._releaseTime[key] = Date()
         })
     }
-    
+
     func listenMouseMove(_ modifier: KeyboardEventModifier? = nil) {
         //var update = aggregator._update;
         //var movement = aggregator._movement;
         //var lastMovement = aggregator._lastMovement;
         //var isDown = aggregator._isDown;
-        
+
         for i in 0..<CameraEventType.count.rawValue {
             let key = getKey(CameraEventType(rawValue: i)!, modifier: modifier)
             _update[key] = true
-        
+
             if _lastMovement[key] == nil {
                 _lastMovement[key] = MouseMovement(
                     startPosition: Cartesian2(),
@@ -252,7 +252,7 @@ class CameraEventAggregator {
                     prevAngle: 0.0,
                     valid: false)
             }
-            
+
             if _movement[key] == nil {
                 _movement[key] = MouseMovement(
                     startPosition: Cartesian2(),
@@ -263,7 +263,7 @@ class CameraEventAggregator {
                     valid: true)
             }
         }
-        
+
         eventHandler.setInputAction(.mouseMove, modifier: modifier, action: { (geometry: InputEvent) in
             for i in 0..<CameraEventType.count.rawValue {
                 let type = CameraEventType(rawValue: i)!
@@ -292,7 +292,7 @@ class CameraEventAggregator {
             self._currentMousePosition = (geometry as! MouseMoveEvent).endPosition
         })
     }
-    
+
     /*defineProperties(CameraEventAggregator.prototype, {
     /**
     * Gets the current mouse position.
@@ -304,7 +304,7 @@ class CameraEventAggregator {
     return this._currentMousePosition;
     }
     },
-    
+
     /**
     * Gets whether any mouse button is down, a touch has started, or the wheel has been moved.
     * @memberof CameraEventAggregator.prototype
@@ -332,7 +332,7 @@ class CameraEventAggregator {
         let key = getKey(type, modifier: modifier)
         return !_update[key]!
     }
-    
+
     /**
     * Gets the aggregated start and end position of the current event.
     *
@@ -344,7 +344,7 @@ class CameraEventAggregator {
         let key = getKey(type, modifier: modifier)
         return _movement[key]!
     }
-    
+
     /**
     * Gets the start and end position of the last move event (not the aggregated event).
     *
@@ -360,8 +360,8 @@ class CameraEventAggregator {
         }
         return nil
     }
-    
-    
+
+
     /**
     * Gets whether the mouse button is down or a touch has started.
     *
@@ -373,7 +373,7 @@ class CameraEventAggregator {
         let key = getKey(type, modifier: modifier)
         return _isDown[key]!
     }
-    
+
     /**
     * Gets the mouse position that started the aggregation.
     *
@@ -382,15 +382,15 @@ class CameraEventAggregator {
     * @returns {Cartesian2} The mouse position.
     */
     func getStartMousePosition (_ type: CameraEventType, modifier: KeyboardEventModifier? = nil) -> Cartesian2 {
-    
+
         if type == .wheel || type == .pinch {
             return _currentMousePosition
         }
-        
+
         let key = getKey(type, modifier: modifier)
         return _eventStartPosition[key]!
     }
-    
+
     /**
     * Gets the time the button was pressed or the touch was started.
     *
@@ -402,7 +402,7 @@ class CameraEventAggregator {
         let key = getKey(type, modifier: modifier)
         return _pressTime[key]
     }
-    
+
     /**
     * Gets the time the button was released or the touch was ended.
     *
@@ -414,7 +414,7 @@ class CameraEventAggregator {
         let key = getKey(type, modifier: modifier)
         return _releaseTime[key]
     }
-    
+
     /**
     * Signals that all of the events have been handled and the aggregator should be reset to handle new events.
     */
@@ -438,7 +438,7 @@ class CameraEventAggregator {
     CameraEventAggregator.prototype.isDestroyed = function() {
     return false;
     };
-    
+
     /**
     * Removes mouse listeners held by this object.
     * <br /><br />
@@ -459,7 +459,7 @@ class CameraEventAggregator {
     this._eventHandler = this._eventHandler && this._eventHandler.destroy();
     return destroyObject(this);
     };
-    
+
     return CameraEventAggregator;
     */
 }

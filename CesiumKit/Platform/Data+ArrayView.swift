@@ -9,7 +9,7 @@
 import Foundation
 
 extension Data {
-    
+
     public func getFloat32(_ pos: Int, littleEndian: Bool = true) -> Float {
         assert(self.count >= pos + MemoryLayout<Float>.size, "pos out of bounds")
         var result: Float = 0.0
@@ -18,7 +18,7 @@ extension Data {
         }
         return result
     }
-    
+
     public func getFloat64(_ pos: Int, littleEndian: Bool = true) -> Double {
         assert(self.count >= pos + MemoryLayout<Double>.size, "pos out of bounds")
         var result: Double = 0.0
@@ -28,7 +28,7 @@ extension Data {
         }
         return result
     }
-    
+
     public func getUInt8(_ pos: Int) -> UInt8 {
         assert(self.count >= pos + MemoryLayout<UInt8>.size, "pos out of bounds")
         var result: UInt8 = 0
@@ -37,7 +37,7 @@ extension Data {
         }
         return result
     }
-    
+
     public func getUInt16(_ pos: Int, littleEndian: Bool = true) -> UInt16 {
         assert(self.count >= pos + MemoryLayout<UInt32>.size, "pos out of bounds")
         var result: UInt16 = 0
@@ -46,7 +46,7 @@ extension Data {
         }
         return littleEndian ? result : result.bigEndian
     }
-    
+
     public func getUInt32(_ pos: Int, littleEndian: Bool = true) -> UInt32 {
         assert(self.count >= pos + MemoryLayout<UInt32>.size, "pos out of bounds")
         var result: UInt32 = 0
@@ -55,7 +55,7 @@ extension Data {
         }
         return littleEndian ? result : result.bigEndian
     }
-    
+
     public func getUInt8Array(_ pos: Int = 0, elementCount: Int? = nil) -> [UInt8] {
         let elementCount = elementCount ?? self.count
         assert(self.count >= pos + elementCount, "requested array out of bounds")
@@ -63,7 +63,7 @@ extension Data {
         copyBytes(to: &result, from: Range(uncheckedBounds: (lower: pos, upper: pos+elementCount)))
         return result
     }
-    
+
     public func getUInt16Array(_ pos: Int = 0, elementCount: Int? = nil, littleEndian: Bool = true) -> [UInt16] {
         let elementCount = elementCount ?? self.count / MemoryLayout<UInt16>.stride
         let arrayByteLength = elementCount * MemoryLayout<UInt16>.stride
@@ -74,7 +74,7 @@ extension Data {
         }
         return littleEndian ? result : result.map { $0.bigEndian }
     }
-    
+
     public func getUInt32Array(_ pos: Int = 0, elementCount: Int? = nil, littleEndian: Bool = true) -> [UInt32] {
         let elementCount = elementCount ?? self.count / MemoryLayout<UInt32>.stride
         let arrayByteLength = elementCount * MemoryLayout<UInt32>.stride

@@ -39,7 +39,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
  * @param {ImageryProvider} imageryProvider The imagery provider to use.
  */
 open class ImageryLayer {
-    
+
     /**
      * This value is used as the default brightness for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the brightness of the imagery.
@@ -47,7 +47,7 @@ open class ImageryLayer {
      * @default 1.0
      */
     let defaultBrightness: Float = 1.0
-    
+
     /**
      * This value is used as the default contrast for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the contrast of the imagery.
@@ -55,7 +55,7 @@ open class ImageryLayer {
      * @default 1.0
      */
     let defaultContrast: Float = 1.0
-    
+
     /**
      * This value is used as the default hue for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the hue of the imagery.
@@ -63,7 +63,7 @@ open class ImageryLayer {
      * @default 0.0
      */
     let defaultHue: Float = 0.0
-    
+
     /**
      * This value is used as the default saturation for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the saturation of the imagery.
@@ -71,7 +71,7 @@ open class ImageryLayer {
      * @default 1.0
      */
     let defaultSaturation: Float = 1.0
-    
+
     /**
      * This value is used as the default gamma for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the gamma of the imagery.
@@ -79,15 +79,15 @@ open class ImageryLayer {
      * @default 1.0
      */
     let defaultGamma: Float = 1.0
-    
+
     var imageryProvider: ImageryProvider
-    
+
     /**
      * @param {Rectangle} [options.rectangle=imageryProvider.rectangle] The rectangle of the layer.  This rectangle
      *        can limit the visible portion of the imagery provider.
      */
     fileprivate let _rectangle: Rectangle
-    
+
     /**
      * @param {Number|Function} [options.alpha=1.0] The alpha blending value of this layer, from 0.0 to 1.0.
      *                          This can either be a simple number or a function with the signature
@@ -97,7 +97,7 @@ open class ImageryLayer {
      *                          the alpha value to use for the tile.
      */
     let alpha: (() -> Float)
-    
+
     /**
      * @param {Number|Function} [options.brightness=1.0] The brightness of this layer.  1.0 uses the unmodified imagery
      *                          color.  Less than 1.0 makes the imagery darker while greater than 1.0 makes it brighter.
@@ -109,7 +109,7 @@ open class ImageryLayer {
      *                          frame and for every tile, so it must be fast.
      */
     let brightness: (() -> Float)
-    
+
     /**
      * @param {Number|Function} [options.contrast=1.0] The contrast of this layer.  1.0 uses the unmodified imagery color.
      *                          Less than 1.0 reduces the contrast while greater than 1.0 increases it.
@@ -121,7 +121,7 @@ open class ImageryLayer {
      *                          frame and for every tile, so it must be fast.
      */
     let contrast: (() -> Float)
-    
+
     /*
     * @param {Number|Function} [options.hue=0.0] The hue of this layer.  0.0 uses the unmodified imagery color.
     *                          This can either be a simple number or a function with the signature
@@ -132,7 +132,7 @@ open class ImageryLayer {
     *                          frame and for every tile, so it must be fast.
     */
     let hue: (() -> Float)
-    
+
     /**
      * @param {Number|Function} [options.saturation=1.0] The saturation of this layer.  1.0 uses the unmodified imagery color.
      *                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
@@ -144,7 +144,7 @@ open class ImageryLayer {
      *                          frame and for every tile, so it must be fast.
      */
     let saturation: (() -> Float)
-    
+
     /**
      * @param {Number|Function} [options.gamma=1.0] The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
      *                          This can either be a simple number or a function with the signature
@@ -155,15 +155,15 @@ open class ImageryLayer {
      *                          frame and for every tile, so it must be fast.
      */
     let gamma: (() -> Float)
-    
+
     /**
      * @param {Boolean} [options.show=true] True if the layer is shown; otherwise, false.
      */
     let show: Bool
-    
+
     // The value of the show property on the last update.
     var _show: Bool = true
-    
+
     /*
     * @param {Number} [options.maximumAnisotropy=maximum supported] The maximum anisotropy level to use
     *        for texture filtering.  If this parameter is not specified, the maximum anisotropy supported
@@ -171,30 +171,30 @@ open class ImageryLayer {
     *        views.
     */
     let maximumAnisotropy: Int?
-    
+
     /*
     * @param {Number} [options.minimumTerrainLevel] The minimum terrain level-of-detail at which to show this imagery layer,
     *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
     */
     fileprivate let _minimumTerrainLevel: Int?
-    
+
     /**
      * @param {Number} [options.maximumTerrainLevel] The maximum terrain level-of-detail at which to show this imagery layer,
      *                 or undefined to show it at all levels.  Level zero is the least-detailed level.
      */
     fileprivate let _maximumTerrainLevel: Int?
-    
-    
+
+
     fileprivate var _imageryCache = [String: Imagery]()
-    
+
     lazy fileprivate var _skeletonPlaceholder: TileImagery = TileImagery(imagery: Imagery.createPlaceholder(self))
-    
+
     // The index of this layer in the ImageryLayerCollection.
     var layerIndex = -1
-    
+
     //private var _requestImageError = undefined;
     fileprivate var _reprojectComputeCommands = [Command]()
-    
+
     /**
     * Gets a value indicating whether this layer is the base layer in the
     * {@link ImageryLayerCollection}.  The base layer is the one that underlies all
@@ -205,7 +205,7 @@ open class ImageryLayer {
     * @returns {Boolean} true if this is the base layer; otherwise, false.
     */
     var isBaseLayer = false
-    
+
     init (
         imageryProvider: ImageryProvider,
         rectangle: Rectangle = Rectangle.maxValue(),
@@ -233,7 +233,7 @@ open class ImageryLayer {
             self._maximumTerrainLevel = maximumTerrainLevel
             self.maximumAnisotropy = maximumAnisotropy
     }
-    
+
     /**
      * Computes the intersection of this layer's rectangle with the imagery provider's availability rectangle,
      * producing the overall bounds of imagery that can be produced by this layer.
@@ -251,7 +251,7 @@ open class ImageryLayer {
     func getViewableRectangle () -> Rectangle? {
         return imageryProvider.rectangle.intersection(_rectangle)
     }
-    
+
     /**
      * Create skeletons for the imagery tiles that partially or completely overlap a given terrain
      * tile.
@@ -265,7 +265,7 @@ open class ImageryLayer {
      */
     func createTileImagerySkeletons (_ tile: QuadtreeTile, terrainProvider: TerrainProvider, insertionPoint: Int? = nil) -> Bool {
         let surfaceTile = tile.data!
-        
+
         if _minimumTerrainLevel != nil && tile.level < _minimumTerrainLevel {
             return false
         }
@@ -276,7 +276,7 @@ open class ImageryLayer {
         if insertionPoint == nil {
             insertionPoint = surfaceTile.imagery.count
         }
-        
+
         if (!imageryProvider.ready) {
             // The imagery provider is not ready, so we can't create skeletons, yet.
             // Instead, add a placeholder so that we'll know to create
@@ -286,16 +286,16 @@ open class ImageryLayer {
             surfaceTile.imagery.insert(_skeletonPlaceholder, at: insertionPoint!)
             return true
         }
-        
+
         // Compute the rectangle of the imagery from this imageryProvider that overlaps
         // the geometry tile.  The ImageryProvider and ImageryLayer both have the
         // opportunity to constrain the rectangle.  The imagery TilingScheme's rectangle
         // always fully contains the ImageryProvider's rectangle.
         let imageryBounds = imageryProvider.rectangle.intersection(_rectangle)
         var overlapRectangle = tile.rectangle.intersection(imageryBounds!)
-        
+
         var rectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
-        
+
         if overlapRectangle != nil {
             rectangle = overlapRectangle!
         } else {
@@ -305,11 +305,11 @@ open class ImageryLayer {
             if !isBaseLayer {
                 return false
             }
-            
+
             let baseImageryRectangle = imageryBounds!
             let baseTerrainRectangle = tile.rectangle
             overlapRectangle = Rectangle(west: 0.0, south: 0.0, east: 0.0, north:0.0)
-            
+
             if baseTerrainRectangle.south >= baseImageryRectangle.north {
                 overlapRectangle!.south = baseImageryRectangle.north
                 overlapRectangle!.north = overlapRectangle!.south
@@ -320,7 +320,7 @@ open class ImageryLayer {
                 rectangle.south = max(baseTerrainRectangle.south, baseImageryRectangle.south)
                 rectangle.north = min(baseTerrainRectangle.north, baseImageryRectangle.north)
             }
-            
+
             if baseTerrainRectangle.west >= baseImageryRectangle.east {
                 overlapRectangle!.east = baseImageryRectangle.east
                 overlapRectangle!.west = overlapRectangle!.east
@@ -333,14 +333,14 @@ open class ImageryLayer {
             }
             rectangle = overlapRectangle!
         }
-        
+
         var latitudeClosestToEquator = 0.0
         if (rectangle.south > 0.0) {
             latitudeClosestToEquator = rectangle.south
         } else if (rectangle.north < 0.0) {
             latitudeClosestToEquator = rectangle.north
         }
-        
+
         // Compute the required level in the imagery tiling scheme.
         // The errorRatio should really be imagerySSE / terrainSSE rather than this hard-coded value.
         // But first we need configurable imagery SSE and we need the rendering to be able to handle more
@@ -353,27 +353,27 @@ open class ImageryLayer {
         if (imageryLevel > maximumLevel) {
             imageryLevel = maximumLevel
         }
-        
+
         if let minimumLevel = imageryProvider.minimumLevel {
             if (imageryLevel < minimumLevel) {
                 imageryLevel = minimumLevel
             }
         }
-        
+
         let imageryTilingScheme = imageryProvider.tilingScheme
         var northwestTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.northwest, level: imageryLevel)!
         var southeastTileCoordinates = imageryTilingScheme.positionToTileXY(position: rectangle.southeast, level: imageryLevel)!
-        
+
         // If the southeast corner of the rectangle lies very close to the north or west side
         // of the southeast tile, we don't actually need the southernmost or easternmost
         // tiles.
         // Similarly, if the northwest corner of the rectangle lies very close to the south or east side
         // of the northwest tile, we don't actually need the northernmost or westernmost tiles.
-        
+
         // We define "very close" as being within 1/512 of the width of the tile.
         let veryCloseX = tile.rectangle.height / 512.0
         let veryCloseY = tile.rectangle.width / 512.0
-        
+
         let northwestTileRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         if (abs(northwestTileRectangle.south - tile.rectangle.north) < veryCloseY && northwestTileCoordinates.y < southeastTileCoordinates.y) {
             northwestTileCoordinates.y += 1
@@ -381,7 +381,7 @@ open class ImageryLayer {
         if (abs(northwestTileRectangle.east - tile.rectangle.west) < veryCloseX && northwestTileCoordinates.x < southeastTileCoordinates.x) {
             northwestTileCoordinates.x += 1
         }
-        
+
         let southeastTileRectangle = imageryTilingScheme.tileXYToRectangle(x: southeastTileCoordinates.x, y: southeastTileCoordinates.y, level: imageryLevel)
         if (abs(southeastTileRectangle.north - tile.rectangle.south) < veryCloseY && southeastTileCoordinates.y > northwestTileCoordinates.y) {
             southeastTileCoordinates.y -= 1
@@ -389,40 +389,40 @@ open class ImageryLayer {
         if (abs(southeastTileRectangle.west - tile.rectangle.east) < veryCloseX && southeastTileCoordinates.x > northwestTileCoordinates.x) {
             southeastTileCoordinates.x -= 1
         }
-        
+
         // Create TileImagery instances for each imagery tile overlapping this terrain tile.
         // We need to do all texture coordinate computations in the imagery tile's tiling scheme.
         let terrainRectangle = tile.rectangle
         var imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: northwestTileCoordinates.x, y: northwestTileCoordinates.y, level: imageryLevel)
         var clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
-        
+
         var minU: Double
         var maxU = 0.0
-        
+
         var minV = 1.0
         var maxV: Double
-        
+
         // If this is the northern-most or western-most tile in the imagery tiling scheme,
         // it may not start at the northern or western edge of the terrain tile.
         // Calculate where it does start.
         if !isBaseLayer && abs(clippedImageryRectangle.west - tile.rectangle.west) >= veryCloseX {
             maxU = min(1.0, (clippedImageryRectangle.west - terrainRectangle.west) / terrainRectangle.width)
         }
-        
+
         if (!isBaseLayer && abs(clippedImageryRectangle.north - tile.rectangle.north) >= veryCloseY) {
             minV = max(0.0, (imageryRectangle.north - terrainRectangle.south) / terrainRectangle.height)
         }
-        
+
         let initialMinV = minV
-        
+
         for i in northwestTileCoordinates.x...southeastTileCoordinates.x {
             minU = maxU
-            
+
             imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: northwestTileCoordinates.y, level: imageryLevel)
             clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
-            
+
             maxU = min(1.0, (clippedImageryRectangle.east - terrainRectangle.west) / terrainRectangle.width)
-            
+
             // If this is the eastern-most imagery tile mapped to this terrain tile,
             // and there are more imagery tiles to the east of this one, the maxU
             // should be 1.0 to make sure rounding errors don't make the last
@@ -430,17 +430,17 @@ open class ImageryLayer {
             if i == southeastTileCoordinates.x && (isBaseLayer || abs(clippedImageryRectangle.east - tile.rectangle.east) < veryCloseX) {
                 maxU = 1.0
             }
-            
+
             minV = initialMinV
-            
+
             for j in northwestTileCoordinates.y...southeastTileCoordinates.y {
                 maxV = minV
-                
+
                 imageryRectangle = imageryTilingScheme.tileXYToRectangle(x: i, y: j, level: imageryLevel)
                 clippedImageryRectangle = imageryRectangle.intersection(imageryBounds!)!
-                
+
                 minV = max(0.0, (clippedImageryRectangle.south - terrainRectangle.south) / terrainRectangle.height)
-                
+
                 // If this is the southern-most imagery tile mapped to this terrain tile,
                 // and there are more imagery tiles to the south of this one, the minV
                 // should be 0.0 to make sure rounding errors don't make the last
@@ -448,7 +448,7 @@ open class ImageryLayer {
                 if j == southeastTileCoordinates.y && (isBaseLayer || abs(clippedImageryRectangle.south - tile.rectangle.south) < veryCloseY) {
                     minV = 0.0
                 }
-                
+
                 let texCoordsRectangle = Cartesian4(x: minU, y: minV, z: maxU, w: maxV)
                 let imagery = getImageryFromCache(level: imageryLevel, x: i, y: j, imageryRectangle: imageryRectangle)
                 surfaceTile.imagery.insert(TileImagery(imagery: imagery, textureCoordinateRectangle: texCoordsRectangle), at: insertionPoint!)
@@ -457,7 +457,7 @@ open class ImageryLayer {
         }
         return true
     }
-    
+
     /**
      * Calculate the translation and scale for a particular {@link TileImagery} attached to a
      * particular terrain tile.
@@ -474,17 +474,17 @@ open class ImageryLayer {
         let terrainRectangle = tile.rectangle
         let terrainWidth = terrainRectangle.width
         let terrainHeight = terrainRectangle.height
-        
+
         let scaleX = terrainWidth / imageryRectangle.width
         let scaleY = terrainHeight / imageryRectangle.height
-        
+
         return Cartesian4(
             x: scaleX * (terrainRectangle.west - imageryRectangle.west) / terrainWidth,
             y: scaleY * (terrainRectangle.south - imageryRectangle.south) / terrainHeight,
             z: scaleX,
             w: scaleY)
     }
-    
+
     /**
      * Request a particular piece of imagery from the imagery provider.  This method handles raising an
      * error event if the request fails, and retrying the request if necessary.
@@ -494,31 +494,31 @@ open class ImageryLayer {
      * @param {Imagery} imagery The imagery to request.
      */
     func requestImagery (_ imagery: Imagery) {
-        
+
         imagery.state = .transitioning
-        
+
         let completionBlock: ((CGImage?) -> Void) = { (image) in
-            
+
             if let image = image {
                 DispatchQueue.main.async(execute: {
                     imagery.image = image
                     imagery.credits = self.imageryProvider.tileCredits(x: imagery.x, y: imagery.y, level: imagery.level)
-                    
+
                     imagery.state = .received
                 })
             } else {
                 DispatchQueue.main.async(execute: {
                     imagery.state = .failed
-                    
+
                     let message = "Failed to obtain image tile X: \(imagery.x) Y: \(imagery.y) Level: \(imagery.level)"
                     logPrint(.error, message)
                 })
             }
-            
+
         }
         self.imageryProvider.requestImage(x: imagery.x, y: imagery.y, level: imagery.level, completionBlock: completionBlock)
     }
-    
+
     /**
      * Create a WebGL texture for a given {@link Imagery} instance.
      *
@@ -528,13 +528,13 @@ open class ImageryLayer {
      * @param {Imagery} imagery The imagery for which to create a texture.
      */
     func createTexture (frameState: FrameState, imagery: Imagery) {
-        
+
         guard let context = frameState.context else {
             return
         }
-        
+
         QueueManager.sharedInstance.resourceLoadQueue.async(execute: {
-            
+
             // If this imagery provider has a discard policy, use it to check if this
             // image should be discarded.
             if let discardPolicy = self.imageryProvider.tileDiscardPolicy {
@@ -546,7 +546,7 @@ open class ImageryLayer {
                     })
                     return
                 }
-                
+
                 // Mark discarded imagery tiles invalid.  Parent imagery will be used instead.
                 if (discardPolicy.shouldDiscardImage(imagery.image!)) {
                     DispatchQueue.main.async(execute: {
@@ -563,7 +563,7 @@ open class ImageryLayer {
                 usage: .ShaderRead
                 )
             )
-            
+
             logPrint(.debug, "created texture for L\(imagery.level)X\(imagery.x)Y\(imagery.y)")
             DispatchQueue.main.async(execute: {
                 //dispatch_async(context.renderQueue, {
@@ -573,7 +573,7 @@ open class ImageryLayer {
             })
         })
     }
-    
+
     /**
      * Enqueues a command re-projecting a texture to a {@link GeographicProjection} on the next update,
      * if necessary, and generates mipmaps for the geographic texture.
@@ -584,11 +584,11 @@ open class ImageryLayer {
      * @param {Imagery} imagery The imagery instance to reproject.
      */
     func reprojectTexture (frameState: inout FrameState, imagery: Imagery) {
-        
+
         let texture = imagery.texture!
         let rectangle = imagery.rectangle!
         let context = frameState.context
-        
+
         // Reproject this texture if it is not already in a geographic projection and
         // the pixels are more than 1e-5 radians apart.  The pixel spacing cutoff
         // avoids precision problems in the reprojection transformation while making
@@ -613,7 +613,7 @@ open class ImageryLayer {
         } else {
             finalizeReprojectTexture(context: context!, imagery: imagery, texture: texture)
         }
-        
+
     }
     func finalizeReprojectTexture(context: Context, imagery: Imagery, texture: Texture) {
         /*
@@ -644,7 +644,7 @@ open class ImageryLayer {
         }
         texture.sampler = nonMipmapSampler;
         }
-        
+
         imagery.state = ImageryState.READY;*/
         if false { //Math.isPowerOfTwo(texture.width) && Math.isPowerOfTwo(texture.height) {
             var mipmapSampler = context.cache["imageryLayer_mipmapSampler"] as! Sampler?
@@ -666,9 +666,9 @@ open class ImageryLayer {
             imagery.state = .ready
         })
     }
-    
+
     func generateMipmaps (frameState: inout FrameState, imagery: Imagery) {
-        
+
         guard let context = frameState.context else {
             return
         }
@@ -696,7 +696,7 @@ open class ImageryLayer {
             })
         })
     }
-    
+
     /**
      * Updates frame state to execute any queued texture re-projections.
      *
@@ -708,7 +708,7 @@ open class ImageryLayer {
         frameState.commandList.append(contentsOf: _reprojectComputeCommands)
         _reprojectComputeCommands.removeAll()
     }
-    
+
     /**
      * Cancels re-projection commands queued for the next frame.
      *
@@ -717,29 +717,29 @@ open class ImageryLayer {
     func cancelReprojections () {
         _reprojectComputeCommands.removeAll()
     }
-        
+
     func getImageryFromCache (level: Int, x: Int, y: Int, imageryRectangle: Rectangle? = nil) -> Imagery {
         let cacheKey = getImageryCacheKey(level: level, x: x, y: y)
         var imagery = _imageryCache[cacheKey]
-        
+
         if imagery == nil {
             imagery = Imagery(imageryLayer: self, level: level, x: x, y: y, rectangle: imageryRectangle)
             _imageryCache[cacheKey] = imagery
         }
-        
+
         imagery!.addReference()
         return imagery!
     }
-    
+
     func removeImageryFromCache (_ imagery: Imagery) {
         let cacheKey = getImageryCacheKey(level: imagery.level, x: imagery.x, y: imagery.y)
         _imageryCache.removeValue(forKey: cacheKey)
     }
-    
+
     fileprivate func getImageryCacheKey(level: Int, x: Int, y: Int) -> String {
         return "level\(level)x\(x)y\(y)"
     }
-    
+
     class Reproject {
         let vertexBuffer: Buffer
         let vertexAttributes: [VertexAttributes]
@@ -747,7 +747,7 @@ open class ImageryLayer {
         let sampler: Sampler
         let indexBuffer: Buffer
         let indexCount: Int
-        
+
         init (vertexBuffer: Buffer, vertexAttributes: [VertexAttributes], pipeline: RenderPipeline, sampler: Sampler, indexBuffer: Buffer, indexCount: Int) {
             self.vertexBuffer = vertexBuffer
             self.vertexAttributes = vertexAttributes
@@ -756,7 +756,7 @@ open class ImageryLayer {
             self.indexBuffer = indexBuffer
             self.indexCount = indexCount
         }
-        
+
         deinit {
             // FIXME: destroy
             //if framebuffer != nil {
@@ -766,9 +766,9 @@ open class ImageryLayer {
             //shaderProgram.destroy();
         }
     }
-    
+
     func reprojectToGeographic(_ command: ComputeCommand, context: Context, texture: Texture, rectangle: Rectangle) {
-        
+
         // This function has gone through a number of iterations, because GPUs are awesome.
         //
         // Originally, we had a very simple vertex shader and computed the Web Mercator texture coordinates
@@ -803,15 +803,15 @@ open class ImageryLayer {
         // because the extra vertices weren't buying us anything.  The height of 64 means we are technically
         // doing a slightly less accurate reprojection than we were before, but we can't see the difference
         // so it's worth the 4x speedup.
-        
+
         var reproject: Reproject! = context.cache["imageryLayer_reproject"] as! Reproject!
-        
+
         if reproject == nil {
-            
+
             var positions = [Float32]()
             let position0: Float = 0.0
             let position1: Float = 1.0
-            
+
             for j in 0..<64 {
                 let y = 1 - Float(j) / 63.0
                 positions.append(position0)
@@ -819,13 +819,13 @@ open class ImageryLayer {
                 positions.append(position1)
                 positions.append(y)
             }
-            
+
             let vertexBuffer = Buffer(device: context.device, array: positions, componentDatatype: .float32, sizeInBytes: positions.sizeInBytes)
-            
+
             let indices = EllipsoidTerrainProvider.getRegularGridIndices(width: 2, height: 64).map({ UInt16($0) })
-            
+
             let indexBuffer = Buffer(device: context.device, array: indices, componentDatatype: .unsignedShort, sizeInBytes: indices.sizeInBytes)
-            
+
             let vertexAttributes = [
                 //position
                 VertexAttributes(
@@ -849,7 +849,7 @@ open class ImageryLayer {
                 )
             ]
             let vertexDescriptor = VertexDescriptor(attributes: vertexAttributes)
-            
+
             let pipeline = context.pipelineCache.getRenderPipeline(
                 vertexShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorVS"]!]),
                 fragmentShaderSource: ShaderSource(sources: [Shaders["ReprojectWebMercatorFS"]!]),
@@ -857,10 +857,10 @@ open class ImageryLayer {
                 colorMask: nil,
                 depthStencil: false
             )
-            
+
             let maximumSupportedAnisotropy = context.limits.maximumTextureFilterAnisotropy
             let sampler = Sampler(context: context, maximumAnisotropy: min(maximumSupportedAnisotropy, maximumAnisotropy ?? maximumSupportedAnisotropy))
-            
+
             reproject = Reproject(
                 vertexBuffer: vertexBuffer,
                 vertexAttributes: vertexAttributes,
@@ -869,33 +869,33 @@ open class ImageryLayer {
                 indexBuffer: indexBuffer,
                 indexCount: indices.count
             )
-            
+
             context.cache["imageryLayer_reproject"] = reproject
         }
-        
+
         texture.sampler = reproject!.sampler
-        
+
         let width = texture.width
         let height = texture.height
-        
+
         let uniformMap = ImageryLayerUniformMap()
-        
+
         uniformMap.textureDimensions = Cartesian2(x: Double(width), y: Double(height))
         uniformMap.viewportOrthographic = Matrix4.computeOrthographicOffCenter(left: 0, right: uniformMap.textureDimensions.x, bottom: 0, top: uniformMap.textureDimensions.y, near: 0.0, far: 1.0)
         uniformMap.texture = texture
-        
+
         var sinLatitude = sin(rectangle.south)
         let southMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
-        
+
         sinLatitude = sin(rectangle.north)
         let northMercatorY = 0.5 * log((1 + sinLatitude) / (1 - sinLatitude))
         let oneOverMercatorHeight = 1.0 / (northMercatorY - southMercatorY)
-        
+
         let south = rectangle.south
         let north = rectangle.north
-        
+
         var webMercatorT = [Float]()
-        
+
         for webMercatorTIndex in 0..<64 {
             let fraction = Double(webMercatorTIndex) / 63.0
             let latitude = Math.lerp(p: south, q: north, time: fraction)
@@ -906,14 +906,14 @@ open class ImageryLayer {
             webMercatorT.append(mercatorFraction)
         }
         let webMercatorTBuffer = Buffer(device: context.device, array: webMercatorT, componentDatatype: .float32, sizeInBytes: webMercatorT.sizeInBytes)
-        
+
         var attributes = reproject!.vertexAttributes
         attributes[1].buffer = webMercatorTBuffer
-        
+
         let vertexArray = VertexArray(attributes: attributes, vertexCount: 128, indexBuffer: reproject!.indexBuffer, indexCount: reproject?.indexCount)
-        
+
         let textureUsage: TextureUsage = [.RenderTarget, .ShaderRead]
-        
+
         let outputTexture = Texture(
             context: context,
             options: TextureOptions(
@@ -925,13 +925,13 @@ open class ImageryLayer {
             )
         )
         outputTexture.sampler = (reproject?.sampler)!
-        
+
         command.pipeline = reproject?.pipeline
         command.outputTexture = outputTexture
         command.uniformMap = uniformMap
         command.vertexArray = vertexArray
     }
-    
+
     /**
      * Gets the level with the specified world coordinate spacing between texels, or less.
      *
@@ -943,13 +943,13 @@ open class ImageryLayer {
         // PERFORMANCE_IDEA: factor out the stuff that doesn't change.
         let tilingScheme = imageryProvider.tilingScheme
         let latitudeFactor = !(tilingScheme is GeographicTilingScheme) ? cos(latitudeClosestToEquator) : 1.0
-        
+
         let levelZeroMaximumTexelSpacing = tilingScheme.ellipsoid.maximumRadius * tilingScheme.rectangle.width * latitudeFactor / Double(imageryProvider.tileWidth * tilingScheme.numberOfXTilesAt(level: 0))
-        
+
         let twoToTheLevelPower = levelZeroMaximumTexelSpacing / texelSpacing;
         let level = log(twoToTheLevelPower) / log(2)
         let rounded = Int(round(level))
         return rounded | 0
     }
-    
+
 }

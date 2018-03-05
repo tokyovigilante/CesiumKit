@@ -23,7 +23,7 @@ enum TerrainQuantization {
      * @constant
      */
     case none
-    
+
     /**
      * The vertices are compressed to 12 bits.
      *
@@ -31,7 +31,7 @@ enum TerrainQuantization {
      * @constant
      */
     case bits12
-    
+
     var define: String {
         switch self {
         case .bits12:
@@ -40,7 +40,7 @@ enum TerrainQuantization {
             return ""
         }
     }
-    
+
     var enabled: Bool {
         return self == .bits12
     }

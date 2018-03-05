@@ -17,7 +17,7 @@ import Foundation
  this.dimensions = undefined;
  this.billboard = undefined;
  }
- 
+
  // GlyphTextureInfo represents a single character, drawn in a particular style,
  // shared and reference counted across all labels.  It may or may not have an
  // index into the label collection's texture atlas, depending on whether the character
@@ -27,7 +27,7 @@ import Foundation
  this.index = index;
  this.dimensions = dimensions;
  }
- 
+
  // reusable object for calling writeTextToCanvas
  var writeTextToCanvasParameters = {};
  function createGlyphCanvas(character, font, fillColor, outlineColor, outlineWidth, style, verticalOrigin) {
@@ -35,7 +35,7 @@ import Foundation
  writeTextToCanvasParameters.fillColor = fillColor;
  writeTextToCanvasParameters.strokeColor = outlineColor;
  writeTextToCanvasParameters.strokeWidth = outlineWidth;
- 
+
  if (verticalOrigin === VerticalOrigin.BOTTOM) {
  writeTextToCanvasParameters.textBaseline = 'bottom';
  } else if (verticalOrigin === VerticalOrigin.TOP) {
@@ -44,17 +44,17 @@ import Foundation
  // VerticalOrigin.CENTER
  writeTextToCanvasParameters.textBaseline = 'middle';
  }
- 
+
  writeTextToCanvasParameters.fill = style === LabelStyle.FILL || style === LabelStyle.FILL_AND_OUTLINE;
  writeTextToCanvasParameters.stroke = style === LabelStyle.OUTLINE || style === LabelStyle.FILL_AND_OUTLINE;
- 
+
  return writeTextToCanvas(character, writeTextToCanvasParameters);
  }
- 
+
  function unbindGlyph(labelCollection, glyph) {
  glyph.textureInfo = undefined;
  glyph.dimensions = undefined;
- 
+
  var billboard = glyph.billboard;
  if (defined(billboard)) {
  billboard.show = false;
@@ -63,35 +63,35 @@ import Foundation
  glyph.billboard = undefined;
  }
  }
- 
+
  function addGlyphToTextureAtlas(textureAtlas, id, canvas, glyphTextureInfo) {
  textureAtlas.addImage(id, canvas).then(function(index, id) {
  glyphTextureInfo.index = index;
  });
  }
- 
+
  function rebindAllGlyphs(labelCollection, label) {
  var text = label._text;
  var textLength = text.length;
  var glyphs = label._glyphs;
  var glyphsLength = glyphs.length;
- 
+
  var glyph;
  var glyphIndex;
  var textIndex;
- 
+
  // if we have more glyphs than needed, unbind the extras.
  if (textLength < glyphsLength) {
  for (glyphIndex = textLength; glyphIndex < glyphsLength; ++glyphIndex) {
  unbindGlyph(labelCollection, glyphs[glyphIndex]);
  }
  }
- 
+
  // presize glyphs to match the new text length
  glyphs.length = textLength;
- 
+
  var glyphTextureCache = labelCollection._glyphTextureCache;
- 
+
  // walk the text looking for new characters (creating new glyphs for each)
  // or changed characters (rebinding existing glyphs)
  for (textIndex = 0; textIndex < textLength; ++textIndex) {
@@ -102,7 +102,7 @@ import Foundation
  var outlineWidth = label._outlineWidth;
  var style = label._style;
  var verticalOrigin = label._verticalOrigin;
- 
+
  // retrieve glyph dimensions and texture index (if the canvas has area)
  // from the glyph texture cache, or create and add if not present.
  var id = JSON.stringify([
@@ -114,21 +114,21 @@ import Foundation
  +style,
  +verticalOrigin
  ]);
- 
+
  var glyphTextureInfo = glyphTextureCache[id];
  if (!defined(glyphTextureInfo)) {
  var canvas = createGlyphCanvas(character, font, fillColor, outlineColor, outlineWidth, style, verticalOrigin);
- 
+
  glyphTextureInfo = new GlyphTextureInfo(labelCollection, -1, canvas.dimensions);
  glyphTextureCache[id] = glyphTextureInfo;
- 
+
  if (canvas.width > 0 && canvas.height > 0) {
  addGlyphToTextureAtlas(labelCollection._textureAtlas, id, canvas, glyphTextureInfo);
  }
  }
- 
+
  glyph = glyphs[textIndex];
- 
+
  if (defined(glyph)) {
  // clean up leftover information from the previous glyph
  if (glyphTextureInfo.index === -1) {
@@ -147,10 +147,10 @@ import Foundation
  glyph = new Glyph();
  glyphs[textIndex] = glyph;
  }
- 
+
  glyph.textureInfo = glyphTextureInfo;
  glyph.dimensions = glyphTextureInfo.dimensions;
- 
+
  // if we have a texture, configure the existing billboard, or obtain one
  if (glyphTextureInfo.index !== -1) {
  var billboard = glyph.billboard;
@@ -164,7 +164,7 @@ import Foundation
  }
  glyph.billboard = billboard;
  }
- 
+
  billboard.show = label._show;
  billboard.position = label._position;
  billboard.eyeOffset = label._eyeOffset;
@@ -179,22 +179,22 @@ import Foundation
  billboard.pixelOffsetScaleByDistance = label._pixelOffsetScaleByDistance;
  }
  }
- 
+
  // changing glyphs will cause the position of the
  // glyphs to change, since different characters have different widths
  label._repositionAllGlyphs = true;
  }
- 
+
  // reusable Cartesian2 instance
  var glyphPixelOffset = new Cartesian2();
- 
+
  function repositionAllGlyphs(label, resolutionScale) {
  var glyphs = label._glyphs;
  var glyph;
  var dimensions;
  var totalWidth = 0;
  var maxHeight = 0;
- 
+
  var glyphIndex = 0;
  var glyphLength = glyphs.length;
  for (glyphIndex = 0; glyphIndex < glyphLength; ++glyphIndex) {
@@ -203,7 +203,7 @@ import Foundation
  totalWidth += dimensions.computedWidth;
  maxHeight = Math.max(maxHeight, dimensions.height);
  }
- 
+
  var scale = label._scale;
  var horizontalOrigin = label._horizontalOrigin;
  var widthOffset = 0;
@@ -212,15 +212,15 @@ import Foundation
  } else if (horizontalOrigin === HorizontalOrigin.RIGHT) {
  widthOffset -= totalWidth * scale;
  }
- 
+
  glyphPixelOffset.x = widthOffset * resolutionScale;
  glyphPixelOffset.y = 0;
- 
+
  var verticalOrigin = label._verticalOrigin;
  for (glyphIndex = 0; glyphIndex < glyphLength; ++glyphIndex) {
  glyph = glyphs[glyphIndex];
  dimensions = glyph.dimensions;
- 
+
  if (verticalOrigin === VerticalOrigin.BOTTOM || dimensions.height === maxHeight) {
  glyphPixelOffset.y = -dimensions.descent * scale;
  } else if (verticalOrigin === VerticalOrigin.TOP) {
@@ -228,28 +228,28 @@ import Foundation
  } else if (verticalOrigin === VerticalOrigin.CENTER) {
  glyphPixelOffset.y = -(maxHeight - dimensions.height) / 2 * scale - dimensions.descent * scale;
  }
- 
+
  glyphPixelOffset.y *= resolutionScale;
- 
+
  if (defined(glyph.billboard)) {
  glyph.billboard._setTranslate(glyphPixelOffset);
  }
- 
+
  glyphPixelOffset.x += dimensions.computedWidth * scale * resolutionScale;
  }
  }
- 
+
  function destroyLabel(labelCollection, label) {
  var glyphs = label._glyphs;
  for ( var i = 0, len = glyphs.length; i < len; ++i) {
  unbindGlyph(labelCollection, glyphs[i]);
  }
  label._labelCollection = undefined;
- 
+
  if (defined(label._removeCallbackFunc)) {
  label._removeCallbackFunc();
  }
- 
+
  destroyObject(label);
  }
 
@@ -300,7 +300,7 @@ import Foundation
  * });
  */
 open class LabelCollection: Primitive {
-    
+
     /**
      * The 4x4 transformation matrix that transforms each label in this collection from model to world coordinates.
      * When this is the identity matrix, the labels are drawn in world coordinates, i.e., Earth's WGS84 coordinates.
@@ -331,9 +331,9 @@ open class LabelCollection: Primitive {
      * });
      */
     let modelMatrix: Matrix4
-    
+
     weak var scene: Scene!
-    
+
     /**
      * This property is for debugging only; it is not for production use nor is it optimized.
      * <p>
@@ -345,13 +345,13 @@ open class LabelCollection: Primitive {
      * @default false
      */
     var debugShowBoundingVolume: Bool
-    
+
     fileprivate var _textureAtlas: FontAtlas? = nil
-    
+
     fileprivate var _labels = [Label]()
-    
+
     fileprivate var _labelsToUpdate = [Label]()
-    
+
     /**
      * Returns the number of labels in this collection.  This is commonly used with
      * {@link LabelCollection#get} to iterate over all the labels
@@ -362,7 +362,7 @@ open class LabelCollection: Primitive {
     var length: Int {
         return _labels.count
     }
-    
+
 /* this._billboardCollection = new BillboardCollection({
  scene : this._scene
  });
@@ -374,7 +374,7 @@ open class LabelCollection: Primitive {
      this._totalGlyphCount = 0;
      this._resolutionScale = undefined;
  */
- 
+
     public init (
         modelMatrix: Matrix4 = Matrix4.identity,
         debugShowBoundingVolume: Bool = false,
@@ -384,7 +384,7 @@ open class LabelCollection: Primitive {
         self.debugShowBoundingVolume = debugShowBoundingVolume
         self.scene = scene
     }
-     
+
      /**
      * Creates and adds a label with the specified initial properties to the collection.
      * The added label is returned so it can be modified or removed from the collection later.
@@ -459,10 +459,10 @@ open class LabelCollection: Primitive {
         )
      _labels.append(label)
      _labelsToUpdate.append(label)
-     
+
      return label
      }
-     
+
      /**
      * Removes a label from the collection.  Once removed, a label is no longer usable.
      *
@@ -515,14 +515,14 @@ open class LabelCollection: Primitive {
      */
      LabelCollection.prototype.removeAll = function() {
      var labels = this._labels;
-     
+
      for ( var i = 0, len = labels.length; i < len; ++i) {
      destroyLabel(this, labels[i]);
      }
-     
+
      labels.length = 0;
      };
-     
+
      /**
      * Check whether this collection contains a given label.
      *
@@ -534,7 +534,7 @@ open class LabelCollection: Primitive {
      LabelCollection.prototype.contains = function(label) {
      return defined(label) && label._labelCollection === this;
      };
-     
+
      /**
      * Returns the label in the collection at the specified index.  Indices are zero-based
      * and increase as labels are added.  Removing a label shifts all labels after
@@ -568,7 +568,7 @@ open class LabelCollection: Primitive {
      throw new DeveloperError('index is required.');
      }
      //>>includeEnd('debug');
-     
+
      return this._labels[index];
      };
      */
@@ -577,54 +577,54 @@ open class LabelCollection: Primitive {
      */
     func update (_ frameState: FrameState) {
         /*var billboardCollection = this._billboardCollection;
-        
+
         billboardCollection.modelMatrix = this.modelMatrix;
         billboardCollection.debugShowBoundingVolume = this.debugShowBoundingVolume;
-        
+
         var context = frameState.context;
-        
+
         if (!defined(this._textureAtlas)) {
             this._textureAtlas = new TextureAtlas({
                 context : context
             });
             billboardCollection.textureAtlas = this._textureAtlas;
         }
-        
+
         var uniformState = context.uniformState;
         var resolutionScale = uniformState.resolutionScale;
         var resolutionChanged = this._resolutionScale !== resolutionScale;
         this._resolutionScale = resolutionScale;
-        
+
         var labelsToUpdate;
         if (resolutionChanged) {
             labelsToUpdate = this._labels;
         } else {
             labelsToUpdate = this._labelsToUpdate;
         }
-        
+
         var len = labelsToUpdate.length;
         for (var i = 0; i < len; ++i) {
             var label = labelsToUpdate[i];
             if (label.isDestroyed()) {
                 continue;
             }
-            
+
             var preUpdateGlyphCount = label._glyphs.length;
-            
+
             if (label._rebindAllGlyphs) {
                 rebindAllGlyphs(this, label);
                 label._rebindAllGlyphs = false;
             }
-            
+
             if (resolutionChanged || label._repositionAllGlyphs) {
                 repositionAllGlyphs(label, resolutionScale);
                 label._repositionAllGlyphs = false;
             }
-            
+
             var glyphCountDifference = label._glyphs.length - preUpdateGlyphCount;
             this._totalGlyphCount += glyphCountDifference;
         }
-        
+
         this._labelsToUpdate.length = 0;
         billboardCollection.update(frameState);*/
     }
@@ -642,7 +642,7 @@ open class LabelCollection: Primitive {
      LabelCollection.prototype.isDestroyed = function() {
      return false;
      };
-     
+
      /**
      * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
      * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
@@ -664,10 +664,10 @@ open class LabelCollection: Primitive {
      this.removeAll();
      this._billboardCollection = this._billboardCollection.destroy();
      this._textureAtlas = this._textureAtlas && this._textureAtlas.destroy();
-     
+
      return destroyObject(this);
      };
-     
+
      return LabelCollection;
      });
 

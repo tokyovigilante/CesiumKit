@@ -38,7 +38,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .floatVec4
     ),
-    
+
     /**
      * An automatic GLSL uniform representing a 4x4 orthographic projection matrix that
      * transforms window coordinates to clip coordinates.  Clip coordinates is the
@@ -70,7 +70,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .floatMatrix4
     ),
-    
+
     /**
      * An automatic GLSL uniform representing a 4x4 transformation matrix that
      * transforms normalized device coordinates to window coordinates.  The context's
@@ -105,7 +105,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      * q.xyz /= q.w;                                                // clip to normalized device coordinates (ndc)
      * q.xyz = (czm_f_viewportTransformation * vec4(q.xyz, 1.0)).xyz; // ndc to window coordinates
      */
-    
+
     "czm_f_viewportTransformation": AutomaticUniform(
         size: 1,
         datatype: .floatMatrix4
@@ -135,7 +135,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.globeDepthTexture;
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 model transformation matrix that
      * transforms model coordinates to world coordinates.
@@ -162,7 +162,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.model; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 model transformation matrix that
      * transforms world coordinates to model coordinates.
@@ -294,7 +294,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.viewRotation3D; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 transformation matrix that
      * transforms from eye coordinates to world coordinates.
@@ -320,7 +320,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseView; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 transformation matrix that
      * transforms from 3D eye coordinates to world coordinates.  In 3D mode, this is identical to
@@ -348,7 +348,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseView3D; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 3x3 rotation matrix that
      * transforms vectors from eye coordinates to world coordinates.
@@ -375,7 +375,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseViewRotation; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 3x3 rotation matrix that
      * transforms vectors from 3D eye coordinates to world coordinates.  In 3D mode, this is identical to
@@ -428,7 +428,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .floatMatrix4
     ),
-    
+
     /**
      * An automatic GLSL uniform representing a 4x4 inverse projection transformation matrix that
      * transforms from clip coordinates to eye coordinates. Clip coordinates is the
@@ -462,7 +462,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseProjectionOIT; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 projection transformation matrix with the far plane at infinity,
      * that transforms eye coordinates to clip coordinates.  Clip coordinates is the
@@ -522,7 +522,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype: .floatMatrix4
     ),
-    
+
     /**
      * An automatic GLSL uniform representing a 4x4 model-view transformation matrix that
      * transforms 3D model coordinates to eye coordinates.  In 3D mode, this is identical to
@@ -638,7 +638,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseModelView3D; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 view-projection transformation matrix that
      * transforms world coordinates to clip coordinates.  Clip coordinates is the
@@ -670,7 +670,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.viewProjection; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 view-projection transformation matrix that
      * transforms clip coordinates to world coordinates.  Clip coordinates is the
@@ -754,7 +754,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseModelViewProjection; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 model-view-projection transformation matrix that
      * transforms model coordinates, relative to the eye, to clip coordinates.  Clip coordinates is the
@@ -789,7 +789,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.modelViewProjectionRelativeToEye; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 4x4 model-view-projection transformation matrix that
      * transforms model coordinates to clip coordinates.  Clip coordinates is the
@@ -849,7 +849,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype : .floatMatrix3
     ),
-    
+
     /**
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in 3D model coordinates to eye coordinates.
@@ -878,7 +878,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype: .floatMatrix3
     ),
-    
+
     /**
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in eye coordinates to model coordinates.  This is
@@ -907,7 +907,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseNormal; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing a 3x3 normal transformation matrix that
      * transforms normal vectors in eye coordinates to 3D model coordinates.  This is
@@ -937,7 +937,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.inverseNormal3D; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform containing height (<code>x</code>) and height squared (<code>y</code>)
      *  of the eye (camera) in the 2D scene in meters.
@@ -1003,7 +1003,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.currentFrustum; as Any
      }
      }),
-     
+
      /**
      * The distances to the frustum planes. The top, bottom, left and right distances are
      * the x, y, z, and w components, respectively.
@@ -1018,7 +1018,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.frustumPlanes;
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing the sun position in world coordinates.
      *
@@ -1040,7 +1040,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.sunPositionWC; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing the sun position in Columbus view world coordinates.
      *
@@ -1084,7 +1084,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: UniformDataType.floatVec3
     ),
-    
+
     /**
      * An automatic GLSL uniform representing the normalized direction to the sun in world coordinates.
      * This is commonly used for directional lighting computations.
@@ -1104,7 +1104,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .floatVec3
     ),
-    
+
     /**
      * An automatic GLSL uniform representing the normalized direction to the moon in eye coordinates.
      * This is commonly used for directional lighting computations.
@@ -1150,7 +1150,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      return uniformState.encodedCameraPositionMCHigh; as Any
      }
      }),
-     
+
      /**
      * An automatic GLSL uniform representing the low bits of the camera position in model
      * coordinates.  This is used for GPU RTE to eliminate jittering artifacts when rendering
@@ -1189,7 +1189,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype : .floatVec3
     ),
-    
+
     /**
      * An automatic GLSL uniform representing the frame number. This uniform is automatically incremented
      * every frame.
@@ -1205,7 +1205,7 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype : .floatVec1
     ),
-    
+
     /**
      * An automatic GLSL uniform representing the current morph transition time between
      * 2D/Columbus View and 3D, with 0.0 being 2D or Columbus View and 1.0 being 3D.
@@ -1224,10 +1224,10 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size: 1,
         datatype: .floatVec1
     ),
-    
+
     /*
-     
-     
+
+
      /**
      * An automatic GLSL uniform representing the current {@link SceneMode}, expressed
      * as a float.
@@ -1297,8 +1297,8 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
      }
      })
      };*/
-    
-    
+
+
     /**
      * An automatic GLSL uniform scalar used to mix a color with the fog color based on the distance to the camera.
      *
@@ -1311,5 +1311,5 @@ let AutomaticUniforms: [String: AutomaticUniform] = [
         size : 1,
         datatype: .floatVec1
     )
-    
+
 ]

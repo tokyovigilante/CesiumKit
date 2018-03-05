@@ -38,7 +38,7 @@ enum FontAtlasError: Error, CustomStringConvertible {
     /// Parameter path: The texture data path.
     /// - Parameter message: Optional error message.
     case invalidTextureDataError(path: String, message: String?)
-    
+
     var description: String {
         switch self {
             case let .invalidJSONError(json, message): return "Invalid JSON - \(message): \(JSON.encodeAsString(json))"
@@ -50,30 +50,30 @@ enum FontAtlasError: Error, CustomStringConvertible {
 final class FontAtlas: JSONEncodable {
 
     fileprivate (set) var parentFont: CTFont
-    
+
     fileprivate var _fontPointSize: Int
 
     fileprivate var _spread: Double = 0.0
-    
+
     fileprivate let _textureSize: Int
-    
+
     internal var glyphDescriptors = [CGGlyph: GlyphDescriptor]()
-    
+
     fileprivate var _textureData = [UInt8]()
-    
+
     fileprivate (set) var ready = false
-    
+
     fileprivate var _waitingForMipmaps = false
-    
+
     var texture: Texture? {
         if !ready {
             return nil
         }
         return _texture
     }
-    
+
     fileprivate var _texture: Texture! = nil
-    
+
     fileprivate var MBE_GENERATE_DEBUG_ATLAS_IMAGE = true
 
     /// Create a signed-distance field based font atlas with the specified dimensions.
@@ -83,48 +83,48 @@ final class FontAtlas: JSONEncodable {
         _fontPointSize = Int(ceilf(Float(pointSize)))
         _textureSize = textureSize
         _spread = estimatedLineWidthForFont(parentFont) * 0.5
-        
+
         QueueManager.sharedInstance.fontAtlasQueue.async(execute: {
             self.createTextureData()
             self.createTexture(context)
             FontAtlas.writeToFile(self)
         })
     }
-    
+
     internal convenience init (fromJSON json: JSON, context: Context) throws {
         try self.init(fromJSON: json)
-        
+
         QueueManager.sharedInstance.fontAtlasQueue.async(execute: {
             self.createTexture(context)
         })
     }
-    
+
     internal init(fromJSON json: JSON) throws {
         let fontName = try json.getString(FontNameKey)
         _fontPointSize = try json.getInt(PointSizeKey)
         _spread = try json.getDouble(FontSpreadKey)
-        
+
         if _fontPointSize <= 0 || fontName == "" {
             throw FontAtlasError.invalidJSONError(json: json, message: "Invalid persisted font (invalid font name or size)")
         }
         parentFont = CTFontCreateWithName(fontName as CFString?, CGFloat(_fontPointSize), nil)
-        
+
         let glyphDescriptorArray = try json
             .getArray(GlyphDescriptorsKey)
             .map { try GlyphDescriptor(fromJSON: $0) }
             .sorted { $0.glyphIndex < $1.glyphIndex }
-        
+
         glyphDescriptors = [CGGlyph: GlyphDescriptor]()
         for descriptor in glyphDescriptorArray {
             glyphDescriptors[descriptor.glyphIndex] = descriptor
         }
-        
+
         if glyphDescriptors.count <= 0 {
             throw FontAtlasError.invalidJSONError(json: json, message: "Encountered invalid persisted font (no glyph metrics).")
         }
-        
+
         _textureSize = try json.getInt(TextureSizeKey)
-               
+
         let textureDataURL = LocalStorage.sharedInstance.getAppSupportURL().appendingPathComponent("FontAtlases")
             .appendingPathComponent(fontName)
             .appendingPathExtension("textureData")
@@ -147,42 +147,42 @@ final class FontAtlas: JSONEncodable {
             ]))
         return json
     }
-    
+
     fileprivate func estimatedGlyphSizeForFont (_ font: CTFont) -> CGSize {
-    
+
         let exemplarString = "{ǺOJMQYZa@jmqyw"
-        
+
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), exemplarString as CFString!)
-        
+
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
-        
+
         let framesetter = CTFramesetterCreateWithAttributedString(attrString!)
         var fitRange = CFRange()
         let exemplarStringSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), &fitRange)
 
         let averageGlyphWidth = CGFloat(ceilf(Float(exemplarStringSize.width) / Float(CFAttributedStringGetLength(attrString))))
         let maxGlyphHeight = CGFloat(ceilf(Float(exemplarStringSize.height)))
-    
+
         return CGSize(width: averageGlyphWidth, height: maxGlyphHeight)
     }
-    
+
     fileprivate func estimatedLineWidthForFont (_ font: CTFont) -> Double {
-        
+
         let attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
         CFAttributedStringReplaceString(attrString, CFRangeMake(0, 0), "!" as CFString!)
-        
+
         CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, font)
-        
+
         let framesetter = CTFramesetterCreateWithAttributedString(attrString!)
         var fitRange = CFRangeMake(0, 0)
         let textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), nil, CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), &fitRange)
-        
+
         return ceil(Double(textSize.width))
     }
-    
+
     fileprivate func isLikelyToFitInAtlasRect (_ rect: CGRect, forFont font: CTFont, atSize size: Int) -> Bool {
-        
+
         let textureArea = Double(rect.size.width * rect.size.height)
         let trialFont = CTFontCreateCopyWithAttributes(parentFont, CGFloat(size), nil, nil)
         let fontGlyphCount = CTFontGetGlyphCount(trialFont)
@@ -191,11 +191,11 @@ final class FontAtlas: JSONEncodable {
         let estimatedGlyphTotalArea = (Double(averageGlyphSize.width) + glyphMargin) * (Double(averageGlyphSize.height) + glyphMargin) * Double(fontGlyphCount)
         return estimatedGlyphTotalArea < textureArea
     }
-    
+
     fileprivate func pointSizeThatFits (forFont font: CTFont, inAtlasRect rect: CGRect) -> Int {
-        
+
         var fittedSize = Int(CTFontGetSize(font))
-     
+
         while isLikelyToFitInAtlasRect(rect, forFont: font, atSize: fittedSize) {
             fittedSize += 1
         }
@@ -204,16 +204,16 @@ final class FontAtlas: JSONEncodable {
         }
         return fittedSize
     }
-    
+
     fileprivate func createAtlasForFont (_ font: CTFont, width: Int, height: Int) -> [UInt8] {
-        
+
         var imageData = [UInt8](repeating: 0, count: width * height)
-        
+
         let colorSpace = CGColorSpaceCreateDeviceGray()
-        
+
         let alphaInfo = CGImageAlphaInfo.none
         let bitmapInfo = CGBitmapInfo(rawValue: alphaInfo.rawValue)
-        
+
         guard let context = CGContext(data: &imageData,
                                 width: width,
                                 height: height,
@@ -221,89 +221,89 @@ final class FontAtlas: JSONEncodable {
                                 bytesPerRow: width,
                                 space: colorSpace,
                                 bitmapInfo: bitmapInfo.rawValue) else { return [] }
-        
+
         // Turn off antialiasing so we only get fully-on or fully-off pixels.
         // This implicitly disables subpixel antialiasing and hinting.
         context.setAllowsAntialiasing(false)
-        
+
         // Flip context coordinate space so y increases downward
         context.translateBy(x: 0, y: CGFloat(height))
         context.scaleBy(x: 1, y: -1)
-        
+
         let fWidth = CGFloat(width)
         let fHeight = CGFloat(height)
-        
+
         // Fill the context with an opaque black color
         context.setFillColor(red: 0, green: 0, blue: 0, alpha: 1)
         context.fill(CGRect(x: 0, y: 0, width: fWidth, height: fHeight))
-        
+
         _fontPointSize = pointSizeThatFits(forFont: font, inAtlasRect: CGRect(x: 0, y: 0, width: fWidth, height: fHeight))
         parentFont = CTFontCreateCopyWithAttributes(parentFont, CGFloat(_fontPointSize), nil, nil)
 
         let fontGlyphCount = CTFontGetGlyphCount(parentFont)
-        
+
         let glyphMargin = CGFloat(estimatedLineWidthForFont(parentFont))
-        
+
         // Set fill color so that glyphs are solid white
         context.setFillColor(red: 1, green: 1, blue: 1, alpha: 1)
-        
+
         glyphDescriptors.removeAll()
-        
+
         let fontAscent = CTFontGetAscent(parentFont)
         let fontDescent = CTFontGetDescent(parentFont)
-        
+
         var origin = CGPoint(x: 0, y: fontAscent)
         var maxYCoordForLine: CGFloat = -1
-        
+
         for glyph in 0..<UInt16(fontGlyphCount) {
-            
+
             var boundingRect = CGRect()
             CTFontGetBoundingRectsForGlyphs(parentFont, CTFontOrientation.horizontal, [glyph], &boundingRect, 1)
-            
+
             if (origin.x + boundingRect.maxX + glyphMargin > fWidth) {
                 origin.x = 0
                 origin.y = maxYCoordForLine + glyphMargin + fontDescent
                 maxYCoordForLine = -1
             }
-            
+
             if origin.y + boundingRect.maxY > maxYCoordForLine {
                 maxYCoordForLine = origin.y + boundingRect.maxY
             }
-            
+
             let glyphOriginX = origin.x - boundingRect.origin.x + (glyphMargin * 0.5)
             let glyphOriginY = origin.y + (glyphMargin * 0.5)
-            
+
             var glyphTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: glyphOriginX, ty: glyphOriginY)
-            
+
             guard let path = CTFontCreatePathForGlyph(parentFont, glyph, &glyphTransform) else {
                 continue
             }
             context.addPath(path)
             context.fillPath()
-            
+
             var glyphPathBoundingRect = path.boundingBoxOfPath
-        
+
             // The null rect (i.e., the bounding rect of an empty path) is problematic
             // because it has its origin at (+inf, +inf); we fix that up here
             if glyphPathBoundingRect.equalTo(CGRect.null) {
                 glyphPathBoundingRect = CGRect.zero
             }
-            
+
             let texCoordLeft = glyphPathBoundingRect.origin.x / fWidth
             let texCoordRight = (glyphPathBoundingRect.origin.x + glyphPathBoundingRect.size.width) / fWidth
             let texCoordTop = glyphPathBoundingRect.origin.y / fHeight
             let texCoordBottom = (glyphPathBoundingRect.origin.y + glyphPathBoundingRect.size.height) / fHeight
-            
+
             let descriptor = GlyphDescriptor(
                 glyphIndex: glyph,
                 topLeftTexCoord: CGPoint(x: texCoordLeft, y: texCoordTop),
                 bottomRightTexCoord: CGPoint(x: texCoordRight, y: texCoordBottom)
             )
             glyphDescriptors[glyph] = descriptor
-            
+
             origin.x += boundingRect.width + glyphMargin
         }
-        
+
         /*if MBE_GENERATE_DEBUG_ATLAS_IMAGE {
             guard let contextImage = CGBitmapContextCreateImage(context) else {
                 assertionFailure("Could not create debug font atlas image")
@@ -316,15 +316,15 @@ final class FontAtlas: JSONEncodable {
         }*/
         return imageData
     }
-    
+
     /// Compute signed-distance field for an 8-bpp grayscale image (values greater than 127 are considered "on")
     /// For details of this algorithm, see "The 'dead reckoning' signed distance transform" [Grevera 2004]
     fileprivate func createSignedDistanceField(grayscaleImage imageData: [UInt8], width: Int, height: Int) -> [Float] {
-        
+
         assert(width > 0 && height > 0, "invalid glyph atlas dimensions")
-        
+
         struct IntPoint { let x: Int; let y: Int }
-        
+
         let maxDist = hypotf(Float(width), Float(height))
         let distUnit: Float = 1.0
         let distDiag = sqrtf(2.0)
@@ -332,14 +332,14 @@ final class FontAtlas: JSONEncodable {
         // Initialization phase: set all distances to "infinity"; zero out nearest boundary point map
         var distanceMap = [Float](repeating: maxDist, count: width * height) // distance to nearest boundary point map
         var boundaryPointMap = [IntPoint](repeating: IntPoint(x: 0, y: 0), count: width * height) // nearest boundary point map
-        
+
         // Some helpers for manipulating the above arrays
         func image(_ x: Int, _ y: Int) -> Bool { return imageData[y * width + x] > 0x7f }
         func distance(_ x: Int, _ y: Int) -> Float { return distanceMap[y * width + x] }
         func nearestpt(_ x: Int, _ y: Int) -> IntPoint { return boundaryPointMap[y * width + x] }
         func setDistance(_ x: Int, _ y: Int, distance: Float) { distanceMap[y * width + x] = distance }
         func setNearestpt(_ x: Int, _ y: Int, point: IntPoint) { boundaryPointMap[y * width + x] = point }
-        
+
         // Immediate interior/exterior phase: mark all points along the boundary as such
         for y in 1..<(height-1) {
             for x in 1..<(width-1) {
@@ -348,13 +348,13 @@ final class FontAtlas: JSONEncodable {
                    image(x + 1, y) != inside ||
                    image(x, y - 1) != inside ||
                    image(x, y + 1) != inside {
-                    
+
                     setDistance(x, y, distance: 0)
                     setNearestpt(x, y, point: IntPoint(x: x, y: y))
                 }
             }
         }
-        
+
         // Forward dead-reckoning pass
         for y in 1..<(height-2) {
             for x in 1..<(width-2) {
@@ -380,7 +380,7 @@ final class FontAtlas: JSONEncodable {
                 }
             }
         }
-        
+
         // Backward dead-reckoning pass
         for y in stride(from: (height-2), through: 1, by: 1) {
             for x in stride(from: (width-2), through: 1, by: 1) {
@@ -406,7 +406,7 @@ final class FontAtlas: JSONEncodable {
                 }
             }
         }
-        
+
         // Interior distance negation pass; distances outside the figure are considered negative
         for y in 0..<height {
             for x in 0..<width {
@@ -417,36 +417,36 @@ final class FontAtlas: JSONEncodable {
         }
         return distanceMap
     }
-    
+
     fileprivate func createResampledData (distanceField inData: [Float], width: Int, height: Int, scaleFactor: Int) -> [Float] {
-        
+
         assert(width % scaleFactor == 0 && height % scaleFactor == 0, "Scale factor does not evenly divide width and height of source distance field")
-        
+
         let scaledWidth = width / scaleFactor
         let scaledHeight = height / scaleFactor
         var outData = [Float](repeating: 0.0, count: scaledWidth * scaledHeight)
-        
+
         for y in stride(from: 0, to: height, by: scaleFactor) {
-            
+
             for x in stride(from: 0, to: width, by: scaleFactor) {
                 var accum: Float = 0.0
                 for ky in 0..<scaleFactor {
-                    
+
                     for kx in 0..<scaleFactor {
                         accum += inData[(y + ky) * width + (x + kx)]
                     }
                 }
                 accum = accum / Float(scaleFactor * scaleFactor)
-                
+
                 outData[(y / scaleFactor) * scaledWidth + (x / scaleFactor)] = accum
             }
         }
-        
+
         return outData
     }
-    
+
     fileprivate func createQuantizedDistanceField(distanceField inData: [Float], width: Int, height: Int, normalizationFactor: Double) -> [UInt8] {
-        
+
         /*return inData.map {
          let clampDist = fmax(-normalizationFactor, fmin($0, normalizationFactor))
          let scaledDist = clampDist / normalizationFactor
@@ -464,24 +464,24 @@ final class FontAtlas: JSONEncodable {
         }
         return outData
     }
-    
+
     fileprivate func createTextureData () {
         assert(MBEFontAtlasSize >= _textureSize, "Requested font atlas texture size (\(MBEFontAtlasSize)) must be smaller than intermediate texture size (\(_textureSize))")
-    
+
         assert(MBEFontAtlasSize % _textureSize == 0, "Requested font atlas texture size (\(MBEFontAtlasSize)) does not evenly divide intermediate texture size (\(_textureSize))")
-        
+
         // Generate an atlas image for the font, resizing if necessary to fit in the specified size.
         let atlasData = createAtlasForFont(parentFont, width: MBEFontAtlasSize, height: MBEFontAtlasSize)
-        
+
         let scaleFactor = MBEFontAtlasSize / _textureSize
-        
+
         // Create the signed-distance field representation of the font atlas from the rasterized glyph image.
         let distanceField = createSignedDistanceField(
             grayscaleImage: atlasData,
             width: MBEFontAtlasSize,
             height:MBEFontAtlasSize
         )
-    
+
         // Downsample the signed-distance field to the expected texture resolution
         let scaledField = createResampledData(
             distanceField: distanceField,
@@ -489,9 +489,9 @@ final class FontAtlas: JSONEncodable {
             height: MBEFontAtlasSize,
             scaleFactor: scaleFactor
         )
-        
+
         let spread = estimatedLineWidthForFont(parentFont) * 0.5
-        
+
         // Quantize the downsampled distance field into an 8-bit grayscale array suitable for use as a texture
         _textureData = createQuantizedDistanceField(
             distanceField: scaledField,
@@ -500,7 +500,7 @@ final class FontAtlas: JSONEncodable {
             normalizationFactor: spread
         )
     }
-    
+
     func createTexture (_ context: Context) {
         let imageBuffer = Imagebuffer(
             array: _textureData,
@@ -518,9 +518,9 @@ final class FontAtlas: JSONEncodable {
         _texture = Texture(context: context, options: options)
         _waitingForMipmaps = true
     }
-        
+
     class func fromCache(_ context: Context, fontName: String, pointSize: Int) -> FontAtlas {
-        
+
         if let atlas = _cache[fontName] {
             return atlas
         }
@@ -529,7 +529,7 @@ final class FontAtlas: JSONEncodable {
             let atlasFolderURL = LocalStorage.sharedInstance
                 .getAppSupportURL()
                 .appendingPathComponent("FontAtlases")
-            
+
             let jsonURL = atlasFolderURL
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("json")
@@ -545,32 +545,32 @@ final class FontAtlas: JSONEncodable {
         }
         // build from scratch
         let atlas = FontAtlas(context: context, fontName: fontName, pointSize: pointSize)
-        
+
         // add to cache
         _cache[fontName] = atlas
-        
+
         return atlas
     }
-    
+
     class func writeToFile (_ atlas: FontAtlas) {
         do {
             let atlasFolderURL = LocalStorage.sharedInstance
                 .getAppSupportURL()
                 .appendingPathComponent("FontAtlases")
-            
+
             let fontName = CTFontCopyPostScriptName(atlas.parentFont) as String
             let jsonURL = atlasFolderURL
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("json")
-            
+
             try FileManager.default.createDirectory(at: atlasFolderURL, withIntermediateDirectories: true, attributes: nil)
-            
+
             let atlasJSON = atlas.toJSON().object!
-            
+
             let textureDataURL = atlasFolderURL
                 .appendingPathComponent(fontName)
                 .appendingPathExtension("textureData")
-            
+
             try JSON
                 .encodeAsString(JSON.object(atlasJSON))
                 .write(to: jsonURL, atomically: true, encoding: String.Encoding.utf8)
@@ -582,7 +582,7 @@ final class FontAtlas: JSONEncodable {
             logPrint(.error, "texture data write failed")
         }
     }
-    
+
     class func generateMipmapsIfRequired (_ context: Context) {
         for atlas in _cache.values {
             if atlas._waitingForMipmaps {
@@ -592,4 +592,4 @@ final class FontAtlas: JSONEncodable {
         }
     }
 }
- 
+

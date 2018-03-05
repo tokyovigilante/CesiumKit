@@ -27,30 +27,30 @@ public struct BoundingRectangle: Equatable {
     * @default 0.0
     */
     public var x: Double = 0.0
-    
+
     /**
     * The y coordinate of the rectangle.
     * @type {Number}
     * @default 0.0
     */
     public var y: Double = 0.0
-    
+
     /**
     * The width of the rectangle.
     * @type {Number}
     * @default 0.0
     */
     public var width: Double = 0.0
-    
+
     /**
     * The height of the rectangle.
     * @type {Number}
     * @default 0.0
     */
     public var height: Double = 0.0
-    
+
     var projection: MapProjection = GeographicProjection()
-    
+
     public init (x: Double = 0.0, y: Double = 0.0, width: Double = 0.0, height: Double = 0.0, projection: MapProjection = GeographicProjection()) {
         self.x = x
         self.y = y
@@ -58,7 +58,7 @@ public struct BoundingRectangle: Equatable {
         self.height = height
         self.projection = projection
     }
-    
+
     /**
     * Computes a bounding rectangle enclosing the list of 2D points.
     * The rectangle is oriented with the corner at the bottom left.
@@ -68,36 +68,36 @@ public struct BoundingRectangle: Equatable {
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
     init(fromPoints points: [Cartesian2]) {
-        
+
         if (points.count == 0) {
             x = 0
             y = 0
             width = 0
             height = 0
         }
-        
+
         var minimumX = points[0].x
         var minimumY = points[0].y
-        
+
         var maximumX = points[0].x
         var maximumY = points[0].y
-        
+
         for cartesian2 in points {
             let x = cartesian2.x
             let y = cartesian2.y
-            
+
             minimumX = min(x, minimumX)
             maximumX = max(x, maximumX)
             minimumY = min(y, minimumY)
             maximumY = max(y, maximumY)
         }
-        
+
         x = minimumX
         y = minimumY
         width = maximumX - minimumX
         height = maximumY - minimumY
     }
-    
+
     /**
     * Computes a bounding rectangle from an rectangle.
     *
@@ -107,20 +107,20 @@ public struct BoundingRectangle: Equatable {
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
     init(fromRectangle rectangle: Rectangle, projection: MapProjection = GeographicProjection()) {
-        
+
         self.projection = projection
-        
+
         let lowerLeft = projection.project(rectangle.southwest)
         let upperRight = projection.project(rectangle.northeast)
-        
+
         upperRight.subtract(lowerLeft)
-        
+
         x = lowerLeft.x
         y = lowerLeft.y
         width = upperRight.x
         height = upperRight.y
     }
-    
+
     /**
     * Computes a bounding rectangle that is the union of the left and right bounding rectangles.
     *
@@ -130,19 +130,19 @@ public struct BoundingRectangle: Equatable {
     * @returns {BoundingRectangle} The modified result parameter or a new BoundingRectangle instance if one was not provided.
     */
     func union(_ other: BoundingRectangle) -> BoundingRectangle {
-        
+
         let lowerLeftX = min(x, other.x);
         let lowerLeftY = min(y, other.y);
         let upperRightX = max(x + width, other.x + other.width);
         let upperRightY = max(y + height, other.y + other.height);
-        
+
         return BoundingRectangle(
             x: lowerLeftX,
             y: lowerLeftY,
             width: upperRightX - lowerLeftX,
             height: upperRightY - lowerLeftY)
     }
-    
+
     /**
     * Computes a bounding rectangle by enlarging the provided rectangle until it contains the provided point.
     *
@@ -155,14 +155,14 @@ public struct BoundingRectangle: Equatable {
         var result = self
         let width = point.x - result.x
         let height = point.y - result.y
-        
+
         if (width > result.width) {
             result.width = width
         } else if (width < 0) {
             result.width -= width;
             result.x = point.x
         }
-        
+
         if (height > result.height) {
             result.height = height
         } else if (height < 0) {
@@ -171,7 +171,7 @@ public struct BoundingRectangle: Equatable {
         }
         return result
     }
-    
+
     /**
     * Determines if two rectangles intersect.
     *
@@ -188,7 +188,7 @@ public struct BoundingRectangle: Equatable {
         }
         return Intersect.outside;
     }
-    
+
 }
 
 /**

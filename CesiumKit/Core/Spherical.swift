@@ -23,12 +23,12 @@ struct Spherical/*: Packable*/ {
     var clock: Double = 0.0
     var cone: Double = 0.0
     var magnitude: Double = 1.0
-    
+
     static let packedLength: Int = 3;
-    
+
     func pack(_ array: inout [Float], startingIndex: Int) {
     }
-    
+
     static func unpack(_ array: [Float], startingIndex: Int) -> Spherical {
         return Spherical()
     }

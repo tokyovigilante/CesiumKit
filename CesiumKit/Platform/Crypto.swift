@@ -10,14 +10,14 @@ import Foundation
 import CommonCrypto
 
 public struct HMAC {
-    
+
     static func hash(_ inp: String, algo: HMACAlgo) -> String {
         if let stringData = inp.data(using: String.Encoding.utf8, allowLossyConversion: false) {
             return hexStringFromBuffer(digest(stringData, algo: algo))
         }
         return ""
     }
-    
+
     fileprivate static func digest(_ input: Data, algo: HMACAlgo) -> [UInt8] {
         let digestLength = algo.digestLength()
         var hash = [UInt8](repeating: 0, count: digestLength)
@@ -45,7 +45,7 @@ public struct HMAC {
         }
         return hash
     }
-    
+
     fileprivate static func hexStringFromBuffer(_ input: [UInt8]) -> String {
         return input.reduce("") { $0 + String(format:"%02x", $1) }
     }
@@ -53,7 +53,7 @@ public struct HMAC {
 
 enum HMACAlgo {
     case md5, sha1, sha224, sha256, sha384, sha512
-    
+
     func digestLength() -> Int {
         var result: CInt = 0
         switch self {

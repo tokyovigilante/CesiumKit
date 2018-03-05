@@ -20,7 +20,7 @@ enum TextureSource {
     case image(CGImage)
     case buffer(Imagebuffer)
     case cubeMap(CubeMapSources)
-    
+
     var width: Int {
         get {
             switch self {
@@ -33,7 +33,7 @@ enum TextureSource {
             }
         }
     }
-    
+
     var height: Int {
         get {
             switch self {
@@ -49,30 +49,30 @@ enum TextureSource {
 }
 
 struct TextureOptions {
-    
+
     let source: TextureSource?
-    
+
     let width: Int
-    
+
     let height: Int
-    
+
     let cubeMap: Bool
-    
+
     let pixelFormat: PixelFormat
-    
+
     let flipY: Bool
-    
+
     let premultiplyAlpha: Bool
-    
+
     let usage: TextureUsage
-    
+
     let mipmapped: Bool
-    
+
     let sampler: Sampler?
-    
+
     init(source: TextureSource? = nil, width: Int? = 0, height: Int? = 0, cubeMap: Bool = false, pixelFormat: PixelFormat = .bgra8Unorm, flipY: Bool = false, premultiplyAlpha: Bool = true, usage: TextureUsage = .Unknown, mipmapped: Bool = false, sampler: Sampler? = nil) {
         assert (source != nil || (width != nil && height != nil), "Must have texture source or dimensions")
-         
+
         self.source = source
         self.width = source != nil ? source!.width : width!
         self.height = source != nil ? source!.height : height!
@@ -87,27 +87,27 @@ struct TextureOptions {
 }
 
 open class Texture {
-    
+
     let width: Int
-    
+
     let height: Int
-    
+
     let cubeMap: Bool
-    
+
     let pixelFormat: PixelFormat
-    
+
     var textureFilterAnisotropic = true
-    
+
     var premultiplyAlpha = true
-    
+
     let usage: TextureUsage
-    
+
     let mipmapped: Bool
 
     weak var context: Context?
-    
+
     var metalTexture: MTLTexture!
-    
+
     /**
     * The sampler to use when sampling this texture.
     * Create a sampler by calling {@link Context#createSampler}.  If this
@@ -118,13 +118,13 @@ open class Texture {
     * @type {Object}
     */
     var sampler: Sampler
-        
+
     //var dimensions: Cartesian2
 
     init(context: Context, options: TextureOptions) {
 
         let source = options.source
-        
+
         if source == nil {
             width = options.width
             height = options.height
@@ -132,36 +132,36 @@ open class Texture {
             width = source!.width
             height = source!.height
         }
-        
+
         cubeMap = options.cubeMap
         pixelFormat = options.pixelFormat
-        
+
         // Use premultiplied alpha for opaque textures should perform better on Chrome:
         // http://media.tojicode.com/webglCamp4/#20*/
         premultiplyAlpha = options.premultiplyAlpha || options.pixelFormat == .rgba8Unorm || options.pixelFormat == .bgra8Unorm || options.pixelFormat == .r8Unorm
-        
+
         usage = options.usage
 
         mipmapped = options.mipmapped
-       
+
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        
+
         if _mipmapSampler == nil {
             _mipmapSampler = Sampler(context: context, mipMagFilter: .linear)
         }
-        
+
         let sampler = (mipmapped ? _mipmapSampler : _defaultSampler)
         self.sampler = options.sampler ?? sampler!
-        
+
         assert(mipmapped == false || Math.isPowerOfTwo(width) && Math.isPowerOfTwo(height), "Cannot use mipmapping for NPOT textures")
 
         assert(width > 0, "Width must be greater than zero.")
         assert(width <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
         assert(self.height > 0, "Height must be greater than zero.")
         assert(self.height <= context.limits.maximumTextureSize, "Width must be less than or equal to the maximum texture size: \(context.limits.maximumTextureSize)")
-        
+
         /*
         if self.pixelFormat == PixelFormat.DepthComponent && (self.pixelDatatype != PixelDatatype.UnsignedShort && self.pixelDatatype != PixelDatatype.UnsignedInt) {
             assert(true, "When options.pixelFormat is DEPTH_COMPONENT, options.pixelDatatype must be UNSIGNED_SHORT or UNSIGNED_INT.")
@@ -172,15 +172,15 @@ open class Texture {
         if self.pixelDatatype == PixelDatatype.Float && !context.floatingPointTexture {
             assert(true, "When options.pixelDatatype is FLOAT, this WebGL implementation must support the OES_texture_float extension.  Check context.floatingPointTexture.")
         }
-        
+
         if self.pixelFormat.isDepthFormat() {
             assert(source == nil, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, source cannot be provided.")
             assert(context.depthTexture, "When options.pixelFormat is DEPTH_COMPONENT or DEPTH_STENCIL, this WebGL implementation must support WEBGL_depth_texture.  Check context.depthTexture")
         }
         */
-        
+
         let flipY = options.flipY
-        
+
         let textureDescriptor: MTLTextureDescriptor
         if cubeMap {
             textureDescriptor = MTLTextureDescriptor.textureCubeDescriptor(pixelFormat: pixelFormat.toMetal(), size: width, mipmapped: mipmapped)
@@ -189,7 +189,7 @@ open class Texture {
                 width: width, height: height, mipmapped: mipmapped)
         }
         textureDescriptor.usage = usage.toMetal()
-        
+
         if pixelFormat == .depth32Float || pixelFormat == .depth32FloatStencil8 || pixelFormat == .stencil8 || textureDescriptor.sampleCount > 1 {
             textureDescriptor.storageMode = .private
         }
@@ -199,7 +199,7 @@ open class Texture {
             }
         #endif
         metalTexture = context.device.makeTexture(descriptor: textureDescriptor)
-        
+
          if let source = source {
             switch source {
             case .buffer(let imagebuffer):
@@ -207,7 +207,7 @@ open class Texture {
                 let region = MTLRegionMake2D(0, 0, imagebuffer.width, imagebuffer.height)
                 metalTexture.replace(region: region, mipmapLevel: 0, withBytes: imagebuffer.array, bytesPerRow: imagebuffer.width * MemoryLayout.stride(ofValue: imagebuffer.array.first!) * imagebuffer.bytesPerPixel)
             case .image(let imageRef): // From http://stackoverflow.com/questions/14362868/convert-an-uiimage-in-a-texture
-                
+
                 guard let textureData = imageRef.renderToPixelArray(
                     colorSpace: _colorSpace,
                     premultiplyAlpha: premultiplyAlpha,
@@ -241,12 +241,12 @@ open class Texture {
                     )
                 }
             }
-            
+
         }
         self.context = context
         self.textureFilterAnisotropic = context.textureFilterAnisotropic
     }
-    
+
     init (context: Context, metalTexture: MTLTexture, sampler: Sampler? = nil) {
         self.context = context
         self.metalTexture = metalTexture
@@ -258,20 +258,20 @@ open class Texture {
         self.usage = TextureUsage(rawValue: metalTexture.usage.rawValue)
         self.mipmapped = metalTexture.mipmapLevelCount > 1
         self.premultiplyAlpha = true
-        
+
         if _defaultSampler == nil {
             _defaultSampler = Sampler(context: context)
         }
-        
+
         if _mipmapSampler == nil {
             _mipmapSampler = Sampler(context: context, mipMagFilter: .linear)
         }
-        
+
         let defaultSampler: Sampler = mipmapped ? _mipmapSampler : _defaultSampler
         self.sampler = sampler ?? defaultSampler
     }
     /*
-     
+
     /**
     * Copy new image data into this texture, from a source {@link ImageData}, {@link Image}, {@link Canvas}, or {@link Video}.
     * or an object with width, height, and arrayBufferView properties.
@@ -298,7 +298,7 @@ open class Texture {
     Texture.prototype.copyFrom = function(source, xOffset, yOffset) {
     xOffset = defaultValue(xOffset, 0);
     yOffset = defaultValue(yOffset, 0);
-    
+
     //>>includeStart('debug', pragmas.debug);
     if (!defined(source)) {
     throw new DeveloperError('source is required.');
@@ -319,7 +319,7 @@ open class Texture {
     throw new DeveloperError('yOffset + source.height must be less than or equal to height.');
     }
     //>>includeEnd('debug');
-    
+
     // Internet Explorer 11.0.8 is apparently unable to upload a texture to a non-zero
     // yOffset when the pipeline is configured to FLIP_Y.  So do the flip manually.
     if (FeatureDetection.isInternetExplorer() && yOffset !== 0 && this._flipY) {
@@ -330,7 +330,7 @@ open class Texture {
     pixelDatatype : this._pixelDatatype,
     preMultiplyAlpha : this._preMultiplyAlpha
     });
-    
+
     var framebuffer = this._context.createFramebuffer({
     colorTextures : [texture]
     });
@@ -338,28 +338,28 @@ open class Texture {
     this.copyFromFramebuffer(xOffset, yOffset, 0, 0, texture.width, texture.height);
     framebuffer._unBind();
     framebuffer.destroy();
-    
+
     return;
     }
-    
+
     var gl = this._context._gl;
     var target = this._textureTarget;
-    
+
     // TODO: gl.pixelStorei(gl._UNPACK_ALIGNMENT, 4);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._preMultiplyAlpha);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this._flipY);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(target, this._texture);
-    
+
     if (source.arrayBufferView) {
     gl.texSubImage2D(target, 0, xOffset, yOffset,  source.width, source.height, this._pixelFormat, this._pixelDatatype, source.arrayBufferView);
     } else {
     gl.texSubImage2D(target, 0, xOffset, yOffset, this._pixelFormat, this._pixelDatatype, source);
     }
-    
+
     gl.bindTexture(target, null);
     };
-    
+
     /**
     * @param {Number} [xOffset=0] The offset in the x direction within the texture to copy into.
     * @param {Number} [yOffset=0] The offset in the y direction within the texture to copy into.
@@ -385,7 +385,7 @@ open class Texture {
     framebufferYOffset = defaultValue(framebufferYOffset, 0);
     width = defaultValue(width, this._width);
     height = defaultValue(height, this._height);
-    
+
     //>>includeStart('debug', pragmas.debug);
     if (PixelFormat.isDepthFormat(this._pixelFormat)) {
     throw new DeveloperError('Cannot call copyFromFramebuffer when the texture pixel format is DEPTH_COMPONENT or DEPTH_STENCIL.');
@@ -412,10 +412,10 @@ open class Texture {
     throw new DeveloperError('yOffset + height must be less than or equal to height.');
     }
     //>>includeEnd('debug');
-    
+
     var gl = this._context._gl;
     var target = this._textureTarget;
-    
+
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(target, this._texture);
     gl.copyTexSubImage2D(target, 0, xOffset, yOffset, framebufferXOffset, framebufferYOffset, width, height);

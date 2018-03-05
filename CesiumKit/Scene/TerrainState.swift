@@ -7,7 +7,7 @@
 //
 
 enum TerrainState: Int, CustomStringConvertible {
-    
+
     case failed = 0,
     unloaded,
     receiving,
@@ -16,7 +16,7 @@ enum TerrainState: Int, CustomStringConvertible {
     transformed,
     buffering,
     ready
-    
+
     var description: String {
         get {
             switch self {

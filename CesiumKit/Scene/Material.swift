@@ -205,28 +205,28 @@ import Foundation
  */
 
 open class Material {
-    
+
     /**
      * The material type. Can be an existing type or a new type. If no type is specified in fabric, type is a GUID.
      * @type {String}
      * @default undefined
      */
     var type: MaterialType
-    
+
     /**
      * The glsl shader source for this material.
      * @type {String}
      * @default undefined
      */
     var shaderSource: String = ""
-    
+
     /**
      * Maps sub-material names to Material objects.
      * @type {Object}
      * @default undefined
      */
     var materials = [Material]()
-    
+
     /**
      * Maps uniform names to their values.
      * @type {Object}
@@ -234,7 +234,7 @@ open class Material {
      */
     var uniformMap: LegacyUniformMap? = nil
     fileprivate (set) var uniforms = [String: UniformFunc]()
-    
+
     /**
      * When <code>true</code> or a function that returns <code>true</code>,
      * the geometry is expected to appear translucent.
@@ -242,46 +242,46 @@ open class Material {
      * @default undefined
      */
     var translucent: () -> Bool = { return false }
-    
+
     fileprivate var _translucentFunctions = Array<()->Bool>()
-    
+
     fileprivate var _strict = false
-    
+
     fileprivate var _template: MaterialType? = nil
-    
+
     fileprivate var _count = 0
     /*
      this._texturePaths = {};
      this._loadedImages = [];
      this._loadedCubeMaps = [];
-     
+
      this._textures = {};
-     
+
      this._updateFunctions = [];
      */
     var _defaultTexture: Texture? = nil
-    
+
     /**
      * Gets or sets the default texture uniform value.
      * @type {String}
      */
     static var DefaultImageId = "czm_defaultImage"
-    
+
     /**
      * Gets or sets the default cube map texture uniform value.
      * @type {String}
      */
     static var DefaultCubeMapId = "czm_defaultCubeMap"
-    
+
     /*private static var _materialCache: [String: Material] {
-        
+
         var cache = [String: Material]()
-        
+
         var colorFabric = ColorFabricDescription()
         colorFabric.color = Color(fromRed: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
         let colorMaterial = Material(fromType: ColorMaterialType(fabric: colorFabric, source: nil))
         cache["color"] = colorMaterial
-        
+
         /*translucent : function(material) {
          return material.uniforms.color.alpha < 1.0;
          }
@@ -307,7 +307,7 @@ open class Material {
          },
          translucent : true
          });
-         
+
          /**
          * Gets the name of the diffuce map material.
          * @type {String}
@@ -328,7 +328,7 @@ open class Material {
          },
          translucent : false
          });
-         
+
          /**
          * Gets the name of the alpha map material.
          * @type {String}
@@ -349,7 +349,7 @@ open class Material {
          },
          translucent : true
          });
-         
+
          /**
          * Gets the name of the specular map material.
          * @type {String}
@@ -370,7 +370,7 @@ open class Material {
          },
          translucent : false
          });
-         
+
          /**
          * Gets the name of the emmision map material.
          * @type {String}
@@ -391,7 +391,7 @@ open class Material {
          },
          translucent : false
          });
-         
+
          /**
          * Gets the name of the bump map material.
          * @type {String}
@@ -411,7 +411,7 @@ open class Material {
          },
          translucent : false
          });
-         
+
          /**
          * Gets the name of the normal map material.
          * @type {String}
@@ -431,7 +431,7 @@ open class Material {
          },
          translucent : false
          });
-         
+
          /**
          * Gets the name of the grid material.
          * @type {String}
@@ -455,7 +455,7 @@ open class Material {
          return (uniforms.color.alpha < 1.0) || (uniforms.cellAlpha < 1.0);
          }
          });
-         
+
          /**
          * Gets the name of the stripe material.
          * @type {String}
@@ -479,7 +479,7 @@ open class Material {
          return (uniforms.evenColor.alpha < 1.0) || (uniforms.oddColor.alpha < 0.0);
          }
          });
-         
+
          /**
          * Gets the name of the checkerboard material.
          * @type {String}
@@ -501,7 +501,7 @@ open class Material {
          return (uniforms.lightColor.alpha < 1.0) || (uniforms.darkColor.alpha < 0.0);
          }
          });
-         
+
          /**
          * Gets the name of the dot material.
          * @type {String}
@@ -523,7 +523,7 @@ open class Material {
          return (uniforms.lightColor.alpha < 1.0) || (uniforms.darkColor.alpha < 0.0);
          }
          });
-         
+
          /**
          * Gets the name of the water material.
          * @type {String}
@@ -551,7 +551,7 @@ open class Material {
          return (uniforms.baseWaterColor.alpha < 1.0) || (uniforms.blendColor.alpha < 0.0);
          }
          });
-         
+
          /**
          * Gets the name of the rim lighting material.
          * @type {String}
@@ -573,7 +573,7 @@ open class Material {
          return (uniforms.color.alpha < 1.0) || (uniforms.rimColor.alpha < 0.0);
          }
          });
-         
+
          /**
          * Gets the name of the fade material.
          * @type {String}
@@ -601,7 +601,7 @@ open class Material {
          return (uniforms.fadeInColor.alpha < 1.0) || (uniforms.fadeOutColor.alpha < 0.0);
          }
          });
-         
+
          /**
          * Gets the name of the polyline arrow material.
          * @type {String}
@@ -618,7 +618,7 @@ open class Material {
          },
          translucent : true
          });
-         
+
          /**
          * Gets the name of the polyline glow material.
          * @type {String}
@@ -636,7 +636,7 @@ open class Material {
          },
          translucent : true
          });
-         
+
          /**
          * Gets the name of the polyline outline material.
          * @type {String}
@@ -661,10 +661,10 @@ open class Material {
          */
         return cache
     }*/
-    
+
     init (fabric: MaterialType) {
-        
-        
+
+
         type = fabric
         initializeMaterial(/*options*/)
     }
@@ -675,18 +675,18 @@ open class Material {
      writable : false
      }
      });
-     
+
      if (!defined(Material._uniformList[this.type])) {
      Material._uniformList[this.type] = Object.keys(this._uniforms);
      }
      };
-     
+
      // Cached list of combined uniform names indexed by type.
      // Used to get the list of uniforms in the same order.
      Material._uniformList = {};
-     
+
      }*/
-    
+
     /**
      * Creates a new material using an existing material type.
      * <br /><br />
@@ -704,7 +704,7 @@ open class Material {
      * });
      */
     public convenience init (fromType type: MaterialType, uniforms: [String: Uniform] = [:]) {
-        
+
         self.init(fabric: type)
         /*
          if (defined(uniforms)) {
@@ -716,7 +716,7 @@ open class Material {
          }
          */
     }
-    
+
      /**
      * Gets whether or not this material is translucent.
      * @returns <code>true</code> if this material is translucent, <code>false</code> otherwise.
@@ -724,7 +724,7 @@ open class Material {
     var isTranslucent: Bool {
 
         //var translucent = self.translucent()
-        
+
         /*if translucent {
             return true
         }*/
@@ -739,36 +739,36 @@ open class Material {
          } else {
          translucent = translucent && func;
          }
-         
+
          if (!translucent) {
          break;
          }
          }
         return translucent*/
     }
-    
+
     /**
      * @private
      */
     internal func update (_ context: Context) {
         /*var i;
          var uniformId;
-         
+
          var loadedImages = this._loadedImages;
          var length = loadedImages.length;
-         
+
          for (i = 0; i < length; ++i) {
          var loadedImage = loadedImages[i];
          uniformId = loadedImage.id;
          var image = loadedImage.image;
-         
+
          var texture = new Texture({
          context : context,
          source : image
          });
-         
+
          this._textures[uniformId] = texture;
-         
+
          var uniformDimensionsName = uniformId + 'Dimensions';
          if (this.uniforms.hasOwnProperty(uniformDimensionsName)) {
          var uniformDimensions = this.uniforms[uniformDimensionsName];
@@ -776,17 +776,17 @@ open class Material {
          uniformDimensions.y = texture._height;
          }
          }
-         
+
          loadedImages.length = 0;
-         
+
          var loadedCubeMaps = this._loadedCubeMaps;
          length = loadedCubeMaps.length;
-         
+
          for (i = 0; i < length; ++i) {
          var loadedCubeMap = loadedCubeMaps[i];
          uniformId = loadedCubeMap.id;
          var images = loadedCubeMap.images;
-         
+
          var cubeMap = new CubeMap({
          context : context,
          source : {
@@ -798,18 +798,18 @@ open class Material {
          negativeZ : images[5]
          }
          });
-         
+
          this._textures[uniformId] = cubeMap;
          }
-         
+
          loadedCubeMaps.length = 0;
-         
+
          var updateFunctions = this._updateFunctions;
          length = updateFunctions.length;
          for (i = 0; i < length; ++i) {
          updateFunctions[i](this, context);
          }
-         
+
          var subMaterials = this.materials;
          for (var name in subMaterials) {
          if (subMaterials.hasOwnProperty(name)) {
@@ -817,39 +817,39 @@ open class Material {
          }
          }*/
     }
-    
-    
+
+
     func initializeMaterial(_ strict: Bool = false) {
         _strict = strict
         /*result._count = defaultValue(options.count, 0);*/
         _template = type
         /*result._template.uniforms = clone(defaultValue(result._template.uniforms, defaultValue.EMPTY_OBJECT));
          result._template.materials = clone(defaultValue(result._template.materials, defaultValue.EMPTY_OBJECT));
-         
+
          result.type = defined(result._template.type) ? result._template.type : createGuid();
-         
+
          result.shaderSource = '';
          result.materials = {};
          result.uniforms = {};
          result._uniforms = {};*/
-        
-        
+
+
         // Make sure the template has no obvious errors. More error checking happens later.
         checkForTemplateErrors()
-        
+
         // If the material has a new type, add it to the cache.
         /*if (!defined(cachedMaterial)) {
          Material._materialCache.addMaterial(result.type, result);
          }*/
-        
+
         createMethodDefinition()
         createUniforms()
         createSubMaterials()
-        
+
          /*let defaultTranslucent = _translucentFunctions.count == 0 ? true : undefined;
          translucent = defaultValue(translucent, defaultTranslucent);
          translucent = defaultValue(options.translucent, translucent);
-         
+
          if (defined(translucent)) {
          if (typeof translucent === 'function') {
          var wrappedTranslucent = function() {
@@ -859,7 +859,7 @@ open class Material {
          } else {
          result._translucentFunctions.push(translucent);
          }
-         
+
          }*/
     }
     /*
@@ -875,7 +875,7 @@ open class Material {
      }
      }
      }
-     
+
      function invalidNameError(property, properties) {
      var errorString = 'fabric: property name \'' + property + '\' is not valid. It should be ';
      for ( var i = 0; i < properties.length; i++) {
@@ -884,7 +884,7 @@ open class Material {
      }
      throw new DeveloperError(errorString);
      }
-     
+
      function duplicateNameError(property, properties) {
      var errorString = 'fabric: uniforms and materials cannot share the same property \'' + property + '\'';
      throw new DeveloperError(errorString);
@@ -892,22 +892,22 @@ open class Material {
      */
     fileprivate let templateProperties = ["type", "materials", "uniforms", "components", "source"]
     fileprivate let componentProperties = ["diffuse", "specular", "shininess", "normal", "emission", "alpha"]
-    
+
     func checkForTemplateErrors () {
         /*var template = material._template;
          var uniforms = template.uniforms;
          var materials = template.materials;
          var components = template.components;
-         
+
          // Make sure source and components do not exist in the same template.
          if (defined(components) && defined(template.source)) {
          throw new DeveloperError('fabric: cannot have source and components in the same template.');
          }
-         
+
          // Make sure all template and components properties are valid.
          checkForValidProperties(template, templateProperties, invalidNameError, true);
          checkForValidProperties(components, componentProperties, invalidNameError, true);
-         
+
          // Make sure uniforms and materials do not share any of the same names.
          var materialNames = [];
          for ( var property in materials) {
@@ -917,7 +917,7 @@ open class Material {
          }
          checkForValidProperties(uniforms, materialNames, duplicateNameError, false);*/
     }
-    
+
     // Create the czm_getMaterial method body using source or components.
     func createMethodDefinition () {
         if let source = _template?.source {
@@ -933,23 +933,23 @@ open class Material {
             shaderSource += "return material;\n}\n"
         }
     }
-    
+
     /*
      var matrixMap = {
      'mat2' : Matrix2,
      'mat3' : Matrix3,
      'mat4' : Matrix4
      };*/
-    
+
     func createTexture2DUpdateFunction(_ uniformId: String) {
         /*return function(material, context) {
          var uniforms = material.uniforms;
          var uniformValue = uniforms[uniformId];
          var texture = material._textures[uniformId];
-         
+
          var uniformDimensionsName;
          var uniformDimensions;
-         
+
          if (uniformValue instanceof Texture && uniformValue !== texture) {
          material._texturePaths[uniformId] = undefined;
          var tmp = material._textures[uniformId];
@@ -957,24 +957,24 @@ open class Material {
          tmp.destroy();
          }
          material._textures[uniformId] = uniformValue;
-         
+
          uniformDimensionsName = uniformId + 'Dimensions';
          if (uniforms.hasOwnProperty(uniformDimensionsName)) {
          uniformDimensions = uniforms[uniformDimensionsName];
          uniformDimensions.x = uniformValue._width;
          uniformDimensions.y = uniformValue._height;
          }
-         
+
          return;
          }
-         
+
          if (!defined(texture)) {
          material._texturePaths[uniformId] = undefined;
          if (!defined(material._defaultTexture)) {
          material._defaultTexture = context.defaultTexture;
          }
          texture = material._textures[uniformId] = material._defaultTexture;
-         
+
          uniformDimensionsName = uniformId + 'Dimensions';
          if (uniforms.hasOwnProperty(uniformDimensionsName)) {
          uniformDimensions = uniforms[uniformDimensionsName];
@@ -982,11 +982,11 @@ open class Material {
          uniformDimensions.y = texture._height;
          }
          }
-         
+
          if (uniformValue === Material.DefaultImageId) {
          return;
          }
-         
+
          if (uniformValue !== material._texturePaths[uniformId]) {
          if (typeof uniformValue === 'string') {
          when(loadImage(uniformValue), function(image) {
@@ -1001,7 +1001,7 @@ open class Material {
          image : uniformValue
          });
          }
-         
+
          material._texturePaths[uniformId] = uniformValue;
          }
          };*/
@@ -1010,7 +1010,7 @@ open class Material {
      function createCubeMapUpdateFunction(uniformId) {
      return function(material, context) {
      var uniformValue = material.uniforms[uniformId];
-     
+
      if (uniformValue instanceof CubeMap) {
      var tmp = material._textures[uniformId];
      if (tmp !== material._defaultTexture) {
@@ -1020,21 +1020,21 @@ open class Material {
      material._textures[uniformId] = uniformValue;
      return;
      }
-     
+
      if (!defined(material._textures[uniformId])) {
      material._texturePaths[uniformId] = undefined;
      material._textures[uniformId] = context.defaultCubeMap;
      }
-     
+
      if (uniformValue === Material.DefaultCubeMapId) {
      return;
      }
-     
+
      var path =
      uniformValue.positiveX + uniformValue.negativeX +
      uniformValue.positiveY + uniformValue.negativeY +
      uniformValue.positiveZ + uniformValue.negativeZ;
-     
+
      if (path !== material._texturePaths[uniformId]) {
      var promises = [
      loadImage(uniformValue.positiveX),
@@ -1044,14 +1044,14 @@ open class Material {
      loadImage(uniformValue.positiveZ),
      loadImage(uniformValue.negativeZ)
      ];
-     
+
      when.all(promises).then(function(images) {
      material._loadedCubeMaps.push({
      id : uniformId,
      images : images
      });
      });
-     
+
      material._texturePaths[uniformId] = path;
      }
      };
@@ -1064,7 +1064,7 @@ open class Material {
             }
         }
     }
-    
+
     // Writes uniform declarations to the shader file and connects uniform values with
     // corresponding material properties through the returnUniforms function.
     func createUniform (_ descriptor: UniformDescriptor) {
@@ -1098,9 +1098,9 @@ open class Material {
         let uniformId = descriptor.name
         let uniformDeclaration = "uniform " + descriptor.type.declarationString + " " + uniformId + ";\n"
         shaderSource = uniformDeclaration + shaderSource
-        
+
         let newUniformId = uniformId + "_" + "\(_count)"
-        
+
         if replaceToken(uniformId, newToken: newUniformId) == 1 && _strict {
             assertionFailure("strict: shader source does not use uniform \'" + uniformId + "'.")
         }
@@ -1128,7 +1128,7 @@ open class Material {
         }
         uniformMap = type.fabric.uniformMap
     }
-    
+
     // Create all sub-materials by combining source and uniforms together.
     func createSubMaterials () {
         /*var strict = material._strict;
@@ -1141,18 +1141,18 @@ open class Material {
          fabric : subMaterialTemplates[subMaterialId],
          count : material._count
          });
-         
+
          material._count = subMaterial._count;
          material._uniforms = combine(material._uniforms, subMaterial._uniforms, true);
          material.materials[subMaterialId] = subMaterial;
          material._translucentFunctions = material._translucentFunctions.concat(subMaterial._translucentFunctions);
-         
+
          // Make the material's czm_getMaterial unique by appending the sub-material type.
          var originalMethodName = 'czm_getMaterial';
          var newMethodName = originalMethodName + '_' + material._count++;
          replaceToken(subMaterial, originalMethodName, newMethodName);
          material.shaderSource = subMaterial.shaderSource + material.shaderSource;
-         
+
          // Replace each material id with an czm_getMaterial method call.
          var materialMethodCall = newMethodName + '(materialInput)';
          if (replaceToken(material, subMaterialId, materialMethodCall) === 0 && strict) {
@@ -1161,7 +1161,7 @@ open class Material {
          }
          }*/
     }
-    
+
     // Used for searching or replacing a token in a material's shader source with something else.
     // If excludePeriod is true, do not accept tokens that are preceded by periods.
     // http://stackoverflow.com/questions/641407/javascript-negative-lookbehind-equivalent

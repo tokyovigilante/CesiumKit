@@ -59,7 +59,7 @@ import Metal
 * });
 */
 class Geometry {
-    
+
     /**
     * Attributes, which make up the geometry's vertices.  Each property in this object corresponds to a
     * {@link GeometryAttribute} containing the attribute's data.
@@ -106,7 +106,7 @@ class Geometry {
     * });
     */
     let attributes: GeometryAttributes
-    
+
     /**
     * Optional index data that - along with {@link Geometry#primitiveType} -
     * determines the primitives in the geometry.
@@ -116,7 +116,7 @@ class Geometry {
     * @default undefined
     */
     let indices: [Int]?
-    
+
     /**
     * The type of primitives in the geometry.  This is most often {@link PrimitiveType.TRIANGLES},
     * but can varying based on the specific geometry.
@@ -126,7 +126,7 @@ class Geometry {
     * @default undefined
     */
     let primitiveType: MTLPrimitiveType
-    
+
     /**
     * An optional bounding sphere that fully encloses the geometry.  This is
     * commonly used for culling.
@@ -136,17 +136,17 @@ class Geometry {
     * @default undefined
     */
     let boundingSphere: BoundingSphere?
-    
+
     /**
     * @private
     */
     let geometryType: GeometryType
-    
+
     /**
     * @private
     */
     var boundingSphereCV: BoundingSphere? = nil
-    
+
     // FIXME: primitiveType vs geometryType
     init(attributes: GeometryAttributes, indices: [Int]? = nil, primitiveType: MTLPrimitiveType = .triangle, boundingSphere: BoundingSphere? = nil, geometryType: GeometryType = GeometryType.none) {
         self.attributes = attributes
@@ -155,7 +155,7 @@ class Geometry {
         self.boundingSphere = boundingSphere
         self.geometryType = geometryType
     }
-    
+
     /**
     * Computes the number of vertices in a geometry.  The runtime is linear with
     * respect to the number of attributes in a vertex, not the number of vertices.
@@ -168,7 +168,7 @@ class Geometry {
     */
     func computeNumberOfVertices() -> Int {
         let numberOfVertices = -1
-        
+
         //for i in 0...5 {
             /*if let attributeComponentCount = attributes[i]?.values?.count, componentsPerAttribute = attributes[i]?.componentsPerAttribute {
                 let num = attributeComponentCount / componentsPerAttribute
@@ -178,5 +178,5 @@ class Geometry {
         //}
         return numberOfVertices
     }
-    
+
 }

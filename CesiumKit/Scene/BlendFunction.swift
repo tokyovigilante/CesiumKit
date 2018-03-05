@@ -28,7 +28,7 @@ enum BlendFunction: UInt {
     case oneMinusBlendColor
     case blendAlpha
     case oneMinusBlendAlpha
-    
+
     func toMetal() -> MTLBlendFactor {
         return MTLBlendFactor(rawValue: self.rawValue)!
     }

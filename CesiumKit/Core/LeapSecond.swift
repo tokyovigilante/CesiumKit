@@ -18,13 +18,13 @@ import Foundation
  * @param {Number} [offset] The cumulative number of seconds that TAI is ahead of UTC at the provided date.
  */
 struct LeapSecond {
-    
+
     /**
     * Gets or sets the date at which this leap second occurs.
     * @type {JulianDate}
     */
     let julianDate: JulianDate
-    
+
     /**
     * Gets or sets the cumulative number of seconds between the UTC and TAI time standards at the time
     * of this leap second.

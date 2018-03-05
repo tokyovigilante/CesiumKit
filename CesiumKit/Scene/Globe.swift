@@ -18,31 +18,31 @@ import Foundation
 * globe.
 */
 class Globe {
-    
+
     let ellipsoid: Ellipsoid
-    
+
     var imageryLayers: ImageryLayerCollection
-    
+
     fileprivate var _surfaceShaderSet: GlobeSurfaceShaderSet!
-        
+
     fileprivate var _surface: QuadtreePrimitive!
-    
+
     var surfaceTilesToRenderCount: Int {
         return _surface.tilesToRender.count
     }
-    
+
     var debugString: String? {
         return _surface.debugDisplayString
     }
-    
+
     /**
     * The terrain provider providing surface geometry for this globe.
     * @type {TerrainProvider}
     */
     var terrainProvider: TerrainProvider
-    
+
     fileprivate var _mode = SceneMode.scene3D
-    
+
     /**
     * Determines if the globe will be shown.
     *
@@ -50,7 +50,7 @@ class Globe {
     * @default true
     */
     var show = true
-    
+
     /**
     * The normal map to use for rendering waves in the ocean.  Setting this property will
     * only have an effect if the configured terrain provider includes a water mask.
@@ -64,7 +64,7 @@ class Globe {
 
     fileprivate var _oceanNormalMapUrl: String? = nil
     fileprivate var _oceanNormalMapChanged = false
-    
+
     /**
     * The maximum screen-space error used to drive level-of-detail refinement.  Higher
     * values will provide better performance but lower visual quality.
@@ -73,7 +73,7 @@ class Globe {
     * @default 2
     */
     var maximumScreenSpaceError: Double = 2.0
-    
+
     /**
     * The size of the terrain tile cache, expressed as a number of tiles.  Any additional
     * tiles beyond this number will be freed, as long as they aren't needed for rendering
@@ -84,7 +84,7 @@ class Globe {
     * @default 100
     */
     var tileCacheSize = 100
-    
+
     /**
     * Enable lighting the globe with the sun as a light source.
     *
@@ -92,7 +92,7 @@ class Globe {
     * @default false
     */
     var enableLighting = false
-    
+
     /**
     * True if an animated wave effect should be shown in areas of the globe
     * covered by water; otherwise, false.  This property is ignored if the
@@ -102,7 +102,7 @@ class Globe {
     * @default true
     */
     var showWaterEffect = true
-    
+
     /**
      * True if primitives such as billboards, polylines, labels, etc. should be depth-tested
      * against the terrain surface, or false if such primitives should always be drawn on top
@@ -115,9 +115,9 @@ class Globe {
      *
      */
     var depthTestAgainstTerrain = false
-    
+
     fileprivate var _zoomedOutOceanSpecularIntensity: Float = 0.5
-    
+
     /**
     * Gets or sets the color of the globe when no imagery is available.
     * @memberof Globe.prototype
@@ -132,7 +132,7 @@ class Globe {
             tileProvider.baseColor = value
         }
     }
-    
+
     /**
      * Gets an event that's raised when the length of the tile load queue has changed since the last render frame.  When the load queue is empty,
      * all terrain and imagery for the current view have been loaded.  The event passes the new length of the tile load queue.
@@ -143,9 +143,9 @@ class Globe {
     var tileLoadProgressEvent: Event {
         return _surface.tileLoadProgressEvent
     }
-    
+
     init(ellipsoid: Ellipsoid = Ellipsoid.wgs84(), terrain: Bool, lighting: Bool) {
-        
+
         if terrain {
             terrainProvider = CesiumTerrainProvider(
                 url: "https://assets.agi.com/stk-terrain/world",
@@ -159,11 +159,11 @@ class Globe {
         }
         self.enableLighting = lighting
         self.ellipsoid = ellipsoid
-        
+
         imageryLayers = ImageryLayerCollection()
-        
+
     }
-    
+
     func createComparePickTileFunction(_ rayOrigin: Cartesian3) -> ((GlobeSurfaceTile, GlobeSurfaceTile) -> Bool) {
         func comparePickTileFunction(_ a: GlobeSurfaceTile, b: GlobeSurfaceTile) -> Bool {
             let aDist = a.pickBoundingSphere.distanceSquaredTo(rayOrigin)
@@ -172,7 +172,7 @@ class Globe {
         }
         return comparePickTileFunction
     }
-    
+
     /**
     * Find an intersection between a ray and the globe surface that was rendered. The ray must be given in world coordinates.
     *
@@ -189,18 +189,18 @@ class Globe {
     func pick(_ ray: Ray, scene: Scene) -> Cartesian3? {
         let mode = scene.mode
         //let projection = scene.mapProjection
-        
+
         var sphereIntersections = [GlobeSurfaceTile]()
-        
+
         let tilesToRender = _surface.tilesToRender
-        
+
         for tile in tilesToRender {
-            
+
             if tile.data == nil {
                 continue
             }
             let tileData = tile.data!
-            
+
             var boundingVolume = tileData.pickBoundingSphere
             if mode != .scene3D {
                 assertionFailure("unimplemented")
@@ -209,23 +209,23 @@ class Globe {
             } else {
                 boundingVolume = tileData.boundingSphere3D
             }
-            
+
             if IntersectionTests.raySphere(ray, sphere: boundingVolume) != nil {
                 sphereIntersections.append(tileData)
             }
         }
-        
+
         sphereIntersections.sort(by: createComparePickTileFunction(ray.origin))
-        
+
         for sphereIntersection in sphereIntersections {
             if let intersection = sphereIntersection.pick(ray, mode: scene.mode, projection: scene.mapProjection, cullBackFaces: true) {
                 return intersection
             }
         }
-        
+
         return nil
     }
-    
+
     /**
     * Get the height of the surface at a given cartographic.
     *
@@ -244,15 +244,15 @@ class Globe {
         throw new DeveloperError('cartographic is required');
         }
         //>>includeEnd('debug');
-        
+
         var levelZeroTiles = this._surface._levelZeroTiles;
         if (!defined(levelZeroTiles)) {
         return;
         }
-        
+
         var tile;
         var i;
-        
+
         var length = levelZeroTiles.length;
         for (i = 0; i < length; ++i) {
         tile = levelZeroTiles[i];
@@ -260,15 +260,15 @@ class Globe {
         break;
         }
         }
-        
+
         if (!defined(tile) || !Rectangle.contains(tile.rectangle, cartographic)) {
         return undefined;
         }
-        
+
         while (tile.renderable) {
         var children = tile.children;
         length = children.length;
-        
+
         for (i = 0; i < length; ++i) {
         tile = children[i];
         if (Rectangle.contains(tile.rectangle, cartographic)) {
@@ -276,30 +276,30 @@ class Globe {
         }
         }
         }
-        
+
         while (defined(tile) && (!defined(tile.data) || !defined(tile.data.pickTerrain))) {
         tile = tile.parent;
         }
-        
+
         if (!defined(tile)) {
         return undefined;
         }
-        
+
         var ellipsoid = this._surface._tileProvider.tilingScheme.ellipsoid;
         var cartesian = ellipsoid.cartographicToCartesian(cartographic, scratchGetHeightCartesian);
-        
+
         var ray = scratchGetHeightRay;
         Cartesian3.normalize(cartesian, ray.direction);
-        
+
         var intersection = tile.data.pick(ray, undefined, undefined, false, scratchGetHeightIntersection);
         if (!defined(intersection)) {
         return undefined;
         }
-        
+
         return ellipsoid.cartesianToCartographic(intersection, scratchGetHeightCartographic).height;*/return 0.0
     }
-    
-    
+
+
 /**
 * @private
 */
@@ -307,18 +307,18 @@ class Globe {
         if !show {
             return
         }
-        
+
         /*if !terrainProvider.ready {
             return
         }*/
-        
+
         if _surface == nil {
 
             _surfaceShaderSet = GlobeSurfaceShaderSet(
                 baseVertexShaderSource: ShaderSource(sources: [Shaders["GroundAtmosphere"]!, Shaders["GlobeVS"]!]),
                 baseFragmentShaderSource: ShaderSource(sources: [Shaders["GlobeFS"]!])
             )
-            
+
             _surface = QuadtreePrimitive(
                 tileProvider: GlobeSurfaceTileProvider(
                     terrainProvider: terrainProvider,
@@ -327,26 +327,26 @@ class Globe {
                 )
             )
         }
-        
+
         guard let context = frameState.context else {
             return
         }
-        
+
         let width = context.width
         let height = context.height
-        
+
         if width == 0 || height == 0 {
             return
         }
-        
+
         let hasWaterMask = showWaterEffect && terrainProvider.ready && terrainProvider.hasWaterMask
-        
+
         if hasWaterMask && oceanNormalMapUrl != _oceanNormalMapUrl {
             // url changed, load new normal map asynchronously
             _oceanNormalMapUrl = oceanNormalMapUrl
-            
+
             if let oceanNormalMapUrl = oceanNormalMapUrl {
-                
+
                 let oceanMapOperation = NetworkOperation(url: oceanNormalMapUrl)
                 oceanMapOperation.completionBlock = {
                     if (oceanNormalMapUrl != self.oceanNormalMapUrl) {
@@ -375,30 +375,30 @@ class Globe {
                 _oceanNormalMap = nil
             }
         }
-        
+
         let mode = frameState.mode
         if (frameState.passes.render) {
-            
+
             // Don't show the ocean specular highlights when zoomed out in 2D and Columbus View.
             if mode == .scene3D {
                 _zoomedOutOceanSpecularIntensity = 0.5
             } else {
                 _zoomedOutOceanSpecularIntensity = 0.0
             }
-            
+
             _surface.maximumScreenSpaceError = maximumScreenSpaceError
             _surface.tileCacheSize = tileCacheSize
-            
+
             let tileProvider = _surface.tileProvider
             tileProvider.terrainProvider = terrainProvider
             tileProvider.zoomedOutOceanSpecularIntensity = _zoomedOutOceanSpecularIntensity
             tileProvider.hasWaterMask = hasWaterMask
             tileProvider.oceanNormalMap = _oceanNormalMap
             tileProvider.enableLighting = enableLighting
-            
+
             _surface.beginFrame(&frameState)
         }
-        
+
         /*if (frameState.passes.pick && mode == .Scene3D) {
             // Not actually pickable, but render depth-only so primitives on the backface
             // of the globe are not picked.
@@ -412,16 +412,16 @@ class Globe {
         if !show {
             return
         }
-        
+
         if (frameState.passes.render) {
             _surface.update(&frameState)
         }
-        
+
         if (frameState.passes.pick) {
             _surface.update(&frameState)
         }
     }
-    
+
     func endFrame (_ frameState: inout FrameState) {
         if !show {
             return
@@ -449,14 +449,14 @@ class Globe {
 */
     deinit {
         /*this._surfaceShaderSet = this._surfaceShaderSet && this._surfaceShaderSet.destroy();
-         
+
         this._depthCommand.shaderProgram = this._depthCommand.shaderProgram && this._depthCommand.shaderProgram.destroy();
         this._depthCommand.vertexArray = this._depthCommand.vertexArray && this._depthCommand.vertexArray.destroy();
-        
+
         this._surface = this._surface && this._surface.destroy();
-        
+
         this._oceanNormalMap = this._oceanNormalMap && this._oceanNormalMap.destroy();
-        
+
         return destroyObject(this);*/
     }
 }

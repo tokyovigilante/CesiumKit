@@ -19,7 +19,7 @@ extension Array {
     var sizeInBytes: Int {
         return count == 0 ? 0 : count * MemoryLayout.stride(ofValue: self[0])
     }
-    
+
     /**
     * Finds an item in a sorted array.
     *
@@ -47,7 +47,7 @@ extension Array {
         var high = self.count - 1
         var i: Int
         var comparison: Int
-        
+
         while low <= high {
             i = Int(trunc(Double(low + high) / 2.0))
             comparison = comparator(self[i], itemToFind)
@@ -63,7 +63,7 @@ extension Array {
         }
         return ~(high + 1)
     }
-    
+
     /**
     * A function used to compare two items while performing a binary search.
     * @callback binarySearch~Comparator
@@ -84,7 +84,7 @@ extension Array {
 }
 
 extension Array where Element: Equatable {
-    
+
     // Remove first collection element that is equal to the given `object`:
     mutating func removeObject(object: Element) {
         if let index = index(of: object) {

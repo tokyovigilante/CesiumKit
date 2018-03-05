@@ -25,7 +25,7 @@ struct CullingVolume {
     * @default []
     */
     var planes = [Cartesian4]()
-    
+
     /**
     * Determines whether a bounding volume intersects the culling volume.
     * @memberof CullingVolume
@@ -35,7 +35,7 @@ struct CullingVolume {
     */
     func visibility(_ boundingVolume: BoundingVolume) -> Intersect {
         var intersecting = false
-        
+
         for plane in planes {
             let result = boundingVolume.intersectPlane(Plane(fromCartesian4: plane))
             if result == .outside {

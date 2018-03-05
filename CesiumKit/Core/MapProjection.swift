@@ -9,13 +9,13 @@
 import Foundation
 
 public protocol MapProjection {
-    
+
     var ellipsoid: Ellipsoid { get }
     var semimajorAxis: Double { get }
     var oneOverSemimajorAxis: Double { get }
-    
+
     init (ellipsoid: Ellipsoid)
-    
+
     /**
     * Converts geodetic ellipsoid coordinates, in radians, to the equivalent
     * X, Y, Z coordinates expressed in meters and returned in a {@link Cartesian3}.  The height
@@ -29,7 +29,7 @@ public protocol MapProjection {
     * @returns {Cartesian3} The equivalent web mercator X, Y, Z coordinates, in meters.
     */
     func project(_ cartographic: Cartographic) -> Cartesian3
-    
+
     /**
     * Converts X, Y coordinates, expressed in meters, to a {@link Cartographic}
     * containing geodetic ellipsoid coordinates.  The Z coordinate is copied unmodified to the

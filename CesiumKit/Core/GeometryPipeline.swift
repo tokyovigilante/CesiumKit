@@ -17,18 +17,18 @@ struct GeometryPipeline {
     * @see Geometry
     */
     var GeometryPipeline = {};
-    
+
     function addTriangle(lines, index, i0, i1, i2) {
     lines[index++] = i0;
     lines[index++] = i1;
-    
+
     lines[index++] = i1;
     lines[index++] = i2;
-    
+
     lines[index++] = i2;
     lines[index] = i0;
     }
-    
+
     function trianglesToLines(triangles) {
         var count = triangles.length;
         var size = (count / 3) * 6;
@@ -208,29 +208,29 @@ struct GeometryPipeline {
      * // }
      */
     static func createAttributeLocations (_ geometry: Geometry) -> [String: Int] {
-        
+
         // There can be a WebGL performance hit when attribute 0 is disabled, so
         // assign attribute locations to well-known attributes.
         let semantics = [
             "position",
             "positionHigh",
             "positionLow",
-            
+
             // From VertexFormat.position - after 2D projection and high-precision encoding
             "position3DHigh",
             "position3DLow",
             "position2DHigh",
             "position2DLow",
-            
+
             // From Primitive
             "pickColor",
-            
+
             // From VertexFormat
             "normal",
             "st",
             "binormal",
             "tangent",
-            
+
             // From compressing texture coordinates and normals
             "compressedAttributes"
         ]
@@ -246,7 +246,7 @@ struct GeometryPipeline {
                 j += 1
             }
         }
-        
+
         // Locations for custom attributes
         for attribute in attributes {
             if indices[attribute.name] == nil {

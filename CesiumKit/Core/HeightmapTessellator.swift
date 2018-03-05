@@ -99,20 +99,20 @@ class HeightmapTessellator {
         occludeePointInScaledSpace: Cartesian3?
         )
     {
-        
+
         // This function tends to be a performance hotspot for terrain rendering,
         // so it employs a lot of inlining and unrolling as an optimization.
         // In particular, the functionality of Ellipsoid.cartographicToCartesian
         // is inlined.
         let piOverTwo = Double.pi/2
-        
+
         let oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius
-        
+
         var geographicWest: Double
         var geographicSouth: Double
         var geographicEast: Double
         var geographicNorth: Double
-        
+
         if rectangle == nil {
             if isGeographic {
                 geographicWest = Math.toRadians(nativeRectangle.west)
@@ -131,49 +131,49 @@ class HeightmapTessellator {
             geographicEast = rectangle!.east
             geographicNorth = rectangle!.north
         }
-        
+
         let heightScale = structure.heightScale
         let heightOffset = structure.heightOffset
         let elementsPerHeight = structure.elementsPerHeight
         let increment = structure.stride
         let elementMultiplier = structure.elementMultiplier
         let isBigEndian = structure.isBigEndian
-        
+
         let granularityX = nativeRectangle.width / Double(width - 1)
         let granularityY = nativeRectangle.height / Double(height - 1)
-        
+
         let radiiSquared = ellipsoid.radiiSquared
         let radiiSquaredX = radiiSquared.x
         let radiiSquaredY = radiiSquared.y
         let radiiSquaredZ = radiiSquared.z
-        
+
         var minimumHeight = 65536.0
         var maximumHeight = -65536.0
-        
+
         let fromENU = Transforms.eastNorthUpToFixedFrame(relativeToCenter!, ellipsoid: ellipsoid)
         let toENU = fromENU.inverse
-        
+
         var minimum = Cartesian3(simd: double3(Double.infinity))
         var maximum = Cartesian3(simd: double3(-Double.infinity))
-        
+
         var hMin = Double.infinity
-        
+
         var positions = [Cartesian3]()
         var heights = [Double]()
         var uvs = [Cartesian2]()
-        
+
         var startRow = 0
         var endRow = height
         var startCol = 0
         var endCol = width
-        
+
         if (skirtHeight > 0) {
             startRow -= 1
             endRow += 1
             startCol -= 1
             endCol += 1
         }
-        
+
         for rowIndex in startRow..<endRow {
             var row = rowIndex
             if row < 0 {
@@ -182,21 +182,21 @@ class HeightmapTessellator {
             if row >= height {
                 row = height - 1
             }
-            
+
             var latitude = nativeRectangle.north - granularityY * Double(row)
-            
+
             if !isGeographic {
                 latitude = piOverTwo - (2.0 * atan(exp(-latitude * oneOverGlobeSemimajorAxis)))
             } else {
                 latitude = Math.toRadians(latitude)
             }
-            
+
             let cosLatitude = cos(latitude)
             let nZ = sin(latitude)
             let kZ = radiiSquaredZ * nZ
-            
+
             let v = Math.clamp((latitude - geographicSouth) / (geographicNorth - geographicSouth), min: 0.0, max: 1.0)
-            
+
             for colIndex in startCol..<endCol {
                 var col = colIndex
                 if col < 0 {
@@ -205,23 +205,23 @@ class HeightmapTessellator {
                 if col >= width {
                     col = width - 1
                 }
-                
+
                 var longitude = nativeRectangle.west + granularityX * Double(col)
-                
+
                 if !isGeographic {
                     longitude = longitude * oneOverGlobeSemimajorAxis
                 } else {
                     longitude = Math.toRadians(longitude)
                 }
-                
+
                 let terrainOffset = row * (width * increment) + col * increment
-                
+
                 var heightSample: Double
                 if elementsPerHeight == 1 {
                     heightSample = Double(heightmap[terrainOffset])
                 } else {
                     heightSample = 0
-                    
+
                     if isBigEndian {
                         for elementOffset in stride(from: 0, to: elementsPerHeight, by: 1) {
                             heightSample = (heightSample * elementMultiplier) + Double(heightmap[terrainOffset + elementOffset])
@@ -232,41 +232,41 @@ class HeightmapTessellator {
                         }
                     }
                 }
-                
+
                 heightSample = heightSample * heightScale + heightOffset * exaggeration
-                
+
                 maximumHeight = max(maximumHeight, heightSample)
                 minimumHeight = min(minimumHeight, heightSample)
-                
+
                 if colIndex != col || rowIndex != row {
                     heightSample -= skirtHeight
                 }
-                
+
                 let nX = cosLatitude * cos(longitude)
                 let nY = cosLatitude * sin(longitude)
-                
+
                 let kX = radiiSquaredX * nX
                 let kY = radiiSquaredY * nY
-                
+
                 let gamma = sqrt(kX * nX + kY * nY + kZ * nZ)
                 let oneOverGamma = 1.0 / gamma
-                
+
                 let rSurfaceX = kX * oneOverGamma
                 let rSurfaceY = kY * oneOverGamma
                 let rSurfaceZ = kZ * oneOverGamma
-                
+
                 let position = Cartesian3(
                     x: rSurfaceX + nX * heightSample,
                     y: rSurfaceY + nY * heightSample,
                     z: rSurfaceZ + nZ * heightSample
                 )
                 positions.append(position)
-                
+
                 heights.append(heightSample)
-                
+
                 let u = (longitude - geographicWest) / (geographicEast - geographicWest)
                 uvs.append(Cartesian2(x: u, y: v))
-                
+
                 let point = toENU.multiplyByPoint(position)
                 minimum = point.minimumByComponent(minimum)
                 maximum = point.maximumByComponent(maximum)
@@ -274,9 +274,9 @@ class HeightmapTessellator {
 
             }
         }
-        
+
         let boundingSphere3D = BoundingSphere(fromPoints: positions)
-        
+
         var orientedBoundingBox: OrientedBoundingBox? = nil
         if let rectangle = rectangle {
             if rectangle.width < piOverTwo + Math.Epsilon5 {
@@ -289,22 +289,22 @@ class HeightmapTessellator {
                     ellipsoid: ellipsoid)
             }
         }
-        
+
         var occludeePointInScaledSpace: Cartesian3? = nil
 
         if let center = relativeToCenter {
             let occluder = EllipsoidalOccluder(ellipsoid: ellipsoid)
             occludeePointInScaledSpace = occluder.computeHorizonCullingPoint(directionToPoint: center, fromPoints: positions)
         }
-        
+
         let aaBox = AxisAlignedBoundingBox(minimum: minimum, maximum: maximum, center: relativeToCenter)
         let encoding = TerrainEncoding(axisAlignedBoundingBox: aaBox, minimumHeight: hMin, maximumHeight: maximumHeight, fromENU: fromENU, hasVertexNormals: false)
         var vertices = [Float]()
-        
+
         for j in 0..<positions.count {
             encoding.encode(&vertices, position: positions[j], uv: uvs[j], height: heights[j], normalToPack: nil)
         }
-        
+
         return (
             vertices: vertices,
             maximumHeight: maximumHeight,
@@ -315,5 +315,5 @@ class HeightmapTessellator {
             occludeePointInScaledSpace: occludeePointInScaledSpace
         )
     }
-    
+
 }

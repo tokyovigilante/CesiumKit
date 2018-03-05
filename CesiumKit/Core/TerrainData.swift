@@ -19,7 +19,7 @@ import Foundation
 * @see QuantizedMeshTerrainData
 */
 protocol TerrainData: class {
-    
+
     /**
     * The water mask included in this terrain data, if any.  A water mask is a rectangular
     * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
@@ -28,7 +28,7 @@ protocol TerrainData: class {
     * @type {Uint8Array|Image|Canvas}
     */
     var waterMask: [UInt8]? { get }
-    
+
     /**
     * Gets a value indicating whether or not this terrain data was created by upsampling lower resolution
     * terrain data.  If this value is false, the data was obtained from some other source, such
@@ -39,9 +39,9 @@ protocol TerrainData: class {
     * @returns {Boolean} True if this instance was created by upsampling; otherwise, false.
     */
     var createdByUpsampling: Bool { get }
-    
+
     var childTileMask: Int { get }
-        
+
     /**
     * Computes the terrain height at a specified longitude and latitude.
     * @function
@@ -54,7 +54,7 @@ protocol TerrainData: class {
     *          incorrect for positions far outside the rectangle.
     */
     func interpolateHeight(_ rectangle: Rectangle, longitude: Double, latitude: Double) -> Double?
-    
+
     /**
     * Determines if a given child tile is available, based on the
     * {@link TerrainData#childTileMask}.  The given child tile coordinates are assumed
@@ -69,7 +69,7 @@ protocol TerrainData: class {
     * @returns {Boolean} True if the child tile is available; otherwise, false.
     */
     func isChildAvailable(_ thisX: Int, thisY: Int, childX: Int, childY: Int) -> Bool
-    
+
     /**
     * Creates a {@link TerrainMesh} from this terrain data.
     * @function
@@ -84,7 +84,7 @@ protocol TerrainData: class {
     *          be retried later.
     */
     func createMesh(tilingScheme: TilingScheme, x: Int, y: Int, level: Int, exaggeration: Double, completionBlock: (TerrainMesh?) -> ()) -> Bool
-    
+
     /**
     * Upsamples this terrain data for use by a descendant tile.
     * @function
@@ -126,7 +126,7 @@ extension TerrainData {
         if childY != thisY * 2 {
             bitNumber -= 2 // south child
         }
-        
+
         return childTileMask & (1 << bitNumber) != 0
     }
 }

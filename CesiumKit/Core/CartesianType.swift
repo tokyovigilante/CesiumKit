@@ -16,21 +16,21 @@ protocol CartesianType {
     func /(lhs: Self, rhs: Self) -> Self
     func *(lhs: Self, rhs: Double) -> Self
     prefix func -(cartesian: Self) -> Self
-    
+
     func dot(other: Self) -> Double
     func multiplyComponents(other: Self) -> Self
-    
+
     func multiplyByScalar(scalar: Double) -> Self
     func divideByScalar(scalar: Double) -> Self
-    
+
     func add(other: Self) -> Self
     func subtract(other: Self) -> Self
-    
+
     func negate() -> Self
 }
 
 extension CartesianType {
-    
+
     /**
      * Computes the componentwise product of two Cartesians.
      *
@@ -42,7 +42,7 @@ extension CartesianType {
     func multiplyComponents(other: Self) -> Self {
         return self * other
     }
-    
+
     /**
      * Multiplies the provided Cartesian componentwise by the provided scalar.
      *
@@ -54,7 +54,7 @@ extension CartesianType {
     func multiplyByScalar(scalar: Double) -> Self {
         return self * scalar
     }
-    
+
     /**
      * Divides the provided Cartesian componentwise by the provided scalar.
      *
@@ -66,7 +66,7 @@ extension CartesianType {
     func divideByScalar(scalar: Double) -> Self {
         return multiplyByScalar(1.0/scalar)
     }
-    
+
     /**
      * Computes the componentwise sum of two Cartesians.
      *
@@ -78,7 +78,7 @@ extension CartesianType {
     func add(other: Self) -> Self {
         return self + other
     }
-    
+
     /**
      * Computes the componentwise difference of two Cartesians.
      *
@@ -90,7 +90,7 @@ extension CartesianType {
     func subtract(other: Self) -> Self {
         return self - other
     }
-    
+
     /**
      * Negates the provided Cartesian.
      *
@@ -101,6 +101,6 @@ extension CartesianType {
     func negate() -> Self {
         return -self
     }
-    
-    
+
+
 }

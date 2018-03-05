@@ -10,6 +10,6 @@ import Foundation
 
 public enum Orientation {
     case headingPitchRoll (heading: Double, pitch: Double, roll: Double)
-    
+
     case directionUp (direction: Cartesian3, up: Cartesian3)
 }

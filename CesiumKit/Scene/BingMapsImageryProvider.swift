@@ -10,21 +10,21 @@ import Foundation
 #if os(OSX)
 import AppKit.NSImage
 #endif
- 
+
  private struct AttributionArea {
-    
+
     var zoomMin: Int
-    
+
     var zoomMax: Int
-    
+
     var bbox: Rectangle
-    
+
  }
- 
+
  private struct Attribution {
-    
+
     var attribution: Credit
-    
+
     var areas: [AttributionArea]
  }
 
@@ -81,23 +81,23 @@ import AppKit.NSImage
 * });
 */
 open class BingMapsImageryProvider: ImageryProvider {
-    
+
     public struct Options {
-        
+
         public let queue: DispatchQueue? = nil
-        
+
         public let url: String
-        
+
         public let tileProtocol: String
-        
+
         public let mapStyle: BingMapsStyle
-        
+
         public let culture: String
-        
+
         public let tileDiscardPolicy: TileDiscardPolicy?
-        
+
         public let ellipsoid: Ellipsoid
-        
+
         public init (url: String = "//dev.virtualearth.net", key: String? = nil, tileProtocol: String = "https:", mapStyle: BingMapsStyle = .Aerial, culture: String = "", tileDiscardPolicy: TileDiscardPolicy? = NeverTileDiscardPolicy(), ellipsoid: Ellipsoid = Ellipsoid.wgs84()) {
             self.url = url
             self.tileProtocol = tileProtocol
@@ -107,7 +107,7 @@ open class BingMapsImageryProvider: ImageryProvider {
             self.ellipsoid = ellipsoid
         }
     }
-    
+
     /**
     * The default alpha blending value of this provider, with 0.0 representing fully transparent and
     * 1.0 representing fully opaque.
@@ -124,7 +124,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @default undefined
     */
     open let defaultBrightness: Float = 1.0
-    
+
     /**
     * The default contrast of this provider.  1.0 uses the unmodified imagery color.  Less than 1.0 reduces
     * the contrast while greater than 1.0 increases it.
@@ -133,7 +133,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @default undefined
     */
     open let defaultContrast: Float = 1.0
-    
+
     /**
     * The default hue of this provider in radians. 0.0 uses the unmodified imagery color.
     *
@@ -141,7 +141,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @default undefined
     */
     open let defaultHue: Float = 0.0
-    
+
     /**
     * The default saturation of this provider. 1.0 uses the unmodified imagery color. Less than 1.0 reduces the
     * saturation while greater than 1.0 increases it.
@@ -150,7 +150,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @default undefined
     */
     open let defaultSaturation: Float = 1.0
-    
+
     /**
      * The default {@link ImageryLayer#gamma} to use for imagery layers created for this provider.
      * By default, this is set to 1.3 for the "aerial" and "aerial with labels" map styles and 1.0 for
@@ -161,9 +161,9 @@ open class BingMapsImageryProvider: ImageryProvider {
      * @default 1.0
      */
     open let defaultGamma: Float
-    
+
     open let queue: DispatchQueue? = nil
-    
+
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof ImageryProvider.prototype
@@ -175,7 +175,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         }
     }
     fileprivate var _ready: Bool = false
-    
+
     /**
     * Gets the rectangle, in radians, of the imagery provided by this instance.  This function should
     * not be called before {@link BingMapsImageryProvider#ready} returns true.
@@ -189,7 +189,7 @@ open class BingMapsImageryProvider: ImageryProvider {
             return _tilingScheme.rectangle
         }
     }
-    
+
     /**
     * Gets the width of each tile, in pixels.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -202,9 +202,9 @@ open class BingMapsImageryProvider: ImageryProvider {
             return _tileWidth
         }
     }
-    
+
     fileprivate var _tileWidth = 0
-    
+
     /**
     * Gets the height of each tile, in pixels.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -217,9 +217,9 @@ open class BingMapsImageryProvider: ImageryProvider {
             return _tileHeight
         }
     }
-    
+
     fileprivate var _tileHeight = 0
-    
+
     /**
     * Gets the maximum level-of-detail that can be requested.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -233,7 +233,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         }
     }
     fileprivate var _maximumLevel = 0
-    
+
     /**
     * Gets the minimum level-of-detail that can be requested.  This function should
     * not be called before {@link ImageryProvider#ready} returns true. Generally,
@@ -251,23 +251,23 @@ open class BingMapsImageryProvider: ImageryProvider {
         }
     }
     fileprivate var _minimumLevel: Int? = nil
-    
+
     /**
     * Gets the tiling scheme used by the provider.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
     * @memberof ImageryProvider.prototype
     * @type {TilingScheme}
     */
-    
+
     open var tilingScheme: TilingScheme {
         get {
             assert(_ready, "tilingScheme must not be called before the imagery provider is ready.")
             return _tilingScheme
         }
     }
-    
+
     fileprivate var _tilingScheme: TilingScheme
-    
+
     /**
     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
     * for filtering out "missing" tiles via its shouldDiscardImage function.  If this function
@@ -282,9 +282,9 @@ open class BingMapsImageryProvider: ImageryProvider {
             return _tileDiscardPolicy
         }
     }
-    
+
     fileprivate var _tileDiscardPolicy: TileDiscardPolicy?
-    
+
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -293,7 +293,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @type {Event}
     */
     open fileprivate (set) var errorEvent = Event()
-    
+
     /**
     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     * the source of the imagery.  This function should not be called before {@link BingMapsImageryProvider#ready} returns true.
@@ -301,16 +301,16 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @type {Credit}
     */
     open let credit: Credit?
-    
+
     fileprivate var _attributionList = [Attribution]()
-    
+
     /**
     * Gets the proxy used by this provider.
     * @memberof ImageryProvider.prototype
     * @type {Proxy}
     */
     /// FIXME: Disabled var proxy: Proxy { get }
-    
+
     /**
     * Gets a value indicating whether or not the images provided by this imagery provider
     * include an alpha channel.  If this property is false, an alpha channel, if present, will
@@ -321,7 +321,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @type {Boolean}
     */
     open let hasAlphaChannel: Bool = false
-    
+
     /**
     * Gets the Bing Maps key.
     * @memberof BingMapsImageryProvider.prototype
@@ -332,26 +332,26 @@ open class BingMapsImageryProvider: ImageryProvider {
             return _key
         }
     }
-    
+
     fileprivate let _key: String
-    
+
     fileprivate let _url: String
-    
+
     fileprivate let _tileProtocol: String
-    
+
     /**
     * Gets the type of Bing Maps imagery to load.
     * @memberof BingMapsImageryProvider.prototype
     * @type {BingMapsStyle}
     */
     open var mapStyle: BingMapsStyle
-    
+
     open let culture: String
-    
+
     fileprivate var _imageUrlTemplate: String? = nil
-    
+
     fileprivate var _imageUrlSubdomains: JSONArray? = nil
-    
+
     public init(key: String? = nil, options: Options = Options()) {
 
         if options.mapStyle == .Aerial || options.mapStyle == .AerialWithLabels {
@@ -359,16 +359,16 @@ open class BingMapsImageryProvider: ImageryProvider {
         } else {
             defaultGamma = 1.0
         }
-        
+
         mapStyle = options.mapStyle
         culture = options.culture
-        
+
         _key = BingMapsAPI.getKey(key)
-        
+
         _url = options.url
-        
+
         _tileProtocol = options.tileProtocol
-        
+
         _tileDiscardPolicy = options.tileDiscardPolicy
         //        this._proxy = options.proxy;
         credit = Credit(
@@ -376,24 +376,24 @@ open class BingMapsImageryProvider: ImageryProvider {
             imageUrl: nil/*BingMapsImageryProvider._logoData*/,
             link: "http://www.bing.com"
         )
-        
+
         _tilingScheme = WebMercatorTilingScheme(
             ellipsoid: options.ellipsoid,
             numberOfLevelZeroTilesX : 2,
             numberOfLevelZeroTilesY : 2
         )
-        
+
         errorEvent = Event()
-        
+
         _ready = false
-        
+
         //var metadataError;
-        
+
         let metadataSuccess = { (data: Data) -> () in
-            
+
             do {
                 let metadata = try JSON.decode(String(data: data, encoding: .utf8)!, strict: true)
-                
+
                 guard let resourceSet = try metadata.getArray("resourceSets").first else {
                     let error = try metadata.getArray("errorDetails")
                     logPrint(.error, "metadata error: ")// + error.first?)
@@ -408,15 +408,15 @@ open class BingMapsImageryProvider: ImageryProvider {
                 self._tileHeight = try resource.getInt("imageHeight")
                 self._maximumLevel = try resource.getInt("zoomMax") - 1
                 self._imageUrlSubdomains = try resource.getArray("imageUrlSubdomains")
-                
+
                  let imageUrlTemplate = try resource
                     .getString("imageUrl")
                     .replace("{culture}", self.culture)
-                 
+
                  // Force HTTPS
                  self._imageUrlTemplate = imageUrlTemplate.replace("http://", "https://")
-                 
-                 
+
+
                  // Install the default tile discard policy if none has been supplied.
                  //FIXME: Tile discard policy
                  /*if (!defined(that._tileDiscardPolicy)) {
@@ -426,18 +426,18 @@ open class BingMapsImageryProvider: ImageryProvider {
                  disableCheckIfAllPixelsAreTransparent : true
                  });
                  }*/
-                
+
                 if let attributionList = try resource.getArrayOrNil("imageryProviders") {
-                    
+
                     for jsonAttribution in attributionList {
-                        
+
                         var attribution = Attribution(
                             attribution: Credit(text: try jsonAttribution.getString("attribution")),
                             areas: [AttributionArea]()
                         )
-                        
+
                         let coverageAreas = try jsonAttribution.getArray("coverageAreas")
-                        
+
                         for area in coverageAreas {
                             let bbox = try area.getArray("bbox")
                             let zoomMin = try area.getInt("zoomMin")
@@ -457,7 +457,7 @@ open class BingMapsImageryProvider: ImageryProvider {
                         }
                         self._attributionList.append(attribution)
                     }
-                    
+
                 }
 
                 DispatchQueue.main.async(execute: {
@@ -469,20 +469,20 @@ open class BingMapsImageryProvider: ImageryProvider {
                 return
             }
         }
-        
+
         let metadataFailure = { (error: String) -> () in
             logPrint(.error, error)
             /*metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
-        
-        
+
+
         let metadataUrl = _tileProtocol + _url + "/REST/v1/Imagery/Metadata/" + mapStyle.rawValue
-        
+
         let metadataParameters = [
             "incl" : "ImageryProviders",
             "key" : self._key
         ]
-        
+
         let metadataHeaders = ["Accept": "application/json"]
 
         let metadataOperation = NetworkOperation(url: metadataUrl, headers: metadataHeaders, parameters: metadataParameters)
@@ -497,7 +497,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         }
         metadataOperation.enqueue()
     }
-    
+
     /**
     * Requests the image for a given tile.  This function should
     * not be called before {@link ImageryProvider#ready} returns true.
@@ -524,7 +524,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         assert(_ready, "requestImage must not be called before the imagery provider is ready.")
         let url = buildImageUrl(x, y: y, level: level)
         loadImage(url, completionBlock: completionBlock)
-        
+
     }
 
     /**
@@ -539,7 +539,7 @@ open class BingMapsImageryProvider: ImageryProvider {
     *          Image or a Canvas DOM object.
     */
     open func loadImage (_ url: String, completionBlock: @escaping ((CGImage?) -> Void)) {
-        
+
         let imageryOperation = NetworkOperation(url: url)
         imageryOperation.completionBlock = {
             if let error = imageryOperation.error {
@@ -557,7 +557,7 @@ open class BingMapsImageryProvider: ImageryProvider {
         }
         imageryOperation.enqueue()
     }
-    
+
     /*
     /**
     * Gets the proxy used by this provider.
@@ -569,8 +569,8 @@ open class BingMapsImageryProvider: ImageryProvider {
     return this._proxy;
     }
     },
-    
-    
+
+
     /**
     * Gets an event that is raised when the imagery provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -598,11 +598,11 @@ open class BingMapsImageryProvider: ImageryProvider {
      */
     open func tileCredits (x: Int, y: Int, level: Int) -> [Credit] {
         assert(ready, "getTileCredits must not be called before the imagery provider is ready")
-        
+
         let rectangle = _tilingScheme.tileXYToRectangle(x: x, y: y, level: level)
         return getRectangleAttribution(level, rectangle: rectangle)
     }
-    
+
 
     /*BingMapsImageryProvider._logoData = 'data:image/png;base64,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';
     */
@@ -618,21 +618,21 @@ open class BingMapsImageryProvider: ImageryProvider {
     * @see BingMapsImageryProvider#quadKeyToTileXY
     */
     func tileXYToQuadKey (_ x: Int, y: Int, level: Int) -> String {
-        
+
         var quadkey = ""
-        
+
         for i in stride(from: level, through: 0, by: -1) {
             let bitmask = 1 << i
             var digit = 0
-            
+
             if ((x & bitmask) != 0) {
                 digit |= 1
             }
-            
+
             if ((y & bitmask) != 0) {
                 digit |= 2
             }
-            
+
             quadkey += String(digit)
         }
         return quadkey
@@ -654,11 +654,11 @@ open class BingMapsImageryProvider: ImageryProvider {
     for ( var i = level; i >= 0; --i) {
     var bitmask = 1 << i;
     var digit = +quadkey[level - i];
-    
+
     if ((digit & 1) !== 0) {
     x |= bitmask;
     }
-    
+
     if ((digit & 2) !== 0) {
     y |= bitmask;
     }
@@ -672,13 +672,13 @@ open class BingMapsImageryProvider: ImageryProvider {
     */
     func buildImageUrl(_ x: Int, y: Int, level: Int) -> String {
         var imageUrl = _imageUrlTemplate! // _ready already checked
-        
+
         let quadkey = tileXYToQuadKey(x, y: y, level: level)
         imageUrl = imageUrl.replace("{quadkey}", quadkey)
-        
+
         let subdomainIndex = (x + y + level) % _imageUrlSubdomains!.count
         imageUrl = imageUrl.replace("{subdomain}", _imageUrlSubdomains![subdomainIndex].string!)
-        
+
         // FIXME: proxy
         /*var proxy = imageryProvider._proxy;
         if (defined(proxy)) {
@@ -687,17 +687,17 @@ open class BingMapsImageryProvider: ImageryProvider {
         */
         return imageUrl
     }
-    
+
     func getRectangleAttribution(_ level: Int, rectangle: Rectangle) -> [Credit] {
         // Bing levels start at 1, while ours start at 0.
         let level = level + 1
-        
+
         var result = [Credit]()
-        
+
         for attribution in _attributionList {
             var included = false
             for area in attribution.areas {
-                
+
                 if level >= area.zoomMin && level <= area.zoomMax {
                     let intersection = rectangle.intersection(area.bbox)
                     if (intersection != nil) {
@@ -713,6 +713,6 @@ open class BingMapsImageryProvider: ImageryProvider {
         return result
     }
  }
- 
- 
- 
+
+
+

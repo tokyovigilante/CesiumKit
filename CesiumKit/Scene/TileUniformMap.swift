@@ -45,11 +45,11 @@ struct TileUniformStruct: UniformStruct {
     var lightingFadeDistance = float2()
     var zoomedOutOceanSpecularIntensity = Float(0.0)
 }
-    
+
 class TileUniformMap: NativeUniformMap {
-    
+
     let maxTextureCount: Int
-    
+
     var initialColor: float4 {
         get {
             return _uniformStruct.initialColor
@@ -58,7 +58,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.initialColor = newValue
         }
     }
-    
+
     var zoomedOutOceanSpecularIntensity: Float {
         get {
             return _uniformStruct.zoomedOutOceanSpecularIntensity
@@ -67,9 +67,9 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.zoomedOutOceanSpecularIntensity = newValue
         }
     }
-    
+
     var oceanNormalMap: Texture? = nil
-    
+
     var lightingFadeDistance: float2 {
         get {
             return _uniformStruct.lightingFadeDistance
@@ -78,7 +78,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.lightingFadeDistance = newValue
         }
     }
-    
+
     var center3D: float3 {
         get {
             return _uniformStruct.center3D
@@ -87,7 +87,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.center3D = newValue
         }
     }
-    
+
     var modifiedModelView: float4x4 {
         get {
             return _uniformStruct.modifiedModelView
@@ -96,7 +96,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.modifiedModelView = newValue
         }
     }
-    
+
     var tileRectangle: float4 {
         get {
             return _uniformStruct.tileRectangle
@@ -105,9 +105,9 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.tileRectangle = newValue
         }
     }
-    
+
     var dayTextures: [Texture]
-    
+
     var dayTextureTranslationAndScale: [float4] {
         get {
             var floatArray = [float4](repeating: float4(), count: MaximumMetalTextureCount)
@@ -118,7 +118,7 @@ class TileUniformMap: NativeUniformMap {
             memcpy(&_uniformStruct.dayTextureTranslationAndScale, newValue, MemoryLayout<float4>.size * MaximumMetalTextureCount)
         }
     }
-    
+
     var dayTextureTexCoordsRectangle: [float4] {
         get {
             var floatArray = [float4](repeating: float4(), count: MaximumMetalTextureCount)
@@ -129,16 +129,16 @@ class TileUniformMap: NativeUniformMap {
             memcpy(&_uniformStruct.dayTextureTexCoordsRectangle, newValue, MemoryLayout<float4>.size * MaximumMetalTextureCount)
         }
     }
-    
+
     var dayTextureAlpha: [Float]
     var dayTextureBrightness: [Float]
     var dayTextureContrast: [Float]
     var dayTextureHue: [Float]
     var dayTextureSaturation: [Float]
     var dayTextureOneOverGamma: [Float]
-    
+
     var dayIntensity = 0.0
-    
+
     var southAndNorthLatitude: float2 {
         get {
             return _uniformStruct.southAndNorthLatitude
@@ -147,7 +147,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.southAndNorthLatitude = newValue
         }
     }
-    
+
     var southMercatorYAndOneOverHeight: float2 {
         get {
             return _uniformStruct.southMercatorYAndOneOverHeight
@@ -156,9 +156,9 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.southMercatorYAndOneOverHeight = newValue
         }
     }
-    
+
     var waterMask: Texture? = nil
-    
+
     var waterMaskTranslationAndScale: float4 {
         get {
             return _uniformStruct.waterMaskTranslationAndScale
@@ -167,7 +167,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.waterMaskTranslationAndScale = newValue
         }
     }
-    
+
     var minMaxHeight: float2 {
         get {
             return _uniformStruct.minMaxHeight
@@ -176,7 +176,7 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.minMaxHeight = newValue
         }
     }
-    
+
     var scaleAndBias: float4x4 {
         get {
             return _uniformStruct.scaleandBias
@@ -185,9 +185,9 @@ class TileUniformMap: NativeUniformMap {
             _uniformStruct.scaleandBias = newValue
         }
     }
-    
+
     fileprivate var _uniformStruct = TileUniformStruct()
-    
+
     let uniformDescriptors: [UniformDescriptor] = [
         UniformDescriptor(name:  "u_dayTextureTexCoordsRectangle", type: .floatVec4, count: MaximumMetalTextureCount),
         UniformDescriptor(name:  "u_dayTextureTranslationAndScale", type: .floatVec4, count: MaximumMetalTextureCount),
@@ -209,9 +209,9 @@ class TileUniformMap: NativeUniformMap {
         UniformDescriptor(name:  "u_lightingFadeDistance", type: .floatVec2, count: 1),
         UniformDescriptor(name:  "u_zoomedOutOceanSpecularIntensity", type: .floatVec1, count: 1)
     ]
-    
+
     var uniformBufferProvider: UniformBufferProvider! = nil
-        
+
     lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
         buffer.write(from: &self._uniformStruct, length: MemoryLayout<TileUniformStruct>.size)
         var textures = self.dayTextures
@@ -223,10 +223,10 @@ class TileUniformMap: NativeUniformMap {
         }
         return textures
     }
-    
+
     init (maxTextureCount: Int) {
         self.maxTextureCount = maxTextureCount
-        
+
         dayTextures = [Texture]()
         dayTextures.reserveCapacity(maxTextureCount)
 
@@ -237,7 +237,7 @@ class TileUniformMap: NativeUniformMap {
         dayTextureSaturation = [Float]()
         dayTextureOneOverGamma = [Float]()
     }
-    
+
     func textureForUniform (_ uniform: UniformSampler) -> Texture? {
         let dayTextureCount = dayTextures.count
         if uniform.textureUnitIndex == dayTextureCount {

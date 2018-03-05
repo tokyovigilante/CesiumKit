@@ -17,18 +17,18 @@ class GlobeDepth {
 
     let framebuffer = Framebuffer(maximumColorAttachments: 1)
     fileprivate let _copyDepthFramebuffer = Framebuffer(maximumColorAttachments: 0)
-    
+
     fileprivate var _clearColorCommand: ClearCommand
     fileprivate var _copyColorCommand: ClearCommand? = nil
     fileprivate var _copyDepthCommand: ClearCommand? = nil
-        
+
     init () {
         _clearColorCommand = ClearCommand(
             color: Cartesian4(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0),
             stencil: 0
         )
         _clearColorCommand.owner = self
-        
+
     }
 
 /*
@@ -75,13 +75,13 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
             height : height,
             pixelFormat: .bgra8Unorm)
         )
-        
+
         _depthStencilTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
             pixelFormat : .depth32FloatStencil8)
         )
-        
+
         _globeDepthTexture = Texture(context: context, options: TextureOptions(
             width : width,
             height : height,
@@ -92,7 +92,7 @@ globeDepth._debugGlobeDepthViewportCommand.execute(context, passState);
     func updateFramebuffers(context: Context) {
         let width = Int(context.width)
         let height = Int(context.height)
-        
+
         let textureChanged = _colorTexture == nil || _colorTexture.width != width || _colorTexture.height != height
         if textureChanged {
             destroyTextures()
@@ -169,10 +169,10 @@ executeDebugGlobeDepth(this, context, passState);
             destinationOrigin: origin)
         context.completeBlitPass(blitEncoder)
     }
-    
+
     func clear (_ context: Context, passState: PassState, clearColor: Cartesian4) {
         _clearColorCommand.color = clearColor
         _clearColorCommand.execute(context, passState: passState)
     }
-    
+
 }

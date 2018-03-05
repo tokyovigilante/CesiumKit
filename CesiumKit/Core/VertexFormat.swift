@@ -28,7 +28,7 @@ import Foundation
 * @see Packable*
 */
 struct VertexFormat {
-    
+
     /**
     * When <code>true</code>, the vertex has a 3D position attribute.
     * <p>
@@ -40,7 +40,7 @@ struct VertexFormat {
     * @default false
     */
     var position: Bool = false
-    
+
     /**
     * When <code>true</code>, the vertex has a normal attribute (normalized), which is commonly used for lighting.
     * <p>
@@ -52,7 +52,7 @@ struct VertexFormat {
     * @default false
     */
     var normal: Bool = false
-    
+
     /**
     * When <code>true</code>, the vertex has a 2D texture coordinate attribute.
     * <p>
@@ -64,7 +64,7 @@ struct VertexFormat {
     * @default false
     */
     var st: Bool = false
-    
+
     /**
     * When <code>true</code>, the vertex has a binormal attribute (normalized), which is used for tangent-space effects like bump mapping.
     * <p>
@@ -76,7 +76,7 @@ struct VertexFormat {
     * @default false
     */
     var binormal: Bool = false
-    
+
     /**
     * When <code>true</code>, the vertex has a tangent attribute (normalized), which is used for tangent-space effects like bump mapping.
     * <p>
@@ -88,7 +88,7 @@ struct VertexFormat {
     * @default false
     */
     var tangent: Bool = false
-    
+
     /**
     * When <code>true</code>, the vertex has an RGB color attribute.
     * <p>
@@ -100,7 +100,7 @@ struct VertexFormat {
     * @default false
     */
     var color: Bool = false
-    
+
     /**
     * An immutable vertex format with only a position attribute.
     *
@@ -111,7 +111,7 @@ struct VertexFormat {
     static func PositionOnly() -> VertexFormat {
         return VertexFormat(position: true, normal: false, st: false, binormal: false, tangent: false, color: false)
     }
-    
+
     /**
     * An immutable vertex format with position and normal attributes.
     * This is compatible with per-instance color appearances like {@link PerInstanceColorAppearance}.
@@ -124,7 +124,7 @@ struct VertexFormat {
     static func PositionAndNormal() -> VertexFormat {
         return VertexFormat(position: true, normal: true, st: false, binormal: false, tangent: false, color: false)
     }
-    
+
     /**
     * An immutable vertex format with position, normal, and st attributes.
     * This is compatible with {@link MaterialAppearance} when {@link MaterialAppearance#materialSupport}
@@ -139,7 +139,7 @@ struct VertexFormat {
     static func PositionNormalAndST() -> VertexFormat {
         return VertexFormat(position: true, normal: true, st: true, binormal: false, tangent: false, color: false)
     }
-    
+
     /**
     * An immutable vertex format with position and st attributes.
     * This is compatible with {@link EllipsoidSurfaceAppearance}.
@@ -152,7 +152,7 @@ struct VertexFormat {
     static func PositionAndST() -> VertexFormat {
         return VertexFormat(position: true, normal: false, st: true, binormal: false, tangent: false, color: false)
     }
-    
+
     /**
     * An immutable vertex format with position and color attributes.
     *
@@ -180,7 +180,7 @@ struct VertexFormat {
     static func All() -> VertexFormat {
         return VertexFormat(position: true, normal: true, st: true, binormal: true, tangent: true, color: false)
     }
-    
+
     /**
     * An immutable vertex format with position, normal, and st attributes.
     * This is compatible with most appearances and materials; however
@@ -195,11 +195,11 @@ struct VertexFormat {
     static func Default() -> VertexFormat {
         return VertexFormat.PositionNormalAndST()
     }
-    
+
 }
 
 extension VertexFormat: Packable {
-    
+
     /**
      * The number of elements used to pack the object into an array.
      * @type {Number}
@@ -207,7 +207,7 @@ extension VertexFormat: Packable {
     static func packedLength () -> Int {
         return 6
     }
-    
+
     /**
      * Stores the provided instance into the provided array.
      * @function
@@ -226,7 +226,7 @@ extension VertexFormat: Packable {
             color ? 1.0 : 0.0
         ]
     }
-    
+
     init(array: [Double], startingIndex: Int) {
         assert(checkPackedArrayLength(array, startingIndex: startingIndex), "Invalid packed array length")
         position = array[startingIndex] == 1.0
@@ -235,6 +235,6 @@ extension VertexFormat: Packable {
         binormal = array[startingIndex+3] == 1.0
         tangent = array[startingIndex+4] == 1.0
         color = array[startingIndex+5] == 1.0
-        
+
     }
 }

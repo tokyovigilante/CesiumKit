@@ -44,7 +44,7 @@ import Foundation
 */
 
 class GeometryAttribute {
-    
+
     /**
     * The datatype of each component in the attribute, e.g., individual elements in
     * {@link GeometryAttribute#values}.
@@ -54,7 +54,7 @@ class GeometryAttribute {
     * @default undefined
     */
     var componentDatatype: ComponentDatatype
-    
+
     /**
     * A number between 1 and 4 that defines the number of components in an attributes.
     * For example, a position attribute with x, y, and z components would have 3 as
@@ -78,7 +78,7 @@ class GeometryAttribute {
             assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
         }
     }
-    
+
     /**
     * When <code>true</code> and <code>componentDatatype</code> is an integer format,
     * indicate that the components should be mapped to the range [0, 1] (unsigned)
@@ -103,7 +103,7 @@ class GeometryAttribute {
     * ]);
     */
     var normalize: Bool = false
-    
+
     /**
     * The values for the attributes stored in a typed array.  In the code example,
     * every three elements in <code>values</code> defines one attributes since
@@ -123,19 +123,19 @@ class GeometryAttribute {
     * ]);
     */
     var values: Buffer? = nil
-    
+
     /**
     Optional name for custom attributes
     */
     var name: String
-    
+
     var vertexCount: Int {
         if values == nil {
             return 0
         }
         return values!.count / componentsPerAttribute
     }
-    
+
     var vertexArraySize: Int {
         if values == nil {
             return 0
@@ -145,13 +145,13 @@ class GeometryAttribute {
 
     /**
      Gets individual attribute size in bytes.
-     
+
      - returns: Attribute size
      */
     var size: Int {
         return componentDatatype.elementSize * componentsPerAttribute
     }
-    
+
     init(componentDatatype: ComponentDatatype, componentsPerAttribute: Int, normalize: Bool = false, values: Buffer? = nil) {
         assert(componentsPerAttribute >= 1 && componentsPerAttribute <= 4,"options.componentsPerAttribute must be between 1 and 4")
         self.componentDatatype = componentDatatype
@@ -160,6 +160,6 @@ class GeometryAttribute {
         self.values = values
         self.name = "unknown"
     }
-    
+
 }
 

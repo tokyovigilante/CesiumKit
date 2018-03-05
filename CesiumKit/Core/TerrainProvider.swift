@@ -24,7 +24,7 @@ private var regularGridIndexArrays: [Int: [Int: [Int]]] = [:]
 */
 
 protocol TerrainProvider {
-    
+
     /**
     * Gets an event that is raised when the terrain provider encounters an asynchronous error..  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -33,7 +33,7 @@ protocol TerrainProvider {
     * @type {Event}
     */
     var errorEvent: Event { get }
-    
+
     /**
     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
     * the source of the terrain. This function should
@@ -42,7 +42,7 @@ protocol TerrainProvider {
     * @type {Credit}
     */
     var credit : Credit? { get }
-    
+
     /**
     * Gets the tiling scheme used by the provider.  This function should
     * not be called before {@link TerrainProvider#ready} returns true.
@@ -50,19 +50,19 @@ protocol TerrainProvider {
     * @type {TilingScheme}
     */
     var tilingScheme: TilingScheme { get }
-    
-    /** 
+
+    /**
     * Gets the ellipsoid used by the provider. Default is WGS84.
     */
     var ellipsoid: Ellipsoid { get }
-    
+
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof TerrainProvider.prototype
     * @type {Boolean}
     */
     var ready: Bool { get }
-    
+
     /**
     * Specifies the quality of terrain created from heightmaps.  A value of 1.0 will
     * ensure that adjacent heightmap vertices are separated by no more than
@@ -71,7 +71,7 @@ protocol TerrainProvider {
     * screen pixels between adjacent heightmap vertices and thus rendering more quickly.
     */
     var heightmapTerrainQuality: Double { get set }
-    
+
     /**
     * Gets a list of indices for a triangle mesh representing a regular grid.  Calling
     * this function multiple times with the same grid width and height returns the
@@ -82,9 +82,9 @@ protocol TerrainProvider {
     * @param {Number} height The number of vertices in the regular grid in the vertical direction.
     * @returns {Uint16Array} The list of indices.
     */
-        
+
     static func getRegularGridIndices(width: Int, height: Int) -> [Int]
-    
+
     /**
     * Determines an appropriate geometric error estimate when the geometry comes from a heightmap.
     *
@@ -94,7 +94,7 @@ protocol TerrainProvider {
     * @returns {Number} An estimated geometric error.
     */
     static func estimatedLevelZeroGeometricErrorForAHeightmap(ellipsoid: Ellipsoid, tileImageWidth: Int, numberOfTilesAtLevelZero: Int) -> Double
-    
+
     /**
     * Requests the geometry for a given tile.  This function should not be called before
     * {@link TerrainProvider#ready} returns true.  The result must include terrain data and
@@ -111,7 +111,7 @@ protocol TerrainProvider {
     * to allow cancellation.
     */
     func requestTileGeometry(x: Int, y: Int, level: Int, throttleRequests: Bool, completionBlock: @escaping (TerrainData?) -> ()) -> NetworkOperation?
-    
+
     /**
     * Gets the maximum geometric error allowed in a tile at a given level.  This function should not be
     * called before {@link TerrainProvider#ready} returns true.
@@ -121,7 +121,7 @@ protocol TerrainProvider {
     * @returns {Number} The maximum geometric error.
     */
     func levelMaximumGeometricError(_ level: Int) -> Double
-    
+
     /**
     * Determines whether data for a tile is available to be loaded.
     * @function
@@ -132,7 +132,7 @@ protocol TerrainProvider {
     * @returns {Boolean} Undefined if not supported by the terrain provider, otherwise true or false.
     */
     func getTileDataAvailable(x: Int, y: Int, level: Int) -> Bool?
-    
+
     /**
     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     * indicates which areas of the globe are water rather than land, so they can be rendered
@@ -143,7 +143,7 @@ protocol TerrainProvider {
     * @returns {Boolean} True if the provider has a water mask; otherwise, false.
     */
     var hasWaterMask: Bool { get }
-    
+
     /**
     * Gets a value indicating whether or not the requested tiles include vertex normals.
     * This function should not be called before {@link TerrainProvider#ready} returns true.
@@ -154,24 +154,24 @@ protocol TerrainProvider {
 }
 
 extension TerrainProvider {
-    
+
     func getTileDataAvailable(x: Int, y: Int, level: Int) -> Bool? {
         /*if level > 10 {
             return false
         }*/
         return nil
     }
-        
+
     static func estimatedLevelZeroGeometricErrorForAHeightmap(
         ellipsoid: Ellipsoid,
         tileImageWidth: Int,
         numberOfTilesAtLevelZero: Int) -> Double {
             return ellipsoid.maximumRadius * Math.TwoPi * 0.25/*heightmapTerrainQuality*/ / Double(tileImageWidth * numberOfTilesAtLevelZero)
     }
-    
+
     static func getRegularGridIndices(width: Int, height: Int) -> [Int] {
         assert((width * height <= 64 * 1024), "The total number of vertices (width * height) must be less than or equal to 65536")
-        
+
         var byWidth = regularGridIndexArrays[width]
         if byWidth == nil {
             byWidth = [:]
@@ -180,7 +180,7 @@ extension TerrainProvider {
         var indices = byWidth![height]
         if indices == nil {
             indices = [Int]()//ount: (width - 1) * (height - 1) * 6, repeatedValue: 0)
-            
+
             var index = 0
             //var indicesIndex = 0
             for _ in 0..<height-1 {
@@ -189,7 +189,7 @@ extension TerrainProvider {
                     let lowerLeft = upperLeft + width
                     let lowerRight = lowerLeft + 1
                     let upperRight = upperLeft + 1
-                    
+
                     indices!.append(upperLeft)
                     indices!.append(lowerLeft)
                     indices!.append(upperRight)
@@ -201,11 +201,11 @@ extension TerrainProvider {
                 index += 1
             }
             var unWrappedByWidth = byWidth!
-            
+
             unWrappedByWidth[height] = indices!
             regularGridIndexArrays[width] = unWrappedByWidth
         }
-        
+
         return indices!
     }
 }

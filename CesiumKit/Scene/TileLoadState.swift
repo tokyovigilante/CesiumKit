@@ -18,7 +18,7 @@ enum TileLoadState: CustomStringConvertible {
     * @default 0
     */
     case start,
-    
+
     /**
     * Loading is in progress.
     * @type QuadtreeTileLoadState
@@ -26,12 +26,12 @@ enum TileLoadState: CustomStringConvertible {
     * @default 1
     */
     loading,
-    
+
     /**
     * Draw commands are being generated
     */
     generatingCommands,
-    
+
     /**
     * Loading is complete.
     * @type QuadtreeTileLoadState
@@ -39,7 +39,7 @@ enum TileLoadState: CustomStringConvertible {
     * @default 2
     */
     done,
-    
+
     /**
     * The tile has failed to load.
     * @type QuadtreeTileLoadState
@@ -47,7 +47,7 @@ enum TileLoadState: CustomStringConvertible {
     * @default 3
     */
     failed
-    
+
     var description: String {
         get {
             switch self {

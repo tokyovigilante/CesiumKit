@@ -20,19 +20,19 @@ fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 
 class VertexArray {
-    
+
     let attributes: [VertexAttributes]
-    
+
     let vertexCount: Int
-    
+
     let indexBuffer: Buffer?
-    
+
     let indexCount: Int?
-    
+
     /*var numberOfIndices: Int {
         return indexBuffer == nil ? 0 : indexBuffer!.length / indexBuffer!.componentDatatype.elementSize
     }*/
-    
+
     init(attributes: [VertexAttributes], vertexCount: Int, indexBuffer: Buffer? = nil, indexCount: Int? = nil) {
         assert(indexBuffer == nil || (indexBuffer != nil && indexCount != nil), "must provide indexcount with indexBuffer")
         self.attributes = attributes
@@ -40,7 +40,7 @@ class VertexArray {
         self.indexBuffer = indexBuffer
         self.indexCount = indexCount
     }
-    
+
     /**
      * Creates a vertex array from a geometry.  A geometry contains vertex attributes and optional index data
      * in system memory, whereas a vertex array contains vertex buffers and an optional index buffer in WebGL
@@ -97,16 +97,16 @@ class VertexArray {
      * va = va.destroy();
      */
     convenience init(fromGeometry geometry: Geometry, context: Context, attributeLocations: [String: Int], interleave: Bool = false) {
-        
+
         /*
         var geometry = defaultValue(options.geometry, defaultValue.EMPTY_OBJECT);
-        
+
         var bufferUsage = defaultValue(options.bufferUsage, BufferUsage.DYNAMIC_DRAW);
-        
+
         var attributeLocations = defaultValue(options.attributeLocations, defaultValue.EMPTY_OBJECT);
         var interleave = defaultValue(options.interleave, false);
         var createdVAAttributes = options.vertexArrayAttributes;
-        
+
         var name;
         var attribute;
         var vertexBuffer;
@@ -124,11 +124,11 @@ class VertexArray {
                 var vaCount = 0
 
                 for geometryAttribute in geometry.attributes {
-                    
+
                     /*guard let geometryAttribute = geometry.attributes[i] else {
                         continue
                     }*/
-                    
+
                     if geometryAttribute.values != nil {
                         // Common case: per-vertex attributes
                         vertexAttributes.append(VertexAttributes(
@@ -158,14 +158,14 @@ class VertexArray {
             // One vertex buffer per attribute.
             var vaCount = 0
             for geometryAttribute in geometry.attributes {
-                
+
                 if (geometryAttribute.componentDatatype == ComponentDatatype.float64) {
                     geometryAttribute.componentDatatype = ComponentDatatype.float32
                     if let values = geometryAttribute.values {
-                        
+
                         var doubleArray = [Double](repeating: 0.0, count: values.count)
                         let geometryArraySize = geometryAttribute.vertexArraySize
-                        
+
                         doubleArray.withUnsafeMutableBufferPointer({ (pointer: inout UnsafeMutableBufferPointer<Double>) in
                             values.read(into: pointer.baseAddress!, length: geometryArraySize)
                         })
@@ -173,12 +173,12 @@ class VertexArray {
                     }
 
                 }
-                
+
                 let vertexBuffer = geometryAttribute.values
                 if let vertexBuffer = vertexBuffer {
                     vertexCount = max(vertexCount, vertexBuffer.count)
                 }
-                
+
                 vertexAttributes.append(VertexAttributes(
                     buffer: vertexBuffer,
                     bufferIndex: VertexDescriptorFirstBufferOffset + vaCount, // uniform buffer is [0]
@@ -217,27 +217,27 @@ class VertexArray {
         }
         self.init(attributes: vertexAttributes, vertexCount: vertexCount, indexBuffer: indexBuffer, indexCount: indexCount)
     }
-    
+
     class func computeNumberOfVertices(_ attribute: GeometryAttribute) -> Int {
         guard let values = attribute.values else {
             return 0
         }
         return values.count / attribute.componentsPerAttribute
     }
-    
+
     class func interleaveAttributes(_ context: Context, attributes: GeometryAttributes) -> (
         buffer : Buffer,
         offsetsInBytes : [Int],
         vertexSizeInBytes : Int
         )? {
-            
+
             // Extract attribute names.
             var attributeNames = [String]()
             for (i, geometryAttribute) in attributes.enumerated() {
-                
+
                 // Attribute needs to have per-vertex values; not a constant value for all vertices.
                 attributeNames.append(geometryAttribute.name)
-                
+
                 if (geometryAttribute.componentDatatype == ComponentDatatype.float64) {
                     geometryAttribute.componentDatatype = ComponentDatatype.float32
                     var doubleArray = [Double](repeating: 0.0, count: geometryAttribute.vertexCount)
@@ -248,20 +248,20 @@ class VertexArray {
                     geometryAttribute.values = Buffer(device: context.device, array: doubleArray.map({ Float($0) }), componentDatatype: .float32, sizeInBytes: doubleArray.count * MemoryLayout<Float>.stride)
                 }
             }
-            
+
             // Validation.  Compute number of vertices.
             var numberOfVertices = 0
-            
+
             if (attributeNames.count > 0) {
                 numberOfVertices = VertexArray.computeNumberOfVertices(attributes[attributeNames.first!]!)
-                
+
                 for name in attributeNames {
                     let currentNumberOfVertices = computeNumberOfVertices(attributes[name]!)
-                    
+
                     assert(currentNumberOfVertices == numberOfVertices, "Each attribute list must have the same number of vertices.")
                 }
             }
-            
+
             // Sort attributes by the size of their components.  From left to right, a vertex stores floats, shorts, and then bytes.
             attributeNames.sort(by: { a, b in
                 return attributes[a]!.componentDatatype.elementSize > attributes[b]!.componentDatatype.elementSize
@@ -269,13 +269,13 @@ class VertexArray {
             // Compute sizes and strides.
             var vertexSizeInBytes = 0
             var offsetsInBytes = [Int]()
-            
+
             for name in attributeNames {
                 let attribute = attributes[name]!
                 offsetsInBytes.append(vertexSizeInBytes)
                 vertexSizeInBytes += attribute.size
             }
-            
+
             if (vertexSizeInBytes > 0) {
                 // Pad each vertex to be a multiple of the largest component datatype so each
                 // attribute can be addressed using typed arrays.
@@ -284,10 +284,10 @@ class VertexArray {
                 if remainder != 0 {
                     vertexSizeInBytes += maxComponentSizeInBytes - remainder
                 }
-                
+
                 // Total vertex buffer size in bytes, including per-vertex padding.
                 let vertexBufferSizeInBytes = numberOfVertices * vertexSizeInBytes
-                
+
                 // Create array for interleaved vertices.  Each attribute has a different view (pointer) into the array.
                 let buffer = Buffer(
                     device: context.device,
@@ -302,27 +302,27 @@ class VertexArray {
                         let source = attribute.values!
                         let sourceOffset = i * elementSize
                         let targetOffset = i * vertexSizeInBytes + attributeIndex
-                        
+
                         buffer.copy(from: source, length: elementSize, sourceOffset: sourceOffset, targetOffset: targetOffset)
                         attributeIndex += elementSize
                     }
                 }
                 buffer.signalWriteComplete()
-                
+
                 /*
                 var views = {};
-                
+
                 for (j = 0; j < namesLength; ++j) {
                 name = names[j];
                 var sizeInBytes = ComponentDatatype.getSizeInBytes(attributes[name].componentDatatype);
-                
+
                 views[name] = {
                 pointer : ComponentDatatype.createTypedArray(attributes[name].componentDatatype, buffer),
                 index : offsetsInBytes[name] / sizeInBytes, // Offset in ComponentType
                 strideInComponentType : vertexSizeInBytes / sizeInBytes
                 };
                 }
-                
+
                 // Copy attributes into one interleaved array.
                 // PERFORMANCE_IDEA:  Can we optimize these loops?
                 for (j = 0; j < numberOfVertices; ++j) {
@@ -332,26 +332,26 @@ class VertexArray {
                 var values = attribute.values;
                 var view = views[name];
                 var pointer = view.pointer;
-                
+
                 var numberOfComponents = attribute.componentsPerAttribute;
                 for ( var k = 0; k < numberOfComponents; ++k) {
                 pointer[view.index + k] = values[(j * numberOfComponents) + k];
                 }
-                
+
                 view.index += view.strideInComponentType;
                 }
                 }*/
-                
+
                 return (
                     buffer : buffer,
                     offsetsInBytes : offsetsInBytes,
                     vertexSizeInBytes : vertexSizeInBytes
                 )
             }
-            
+
             // No attributes to interleave.
             return nil
     }
-    
+
 }
 

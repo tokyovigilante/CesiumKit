@@ -41,39 +41,39 @@ import Foundation
  * });
  */
 open class Clock {
-    
+
     /**
     * The start time of the clock.
     * @type {JulianDate}
     */
     var startTime: JulianDate
-    
+
     /**
     * The stop time of the clock.
     * @type {JulianDate}
     */
     var stopTime: JulianDate
-    
+
     /**
     * The current time.
     * @type {JulianDate}
     */
     var currentTime: JulianDate
-    
+
     /**
      * Determines if calls to <code>tick</code> are frame dependent or system clock dependent.
      * @type ClockStep
      * @default {@link ClockStep.SYSTEM_CLOCK_MULTIPLIER}
      */
     var clockStep: ClockStep
-    
+
     /**
      * Determines how the clock should behave when <code>startTime</code> or <code>stopTime</code> is reached.
      * @type {ClockRange}
      * @default {@link ClockRange.UNBOUNDED}
      */
     var clockRange: ClockRange
-    
+
     /**
      * Determines how much time advances when tick is called, negative values allow for advancing backwards.
      * If <code>clockStep</code> is set to ClockStep.TICK_DEPENDENT this is the number of seconds to advance.
@@ -83,7 +83,7 @@ open class Clock {
      * @default 1.0
      */
     var multiplier: Double
-    
+
     /**
     * Indicates whether tick can advance time.  This could be false if data is being buffered,
     * for example.  The clock will only tick when both <code>canAnimate</code> and <code>shouldAnimate</code> are true.
@@ -91,7 +91,7 @@ open class Clock {
     * @default true
     */
     var canAnimate: Bool
-    
+
     /**
      * Indicates whether tick should attempt to advance time.
      * The clock will only tick when both <code>canAnimate</code> and <code>shouldAnimate</code> are true.
@@ -99,21 +99,21 @@ open class Clock {
      * @default true
      */
     var shouldAnimate: Bool
-    
+
     /**
     * An {@link Event} that is fired whenever <code>tick</code>.
     * @type {Event}
     */
     var onTick = Event()
-    
+
     /**
      Indicates whether the clock keeps TAI or UTC time. Must be explicitly set for safety (for navigation etc.).
      Should always be set to false inside Cesium.
      */
     fileprivate (set) var isUTC: Bool
-    
+
     fileprivate var _lastSystemTime: Date
-    
+
     public init(
         startTime: JulianDate? = nil,
         currentTime: JulianDate? = nil,
@@ -126,13 +126,13 @@ open class Clock {
         isUTC: Bool = false) {
             var startTime: JulianDate? = startTime
             let startTimeUndefined = startTime == nil
-            
+
             var stopTime: JulianDate? = stopTime
             let stopTimeUndefined = stopTime == nil
-            
+
             var currentTime: JulianDate? = currentTime
             let currentTimeUndefined = currentTime == nil
-            
+
             if startTimeUndefined && stopTimeUndefined && currentTimeUndefined {
                 currentTime = JulianDate.now()
                 startTime = currentTime!
@@ -152,33 +152,33 @@ open class Clock {
             } else if startTimeUndefined {
                 startTime = currentTime!
             }
-            
+
             assert(startTime!.lessThanOrEquals(stopTime!), "startTime must come before stopTime.")
-            
+
             self.startTime = startTime!
             self.stopTime = stopTime!
             self.currentTime = currentTime!
 
             self.multiplier = multiplier
-            
+
             self.clockStep = clockStep
-            
+
             self.clockRange = clockRange
-            
+
             self.canAnimate = canAnimate
-        
+
             self.shouldAnimate = shouldAnimate
-            
+
             if isUTC {
                 _lastSystemTime = Date()
 
             } else {
                 _lastSystemTime = Date.taiDate()
             }
-            
+
             self.isUTC = isUTC
     }
-    
+
     /**
      * Advances the clock from the currentTime based on the current configuration options.
      * tick should be called every frame, regardless of whether animation is taking place
@@ -187,10 +187,10 @@ open class Clock {
      * @returns {JulianDate} The new value of the <code>currentTime</code> property.
      */
     func tick() -> JulianDate {
-        
+
         let currentSystemTime = Date()
         var currentTime = self.currentTime
-        
+
         if canAnimate && shouldAnimate {
             if clockStep == .systemClock {
                 currentTime = JulianDate.now()
@@ -216,11 +216,11 @@ open class Clock {
                 }
             }
         }
-        
+
         self.currentTime = currentTime
         _lastSystemTime = currentSystemTime
         //onTick.raiseEvent(self)
         return currentTime
     }
-    
+
 }

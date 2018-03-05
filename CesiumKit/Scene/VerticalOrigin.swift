@@ -27,7 +27,7 @@ public enum VerticalOrigin {
      * @constant
      */
     case center
-    
+
     /**
      * The origin is at the bottom of the object.
      *
@@ -35,7 +35,7 @@ public enum VerticalOrigin {
      * @constant
      */
     case bottom
-    
+
     /**
      * The origin is at the top of the object.
      *

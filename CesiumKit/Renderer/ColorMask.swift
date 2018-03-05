@@ -14,11 +14,11 @@ struct ColorMask {
     var green = true
     var blue = true
     var alpha = true
-    
+
     func description() -> String {
         return (red ? "r" : "x") + (green ? "g" : "x") + (blue ? "b" : "x") + (alpha ? "a" : "x")
     }
-    
+
     func toMetal() -> MTLColorWriteMask {
         let writeMask: MTLColorWriteMask =  [(red ? .red : MTLColorWriteMask()), (green ? .green : MTLColorWriteMask()),  (blue ? .blue : MTLColorWriteMask()), (alpha ? .alpha : MTLColorWriteMask())]
         return writeMask

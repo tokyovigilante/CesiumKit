@@ -16,7 +16,7 @@
 * @private
 */
 protocol QuadtreeTileProvider {
-    
+
     /**
     * Gets or sets the {@link QuadtreePrimitive} for which this provider is
     * providing tiles.
@@ -24,15 +24,15 @@ protocol QuadtreeTileProvider {
     * @type {QuadtreePrimitive}
     */
     weak var quadtree: QuadtreePrimitive? { get set }
-    
+
     /**
     * Gets a value indicating whether or not the provider is ready for use.
     * @memberof QuadtreeTileProvider.prototype
     * @type {Boolean}
     */
-    
+
     var ready: Bool { get }
-    
+
     /**
     * Gets the tiling scheme used by the provider.  This property should
     * not be accessed before {@link QuadtreeTileProvider#ready} returns true.
@@ -40,12 +40,12 @@ protocol QuadtreeTileProvider {
     * @type {TilingScheme}
     */
     var tilingScheme: TilingScheme { get }
-    
+
     /**
     * Gets the terrain provider used by the tile provider
     */
     var terrainProvider: TerrainProvider { get set }
-    
+
     /**
     * The distance where everything becomes lit. This only takes effect
     * when <code>enableLighting</code> is <code>true</code>.
@@ -54,7 +54,7 @@ protocol QuadtreeTileProvider {
     * @default 6500000.0
     */
     var lightingFadeOutDistance: Float { get set }
-    
+
     /**
     * The distance where lighting resumes. This only takes effect
     * when <code>enableLighting</code> is <code>true</code>.
@@ -63,17 +63,17 @@ protocol QuadtreeTileProvider {
     * @default 9000000.0
     */
     var lightingFadeInDistance: Float { get set }
-    
+
     var hasWaterMask: Bool { get set }
-    
+
     var oceanNormalMap: Texture? { get set }
-    
+
     var enableLighting: Bool { get set }
-    
+
     var zoomedOutOceanSpecularIntensity: Float { get set }
-    
+
     var baseColor: Cartesian4 { get set }
-    
+
     /**
     * Gets an event that is raised when the geometry provider encounters an asynchronous error.  By subscribing
     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -81,11 +81,11 @@ protocol QuadtreeTileProvider {
     * @memberof QuadtreeTileProvider.prototype
     * @type {Event}
     */
-    
+
     var errorEvent: Event { get }
-    
+
     init (terrainProvider: TerrainProvider, imageryLayers: ImageryLayerCollection, surfaceShaderSet: GlobeSurfaceShaderSet)
-    
+
     /**
     * Computes the default geometric error for level zero of the quadtree.
     *
@@ -96,7 +96,7 @@ protocol QuadtreeTileProvider {
     */
     func computeDefaultLevelZeroMaximumGeometricError () -> Double
 
-    
+
     /**
     * Called at the beginning of the update cycle for each render frame, before {@link QuadtreeTileProvider#showTileThisFrame}
     * or any other functions.
@@ -106,7 +106,7 @@ protocol QuadtreeTileProvider {
     * @param {FrameState} frameState The frame state.
     */
     func beginUpdate (_ frameState: inout FrameState)
-    
+
     /**
     * Called at the end of the update cycle for each render frame, after {@link QuadtreeTileProvider#showTileThisFrame}
     * and any other functions.
@@ -116,7 +116,7 @@ protocol QuadtreeTileProvider {
     * @param {FrameState} frameState The frame state.
     */
     func endUpdate (_ frameState: inout FrameState)
-    
+
     /**
     * Gets the maximum geometric error allowed in a tile at a given level, in meters.  This function should not be
     * called before {@link QuadtreeTileProvider#ready} returns true.
@@ -130,7 +130,7 @@ protocol QuadtreeTileProvider {
     * @returns {Number} The maximum geometric error in meters.
     */
     func levelMaximumGeometricError(_ level: Int) -> Double
-    
+
     /**
     * Loads, or continues loading, a given tile.  This function will continue to be called
     * until {@link QuadtreeTile#state} is no longer {@link QuadtreeTileLoadState#LOADING}.  This function should
@@ -145,7 +145,7 @@ protocol QuadtreeTileProvider {
     * @exception {DeveloperError} <code>loadTile</code> must not be called before the tile provider is ready.
     */
     func loadTile (_ tile: QuadtreeTile, frameState: inout FrameState)
-    
+
     /**
     * Determines the visibility of a given tile.  The tile may be fully visible, partially visible, or not
     * visible at all.  Tiles that are renderable and are at least partially visible will be shown by a call
@@ -160,7 +160,7 @@ protocol QuadtreeTileProvider {
     * @returns {Visibility} The visibility of the tile.
     */
     func computeTileVisibility (_ tile: QuadtreeTile, frameState: FrameState, occluders: QuadtreeOccluders) -> Visibility
-    
+
     /**
     * Shows a specified tile in this frame.  The provider can cause the tile to be shown by adding
     * render commands to the commandList, or use any other method as appropriate.  The tile is not
@@ -174,7 +174,7 @@ protocol QuadtreeTileProvider {
     * @param {FrameState} frameState The state information of the current rendering frame.
     */
     func showTileThisFrame (_ tile: QuadtreeTile, frameState: inout FrameState)
-    
+
     /**
     * Gets the distance from the camera to the closest point on the tile.  This is used for level-of-detail selection.
     *
@@ -187,5 +187,5 @@ protocol QuadtreeTileProvider {
     * @returns {Number} The distance from the camera to the closest point on the tile, in meters.
     */
     func computeDistanceToTile (_ tile: QuadtreeTile, frameState: FrameState) -> Double
-    
+
 }

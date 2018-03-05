@@ -15,7 +15,7 @@ import Foundation
 * @alias Transforms
 */
 struct Transforms {
-    
+
     /**
     * Computes a 4x4 transformation matrix from a reference frame with an east-north-up axes
     * centered at the provided origin to the provided ellipsoid's fixed reference frame.
@@ -37,7 +37,7 @@ struct Transforms {
     * var transform = Cesium.Transforms.eastNorthUpToFixedFrame(center);
     */
     static func eastNorthUpToFixedFrame (_ origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Matrix4 {
-        
+
         // If x and y are zero, assume origin is at a pole, which is a special case.
         if Math.equalsEpsilon(origin.x, 0.0, relativeEpsilon: Math.Epsilon14) &&
             Math.equalsEpsilon(origin.y, 0.0, relativeEpsilon: Math.Epsilon14) {
@@ -48,19 +48,19 @@ struct Transforms {
                     0.0,   0.0, sign, origin.z,
                     0.0,   0.0,  0.0, 1.0);
         }
-        
+
         let normal = ellipsoid.geodeticSurfaceNormal(origin)
-        
+
         let tangent = Cartesian3(x: -origin.y, y: origin.x, z: 0.0).normalize()
-        
+
         let bitangent = normal.cross(tangent)
-        
+
         return Matrix4(
             tangent.x, bitangent.x, normal.x, origin.x,
             tangent.y, bitangent.y, normal.y, origin.y,
             tangent.z, bitangent.z, normal.z, origin.z,
             0.0,       0.0,         0.0,      1.0)
-        
+
     }
     /*
     /**
@@ -84,7 +84,7 @@ struct Transforms {
     * var transform = Cesium.Transforms.northEastDownToFixedFrame(center);
     */
     static func northEastDownToFixedFrame (origin: Cartesian3, ellipsoid: Ellipsoid = Ellipsoid.wgs84()) -> Matrix4 {
-        
+
         // If x and y are zero, assume origin is at a pole, which is a special case.
         if Math.equalsEpsilon(origin.x, 0.0, relativeEpsilon: Math.Epsilon14) &&
             Math.equalsEpsilon(origin.y, 0.0, relativeEpsilon: Math.Epsilon14) {
@@ -95,13 +95,13 @@ struct Transforms {
                     0.0,   0.0, -sign, origin.z,
                     0.0,   0.0,  0.0, 1.0)
         }
-        
+
         let normal = ellipsoid.geodeticSurfaceNormal(origin)
-        
+
         let tangent = Cartesian3(x: -origin.y, y: origin.x, z: 0.0).normalize()
-        
+
         let bitangent = normal.cross(tangent)
-        
+
         return Matrix4(
             bitangent.x, tangent.x, -normal.x, origin.x,
             bitangent.y, tangent.y, -normal.y, origin.y,
@@ -135,7 +135,7 @@ struct Transforms {
     throw new DeveloperError('origin is required.');
     }
     //>>includeEnd('debug');
-    
+
     // If x and y are zero, assume origin is at a pole, which is a special case.
     if (CesiumMath.equalsEpsilon(origin.x, 0.0, CesiumMath.EPSILON14) &&
     CesiumMath.equalsEpsilon(origin.y, 0.0, CesiumMath.EPSILON14)) {
@@ -165,21 +165,21 @@ struct Transforms {
     result[15] = 1.0;
     return result;
     }
-    
+
     var normal = eastNorthUpToFixedFrameNormal;
     var tangent  = eastNorthUpToFixedFrameTangent;
     var bitangent = eastNorthUpToFixedFrameBitangent;
-    
+
     ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
     ellipsoid.geodeticSurfaceNormal(origin, normal);
-    
+
     tangent.x = -origin.y;
     tangent.y = origin.x;
     tangent.z = 0.0;
     Cartesian3.normalize(tangent, tangent);
-    
+
     Cartesian3.cross(normal, tangent, bitangent);
-    
+
     if (!defined(result)) {
     return new Matrix4(
     bitangent.x, normal.x, tangent.x, origin.x,
@@ -205,11 +205,11 @@ struct Transforms {
     result[15] = 1.0;
     return result;
     };
-    
+
     var scratchHPRQuaternion = new Quaternion();
     var scratchScale = new Cartesian3(1.0, 1.0, 1.0);
     var scratchHPRMatrix4 = new Matrix4();
-    
+
     /**
     * Computes a 4x4 transformation matrix from a reference frame with axes computed from the heading-pitch-roll angles
     * centered at the provided origin to the provided ellipsoid's fixed reference frame. Heading is the rotation from the local north
@@ -239,10 +239,10 @@ struct Transforms {
     result = Transforms.eastNorthUpToFixedFrame(origin, ellipsoid, result);
     return Matrix4.multiply(result, hprMatrix, result);
     };
-    
+
     var scratchENUMatrix4 = new Matrix4();
     var scratchHPRMatrix3 = new Matrix3();
-    
+
     /**
     * Computes a quaternion from a reference frame with axes computed from the heading-pitch-roll angles
     * centered at the provided origin. Heading is the rotation from the local north
@@ -271,9 +271,9 @@ struct Transforms {
     var rotation = Matrix4.getRotation(transform, scratchHPRMatrix3);
     return Quaternion.fromRotationMatrix(rotation, result);
     };
-    
+
     */
-    
+
     fileprivate static let _gmstConstant0 = 6 * 3600 + 41 * 60 + 50.54841
     fileprivate static let _gmstConstant1 = 8640184.812866
     fileprivate static let _gmstConstant2 = 0.093104
@@ -281,7 +281,7 @@ struct Transforms {
     fileprivate static let _rateCoef = 1.1772758384668e-19
     fileprivate static let _wgs84WRPrecessing = 7.2921158553E-5
     fileprivate static let  _twoPiOverSecondsInDay = Math.TwoPi / 86400.0
-    
+
     /**
     * Computes a rotation matrix to transform a point or vector from True Equator Mean Equinox (TEME) axes to the
     * pseudo-fixed axes at a given time.  This method treats the UT1 time standard as equivalent to UTC.
@@ -302,15 +302,15 @@ struct Transforms {
     * });
     */
     static func computeTemeToPseudoFixedMatrix (_ date: JulianDate) -> Matrix3 {
-        
+
         // GMST is actually computed using UT1.  We're using UTC as an approximation of UT1.
         // We do not want to use the function like convertTaiToUtc in JulianDate because
         // we explicitly do not want to fail when inside the leap second.
         let dateInUtc = date.addSeconds(Double(-date.computeTaiMinusUtc()))
-        
+
         let utcDayNumber = Double(dateInUtc.dayNumber)
         let utcSecondsIntoDay = dateInUtc.secondsOfDay
-        
+
         let t: Double
         let diffDays = utcDayNumber - 2451545.0
         if utcSecondsIntoDay >= 43200.0 {
@@ -318,7 +318,7 @@ struct Transforms {
         } else {
             t = (diffDays - 0.5) / TimeConstants.DaysPerJulianCentury
         }
-        
+
         let gmst0 = _gmstConstant0 + t * (_gmstConstant1 + t * (_gmstConstant2 + t * _gmstConstant3))
         let angle = (gmst0 * _twoPiOverSecondsInDay).truncatingRemainder(dividingBy: Math.TwoPi)
         let ratio = _wgs84WRPrecessing + _rateCoef * (utcDayNumber - 2451545.5)
@@ -326,7 +326,7 @@ struct Transforms {
         let gha = angle + (ratio * secondsSinceMidnight)
         let cosGha = cos(gha)
         let sinGha = sin(gha)
-        
+
         return Matrix3(
             cosGha, sinGha, 0.0,
             -sinGha, cosGha, 0.0,
@@ -345,7 +345,7 @@ struct Transforms {
     * @private
     */
     Transforms.iau2006XysData = new Iau2006XysData();
-    
+
     /**
     * The source of Earth Orientation Parameters (EOP) data, used for computing the transformation
     * between the Fixed and ICRF axes.  By default, zero values are used for all EOP values,
@@ -358,10 +358,10 @@ struct Transforms {
     * @private
     */
     Transforms.earthOrientationParameters = EarthOrientationParameters.NONE;
-    
+
     var ttMinusTai = 32.184;
     var j2000ttDays = 2451545.0;
-    
+
     /**
     * Preloads the data necessary to transform between the ICRF and Fixed axes, in either
     * direction, over a given interval.  This function returns a promise that, when resolved,
@@ -387,10 +387,10 @@ struct Transforms {
     var startSecondTT = timeInterval.start.secondsOfDay + ttMinusTai;
     var stopDayTT = timeInterval.stop.dayNumber;
     var stopSecondTT = timeInterval.stop.secondsOfDay + ttMinusTai;
-    
+
     var xysPromise = Transforms.iau2006XysData.preload(startDayTT, startSecondTT, stopDayTT, stopSecondTT);
     var eopPromise = Transforms.earthOrientationParameters.getPromiseToLoad();
-    
+
     return when.all([xysPromise, eopPromise]);
     };
     */
@@ -464,7 +464,7 @@ struct Transforms {
     if (!defined(eop)) {
     return undefined;
     }
-    
+
     // There is no external conversion to Terrestrial Time (TT).
     // So use International Atomic Time (TAI) and convert using offsets.
     // Here we are assuming that dayTT and secondTT are positive
@@ -472,18 +472,18 @@ struct Transforms {
     // It's possible here that secondTT could roll over 86400
     // This does not seem to affect the precision (unit tests check for this)
     var secondTT = date.secondsOfDay + ttMinusTai;
-    
+
     var xys = Transforms.iau2006XysData.computeXysRadians(dayTT, secondTT, xysScratch);
     if (!defined(xys)) {
     return undefined;
     }
-    
+
     var x = xys.x + eop.xPoleOffset;
     var y = xys.y + eop.yPoleOffset;
-    
+
     // Compute XYS rotation
     var a = 1.0 / (1.0 + Math.sqrt(1.0 - x * x - y * y));
-    
+
     var rotation1 = rotation1Scratch;
     rotation1[0] = 1.0 - a * x * x;
     rotation1[3] = -a * x * y;
@@ -494,16 +494,16 @@ struct Transforms {
     rotation1[2] = -x;
     rotation1[5] = -y;
     rotation1[8] = 1 - a * (x * x + y * y);
-    
+
     var rotation2 = Matrix3.fromRotationZ(-xys.s, rotation2Scratch);
     var matrixQ = Matrix3.multiply(rotation1, rotation2, rotation1Scratch);
-    
+
     // Similar to TT conversions above
     // It's possible here that secondTT could roll over 86400
     // This does not seem to affect the precision (unit tests check for this)
     var dateUt1day = date.dayNumber;
     var dateUt1sec = date.secondsOfDay - JulianDate.computeTaiMinusUtc(date) + eop.ut1MinusUtc;
-    
+
     // Compute Earth rotation angle
     // The IERS standard for era is
     //    era = 0.7790572732640 + 1.00273781191135448 * Tu
@@ -518,26 +518,26 @@ struct Transforms {
     var fractionOfDay = dateUt1sec / TimeConstants.SECONDS_PER_DAY;
     var era = 0.7790572732640 + fractionOfDay + 0.00273781191135448 * (daysSinceJ2000 + fractionOfDay);
     era = (era % 1.0) * CesiumMath.TWO_PI;
-    
+
     var earthRotation = Matrix3.fromRotationZ(era, rotation2Scratch);
-    
+
     // pseudoFixed to ICRF
     var pfToIcrf = Matrix3.multiply(matrixQ, earthRotation, rotation1Scratch);
-    
+
     // Compute pole wander matrix
     var cosxp = Math.cos(eop.xPoleWander);
     var cosyp = Math.cos(eop.yPoleWander);
     var sinxp = Math.sin(eop.xPoleWander);
     var sinyp = Math.sin(eop.yPoleWander);
-    
+
     var ttt = (dayTT - j2000ttDays) + secondTT / TimeConstants.SECONDS_PER_DAY;
     ttt /= 36525.0;
-    
+
     // approximate sp value in rad
     var sp = -47.0e-6 * ttt * CesiumMath.RADIANS_PER_DEGREE / 3600.0;
     var cossp = Math.cos(sp);
     var sinsp = Math.sin(sp);
-    
+
     var fToPfMtx = rotation2Scratch;
     fToPfMtx[0] = cosxp * cossp;
     fToPfMtx[1] = cosxp * sinsp;
@@ -548,10 +548,10 @@ struct Transforms {
     fToPfMtx[6] = -sinyp * sinsp - cosyp * sinxp * cossp;
     fToPfMtx[7] = sinyp * cossp - cosyp * sinxp * sinsp;
     fToPfMtx[8] = cosyp * cosxp;
-    
+
     return Matrix3.multiply(pfToIcrf, fToPfMtx, result);*/
     }
-    
+
     /**
     * Transform a point from model coordinates to window coordinates.
     *
@@ -562,29 +562,29 @@ struct Transforms {
     * @returns {Cartesian2} The modified result parameter or a new Cartesian2 instance if none was provided.
     */
     static func pointToWindowCoordinates(_ modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
-        
+
         var result = Transforms.pointToGLWindowCoordinates(
             modelViewProjectionMatrix: modelViewProjectionMatrix,
             viewportTransformation: viewportTransformation,
             point: point)
         result.y = 2.0 * viewportTransformation[1,1] - result.y
-        
+
         return result
     }
 
     static func pointToGLWindowCoordinates (modelViewProjectionMatrix: Matrix4, viewportTransformation: Matrix4, point: Cartesian3) -> Cartesian2 {
-        
+
         var coords = modelViewProjectionMatrix.multiplyByVector(Cartesian4(x: point.x, y: point.y, z: point.z, w: 1))
         coords = coords.multiplyBy(scalar: 1.0 / coords.w)
         coords = viewportTransformation.multiplyByVector(coords)
-        
+
         return Cartesian2(cartesian4: coords)
     }
     /*
         var normalScratch = new Cartesian3();
         var rightScratch = new Cartesian3();
         var upScratch = new Cartesian3();
-    
+
         /**
          * @private
          */
@@ -593,26 +593,26 @@ struct Transforms {
             if (!defined(position)) {
                 throw new DeveloperError('position is required.');
             }
-    
+
             if (!defined(velocity)) {
                 throw new DeveloperError('velocity is required.');
             }
             //>>includeEnd('debug');
-    
+
             var normal = defaultValue(ellipsoid, Ellipsoid.WGS84).geodeticSurfaceNormal(position, normalScratch);
             var right = Cartesian3.cross(velocity, normal, rightScratch);
             if (Cartesian3.equalsEpsilon(right, Cartesian3.ZERO, CesiumMath.EPSILON6)) {
                 right = Cartesian3.clone(Cartesian3.UNIT_X, right);
             }
-    
+
             var up = Cartesian3.cross(right, velocity, upScratch);
            Cartesian3.cross(velocity, up, right);
             Cartesian3.negate(right, right);
-    
+
             if (!defined(result)) {
                 result = new Matrix3();
            }
-    
+
             result[0] = velocity.x;
             result[1] = velocity.y;
             result[2] = velocity.z;
@@ -622,7 +622,7 @@ struct Transforms {
             result[6] = up.x;
             result[7] = up.y;
             result[8] = up.z;
-    
+
             return result;
         };
     */

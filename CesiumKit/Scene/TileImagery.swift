@@ -19,19 +19,19 @@
 class TileImagery {
 
     var readyImagery: Imagery? = nil
-    
+
     var loadingImagery: Imagery? = nil
-    
+
     var textureCoordinateRectangle: Cartesian4? = nil
-    
+
     var textureTranslationAndScale: Cartesian4? = nil
-    
+
     init(imagery: Imagery, textureCoordinateRectangle: Cartesian4? = nil) {
         loadingImagery = imagery
         self.textureCoordinateRectangle = textureCoordinateRectangle
         textureTranslationAndScale = nil
     }
-    
+
     /**
     * Frees the resources held by this instance.
     */
@@ -39,12 +39,12 @@ class TileImagery {
         if readyImagery != nil {
             readyImagery!.releaseReference()
         }
-        
+
         if loadingImagery != nil {
             loadingImagery!.releaseReference()
         }
     }
-    
+
     /**
     * Processes the load state machine for this instance.
     *
@@ -53,11 +53,11 @@ class TileImagery {
     * @returns {Boolean} True if this instance is done loading; otherwise, false.
     */
     func processStateMachine (_ tile: QuadtreeTile, frameState: inout FrameState) -> Bool {
-        
+
         let imageryLayer = loadingImagery!.imageryLayer
-        
+
         loadingImagery!.processStateMachine(frameState: &frameState)
-        
+
         if loadingImagery!.state == .ready {
             if readyImagery != nil {
                 readyImagery!.releaseReference()
@@ -67,7 +67,7 @@ class TileImagery {
             textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: self)
             return true // done loading
         }
-        
+
         // Find some ancestor imagery we can use while this imagery is still loading.
         var ancestor = loadingImagery!.parent
         var closestAncestorThatNeedsLoading: Imagery?
@@ -78,20 +78,20 @@ class TileImagery {
             }
             ancestor = ancestor!.parent
         }
-        
+
         if readyImagery !== ancestor {
                 if let readyImagery = readyImagery {
                     readyImagery.releaseReference()
                 }
-                
+
                 readyImagery = ancestor
-                
+
                 if let ancestor = ancestor {
                     ancestor.addReference()
                     textureTranslationAndScale = imageryLayer.calculateTextureTranslationAndScale(tile, tileImagery: self)
                 }
         }
-        
+
         if loadingImagery!.state == .failed || loadingImagery!.state == .invalid {
             if let closestAncestorThatNeedsLoading = closestAncestorThatNeedsLoading {
                 // Push the ancestor's load process along a bit.  This is necessary because some ancestor imagery

@@ -11,7 +11,7 @@ import Accelerate
 import simd
 
 public enum UniformDataType: UInt {
-    
+
     case floatVec1 = 5126, // GLenum(GL_FLOAT)
     floatVec2 = 35664, // GLenum(GL_FLOAT_VEC2)
     floatVec3 = 35665, // GLenum(GL_FLOAT_VEC3)
@@ -29,7 +29,7 @@ public enum UniformDataType: UInt {
     floatMatrix4 = 35676, // GLenum(GL_FLOAT_MAT4)
     sampler2D = 35678, // GLenum(GL_SAMPLER_2D)
     samplerCube = 35680 // GLenum(GL_SAMPLER_CUBE)
-    
+
     var declarationString: String {
         switch self {
         case .floatVec1:
@@ -68,7 +68,7 @@ public enum UniformDataType: UInt {
             return "samplerCube"
         }
     }
-    
+
     var metalDeclaration: String {
         switch self {
         case .floatVec1:
@@ -108,7 +108,7 @@ public enum UniformDataType: UInt {
             return ""
         }
     }
-    
+
     var elementCount: Int {
         switch self {
         case .floatVec1:
@@ -185,7 +185,7 @@ public enum UniformDataType: UInt {
             return 0
         }
     }
-    
+
     var elementStride: Int {
         switch self {
         case .floatVec1:
@@ -215,7 +215,7 @@ public enum UniformDataType: UInt {
             return 0
         }
     }
-    
+
 }
 
 typealias UniformFunc = (_ map: LegacyUniformMap, _ buffer: Buffer, _ offset: Int) -> ()
@@ -223,16 +223,16 @@ typealias UniformFunc = (_ map: LegacyUniformMap, _ buffer: Buffer, _ offset: In
 struct AutomaticUniform {
     let size: Int
     let datatype: UniformDataType
-    
+
     func declaration (_ name: String) -> String {
         var declaration = "uniform \(datatype.declarationString) \(name)"
-        
+
         if size == 1 {
             declaration += ";"
         } else {
             declaration += "[\(size)];"
         }
-        
+
         return declaration
     }
 }
@@ -245,29 +245,29 @@ enum UniformType {
 }
 
 open class Uniform {
-    
+
     fileprivate let _desc: GLSLShaderVariableDescription
-    
+
     let dataType: UniformDataType
 
     let type: UniformType
 
     let elementCount: Int
-    
+
     var offset: Int = -1
 
     var name: String {
         return _desc.name
     }
-    
+
     var rawSize: Int {
         return Int(_desc.rawSize())
     }
-    
+
     var alignedSize: Int {
         return dataType.elementStride * Int(_desc.matSize > 0 ? _desc.matSize : 1) * Int(_desc.arraySize > 0 ? _desc.arraySize : 1)
     }
-    
+
     var isSingle: Bool {
         return _desc.arraySize == -1
     }
@@ -275,18 +275,18 @@ open class Uniform {
     var basicType: GLSLOptBasicType {
         return self._desc.type
     }
-    
+
     var mapIndex: UniformIndex? = nil
-    
+
     init (desc: GLSLShaderVariableDescription, type: UniformType, dataType: UniformDataType) {
         _desc = desc
         self.type = type
         elementCount = Int(desc.elementCount())
         self.dataType = dataType
     }
-    
+
     static func create(desc: GLSLShaderVariableDescription, type: UniformType) -> Uniform {
-        
+
         switch desc.type {
         case .float:
             let dataType = inferDataTypeFromGLSLDescription(desc)
@@ -306,9 +306,9 @@ open class Uniform {
             return Uniform(desc: desc, type: type, dataType: .floatVec1)
         }
     }
-    
+
     static func inferDataTypeFromGLSLDescription (_ desc: GLSLShaderVariableDescription) -> UniformDataType {
-        
+
         if desc.matSize == 1 { //vector
             switch desc.vecSize {
             case 1:
@@ -358,9 +358,9 @@ open class Uniform {
         }
         assertionFailure("unknown uniform type")
         return .floatVec1
-        
+
     }
-    
+
 }
 
 typealias UniformIndex = DictionaryIndex<String, UniformFunc>
@@ -438,11 +438,11 @@ glUniformMatrix4fv(_locations[0], GLsizei(_locations.count), GLboolean(GL_FALSE)
 
 
 open class UniformSampler: Uniform {
-    
+
     fileprivate (set) var textureUnitIndex: Int = 0
-        
+
     func setSampler (_ textureUnitIndex: Int) {
         self.textureUnitIndex = textureUnitIndex
     }
-    
+
 }

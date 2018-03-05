@@ -23,7 +23,7 @@ Describes Globe object options
 - parameter Boolean: [options.showRenderLoopErrors=true] If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
 */
 public struct CesiumOptions {
-    
+
     public var clock: Clock
     public var imageryProvider: ImageryProvider?
     public var terrain: Bool
@@ -34,12 +34,12 @@ public struct CesiumOptions {
     public var scene3DOnly = false
     public var mapProjection: MapProjection
     public var showRenderLoopErrors = true
-    
+
     /*/// :param: Object [options.contextOptions] Context and WebGL creation properties corresponding to <code>options</code> passed to {@link Scene.
     let contextOptions = ContextOptions()*/
-    
+
     /*/// :param: Element|String [options.creditContainer] The DOM element or ID that will contain the {@link CreditDisplay.  If not specified the credits are added to the bottom of the widget itself.*/
-    
+
     public init(
         clock: Clock = Clock(isUTC: false),
         imageryProvider: ImageryProvider? = nil,
@@ -62,7 +62,7 @@ public struct CesiumOptions {
         self.scene3DOnly = scene3DOnly
         self.mapProjection = mapProjection
         self.showRenderLoopErrors = showRenderLoopErrors
-        
+
         //NSURLProtocol.registerClass(ResourceURLProtocol)
     }
 }
@@ -126,12 +126,12 @@ public struct CesiumOptions {
 open class CesiumGlobe {
 
     fileprivate var _canRender = false
-    
+
     var renderLoopRunning = false
     var showRenderLoopErrors = false
-    
+
     var _lastFrameTime: Date?
-            
+
     /**
     * Gets the scene.
     * @memberof CesiumWidget.prototype
@@ -139,17 +139,17 @@ open class CesiumGlobe {
     * @type {Scene}
     */
     open let scene: Scene
-    
+
     open let ellipsoid: Ellipsoid = Ellipsoid.wgs84()
 
     var globe: Globe
-    
+
     var imageryProvider: ImageryProvider? = nil
-    
+
     var sceneMode: SceneMode
-    
+
     var scene3DOnly: Bool
-   
+
     /**
     * Gets the credit container.
     * @memberof CesiumWidget.prototype
@@ -157,7 +157,7 @@ open class CesiumGlobe {
     * @type {Element}
     */
     // FIXME public var creditContainer: CreditContainer
-    
+
     /**
     * Gets the screen space event handler.
     * @memberof CesiumWidget.prototype
@@ -169,7 +169,7 @@ open class CesiumGlobe {
             return scene.screenSpaceCameraController._aggregator.eventHandler
         }
     }
-    
+
     /**
     * Gets the collection of image layers that will be rendered on the globe.
     * @memberof Viewer.prototype
@@ -182,7 +182,7 @@ open class CesiumGlobe {
             return scene.imageryLayers
         }
     }
-    
+
     /**
     * The terrain provider providing surface geometry for the globe.
     * @memberof CesiumWidget.prototype
@@ -197,7 +197,7 @@ open class CesiumGlobe {
             scene.terrainProvider = terrainProvider
         }
     }
-    
+
     /**
     * Gets the camera.
     * @memberof CesiumWidget.prototype
@@ -210,7 +210,7 @@ open class CesiumGlobe {
             return scene.camera
         }
     }
-    
+
     /**
     * Gets the clock.
     * @memberof CesiumWidget.prototype
@@ -218,7 +218,7 @@ open class CesiumGlobe {
     * @type {Clock}
     */
     open let clock: Clock
-    
+
     var showFramerate: Bool {
         get {
             return scene.framerateDisplay.show
@@ -236,13 +236,13 @@ open class CesiumGlobe {
 
         var creditContainerContainer = defined(options.creditContainer) ? getElement(options.creditContainer) : element;
         creditContainerContainer.appendChild(creditContainer);*/
-        
+
         _canRender = false
         renderLoopRunning = false
         showRenderLoopErrors = options.showRenderLoopErrors
         clock = options.clock
         _lastFrameTime = nil
-        
+
         globe = Globe(ellipsoid: ellipsoid, terrain: options.terrain, lighting: options.lighting)
         scene = Scene(
             view: view,
@@ -257,9 +257,9 @@ open class CesiumGlobe {
         scene.globe = globe
         scene.camera.constrainedAxis = Cartesian3.unitZ
         scene.backgroundColor = Cartesian4(red: 0.0, green: 0.6, blue: 1.0, alpha: 1.0)
-        
+
         /*var creditDisplay = scene.frameState.creditDisplay;
-        
+
         var cesiumCredit = new Credit('Cesium', cesiumLogoData, 'http://cesiumjs.org/');
         creditDisplay.addDefaultCredit(cesiumCredit);*/
 
@@ -275,7 +275,7 @@ open class CesiumGlobe {
                 ]
             )
         }
-        
+
         scene.skyAtmosphere = SkyAtmosphere(ellipsoid: ellipsoid)
 
         // FIXME: UFOs disabled
@@ -285,19 +285,19 @@ open class CesiumGlobe {
         if options.imageryProvider != nil {
             _ = scene.imageryLayers.addImageryProvider(options.imageryProvider!, index: nil)
         }
-        
+
         //Set the terrain provider
         if options.terrain {
-            
+
         } else {
             scene.terrainProvider = EllipsoidTerrainProvider()
         }
-        
+
         scene.fog.enabled = options.fog
-        
+
         self.sceneMode = options.sceneMode
         self.scene3DOnly = options.scene3DOnly
-        
+
         if self.sceneMode == SceneMode.scene2D {
             self.scene.morphTo2D(0)
         }
@@ -325,18 +325,18 @@ open class CesiumGlobe {
         //return buildModuleUrl('Assets/Textures/SkyBox/tycho2t3_80_' + suffix + '.jpg')
         return suffix
     }
-    
+
     func startRenderLoop() {
-        
+
         renderLoopRunning = true
         _lastFrameTime = nil
     }
 
     func configureCanvasSize(_ size: Cartesian2) {
-        
+
         scene.resize(size)
         _canRender = scene.drawableWidth != 0 && scene.drawableHeight != 0
-        
+
     }
 
     func configureCameraFrustum() {
@@ -374,16 +374,16 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         var element = this._element;
         var overlay = document.createElement('div');
         overlay.className = 'cesium-widget-errorPanel';
-        
+
         var content = document.createElement('div');
         content.className = 'cesium-widget-errorPanel-content';
         overlay.appendChild(content);
-        
+
         var errorHeader = document.createElement('div');
         errorHeader.className = 'cesium-widget-errorPanel-header';
         errorHeader.appendChild(document.createTextNode(title));
         content.appendChild(errorHeader);
-        
+
         var errorPanelScroller = document.createElement('div');
         errorPanelScroller.className = 'cesium-widget-errorPanel-scroll';
         content.appendChild(errorPanelScroller);
@@ -394,26 +394,26 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         if (defined(window.addEventListener)) {
         window.addEventListener('resize', resizeCallback, false);
         }
-        
+
         var errorMessage = document.createElement('div');
         errorMessage.className = 'cesium-widget-errorPanel-message';
         errorMessage.innerHTML = '<p>' + message + '</p>';
         errorPanelScroller.appendChild(errorMessage);
-        
+
         var errorDetails = '(no error details available)';
         if (defined(error)) {
         errorDetails = formatError(error);
         }
-        
+
         var errorMessageDetails = document.createElement('div');
         errorMessageDetails.className = 'cesium-widget-errorPanel-message';
         errorMessageDetails.appendChild(document.createTextNode(errorDetails));
         errorPanelScroller.appendChild(errorMessageDetails);
-        
+
         var buttonPanel = document.createElement('div');
         buttonPanel.className = 'cesium-widget-errorPanel-buttonPanel';
         content.appendChild(buttonPanel);
-        
+
         var okButton = document.createElement('button');
         okButton.setAttribute('type', 'button');
         okButton.className = 'cesium-button';
@@ -424,11 +424,11 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
         }
         element.removeChild(overlay);
         };
-        
+
         buttonPanel.appendChild(okButton);
-        
+
         element.appendChild(overlay);
-        
+
         console.error(title + '\n' + message + '\n' + errorDetails);*/
     }
 
@@ -467,7 +467,7 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
     * unless <code>useDefaultRenderLoop</code> is set to false;
     */
     open func render(_ size: CGSize) {
-        
+
         updateFramerate()
         resize(Cartesian2(x: Double(size.width), y: Double(size.height)))
         scene.initializeFrame()
@@ -476,18 +476,18 @@ var cesiumLogoData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAAAaCAYA
             scene.render(currentTime)
         }
     }
-    
+
     fileprivate var _lastRenderTime = Date()
     fileprivate var _lastUpdateTime = Date()
     fileprivate var _avgFPS = 0.0
-    
+
     func updateFramerate () {
         let currentTime = Date()
-        
+
         let elapsed = currentTime.timeIntervalSince(_lastRenderTime)
         let updateElapsed = currentTime.timeIntervalSince(_lastUpdateTime)
         _lastRenderTime = currentTime
-        
+
         let fps = 1.0 / elapsed
         _avgFPS = 0.9 * _avgFPS + 0.1 * fps
         if updateElapsed > 0.1 {

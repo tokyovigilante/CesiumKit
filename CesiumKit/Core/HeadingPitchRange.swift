@@ -22,26 +22,26 @@ import Foundation
  */
 
 public struct HeadingPitchRange {
-    
+
     /**
      * Heading is the rotation from the local north direction where a positive angle is increasing eastward.
      * @type {Number}
      */
     public var heading: Double = 0.0
-    
+
     /**
      * Pitch is the rotation from the local xy-plane. Positive pitch angles
      * are above the plane. Negative pitch angles are below the plane.
      * @type {Number}
      */
     public var pitch: Double = 0.0
-    
+
     /**
      * Range is the distance from the center of the local frame.
      * @type {Number}
      */
     public var range: Double = 0.0
-    
+
     public init (heading: Double = 0.0, pitch: Double = 0.0, range: Double = 0.0) {
         self.heading = heading
         self.pitch = pitch
@@ -50,22 +50,22 @@ public struct HeadingPitchRange {
 }
 
 extension HeadingPitchRange: Offset {
-    
+
     public var offset: Cartesian3 {
         let pitch = Math.clamp(self.pitch, min: -.pi/2, max: .pi/2)
         let heading = Math.zeroToTwoPi(self.heading) - .pi/2
-        
+
         let pitchQuat = Quaternion(axis: Cartesian3.unitY, angle: -pitch)
         let headingQuat = Quaternion(axis: Cartesian3.unitZ, angle: -heading)
         let rotQuat = headingQuat.multiply(pitchQuat)
         let rotMatrix = Matrix3(quaternion: rotQuat)
-        
+
         let offset = rotMatrix
             .multiplyByVector(Cartesian3.unitX)
             .negate()
             .multiplyBy(scalar: range)
         return offset
-    }   
-    
+    }
+
 }
 

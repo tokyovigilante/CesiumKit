@@ -22,11 +22,11 @@ struct VertexAttributes {
 }
 
 class VertexDescriptor {
-    
+
     let metalDescriptor: MTLVertexDescriptor
-    
+
     init (attributes: [VertexAttributes]) {
-        
+
         metalDescriptor = MTLVertexDescriptor()
 
         let bufferIndex = attributes.first?.bufferIndex ?? 1
@@ -34,7 +34,7 @@ class VertexDescriptor {
         metalDescriptor.layouts[bufferIndex].stepFunction = .perVertex
         metalDescriptor.layouts[bufferIndex].stepRate = 1
 
-        
+
         // Verify all attribute names are unique
         var uniqueIndices = [Bool](repeating: false, count: attributes.count)
         for (index, va) in attributes.enumerated() {
@@ -45,13 +45,13 @@ class VertexDescriptor {
             addAttribute(va)
         }
     }
-    
+
     fileprivate func addAttribute(_ attribute: VertexAttributes) {
         let index = attribute.index
         metalDescriptor.attributes[index].bufferIndex = attribute.bufferIndex
         metalDescriptor.attributes[index].format = attribute.format.metalVertexFormat
         metalDescriptor.attributes[index].offset = attribute.offset
-        
+
         metalDescriptor.layouts[attribute.bufferIndex].stride += attribute.size
     }
 }

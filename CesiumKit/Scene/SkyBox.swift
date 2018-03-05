@@ -39,14 +39,14 @@ import Foundation
  */
 
 class SkyBox {
-    
+
     var sources: CubeMapSources {
         didSet {
             _sourcesUpdated = true
         }
     }
     fileprivate var _sourcesUpdated: Bool = true
-    
+
     /**
      * Determines if the sky box will be shown.
      *
@@ -54,11 +54,11 @@ class SkyBox {
      * @default true
      */
     var show: Bool = true
-    
+
     fileprivate var _command: DrawCommand
-    
+
     fileprivate var _cubemap: Texture? = nil
-    
+
     convenience init (sources: [String]) {
         self.init(sources: CubeMap.loadImagesForSources(sources))
     }
@@ -71,7 +71,7 @@ class SkyBox {
         )
         _command.owner = self
     }
-    
+
     /**
     * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
     * get the draw commands needed to render this primitive.
@@ -87,20 +87,20 @@ class SkyBox {
         if !show {
             return nil
         }
-        
+
         guard let context = frameState.context else {
             return nil
         }
-        
+
         if frameState.mode != .scene3D && frameState.mode != SceneMode.morphing {
             return nil
         }
-        
+
         // The sky box is only rendered during the render pass; it is not pickable, it doesn't cast shadows, etc.
         if !frameState.passes.render {
             return nil
         }
-        
+
         if _sourcesUpdated {
             let width = Int(sources.positiveX.width)
             _cubemap = Texture(
@@ -116,26 +116,26 @@ class SkyBox {
             )
             _sourcesUpdated = false
         }
-        
+
         if _command.vertexArray == nil {
-            
+
             let uniformMap = SkyBoxUniformMap()
             uniformMap.cubemap = _cubemap
             _command.uniformMap = uniformMap
-            
+
             let geometry = BoxGeometry(
                 fromDimensions: Cartesian3(x: 2.0, y: 2.0, z: 2.0),
                 vertexFormat : VertexFormat.PositionOnly()
                 ).createGeometry(context)
-            
+
             let attributeLocations = GeometryPipeline.createAttributeLocations(geometry)
-            
+
             _command.vertexArray = VertexArray(
                 fromGeometry: geometry,
                 context: context,
                 attributeLocations: attributeLocations
             )
-            
+
             _command.pipeline = RenderPipeline.fromCache(
                 context: context,
                 vertexShaderSource: ShaderSource(sources: [Shaders["SkyBoxVS"]!]),
@@ -145,7 +145,7 @@ class SkyBox {
                 blendingState: .AlphaBlend()
             )
             _command.uniformMap?.uniformBufferProvider = _command.pipeline!.shaderProgram.createUniformBufferProvider(context.device, deallocationBlock: nil)
-            
+
             _command.renderState = RenderState(
                 device: context.device,
                 cullFace: .front
@@ -154,23 +154,23 @@ class SkyBox {
         if _cubemap == nil {
             return nil
         }
-        
+
         return _command
     }
-        
+
     class func getDefaultSkyBoxUrl (_ face: String) -> String {
         return "tycho2t3_80_" + face + ".jpg"
     }
 }
 
 private class SkyBoxUniformMap: NativeUniformMap {
-    
+
     var cubemap : Texture?
-    
+
     var uniformBufferProvider: UniformBufferProvider! = nil
-    
+
     var uniformDescriptors: [UniformDescriptor] = []
-    
+
     lazy var uniformUpdateBlock: UniformUpdateBlock = { buffer in
         return [self.cubemap!]
     }

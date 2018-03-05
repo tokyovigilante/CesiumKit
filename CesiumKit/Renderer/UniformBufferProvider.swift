@@ -10,23 +10,23 @@ import Foundation
 import Metal
 
 open class UniformBufferProvider {
-    
+
     let bufferSize: Int
-    
+
     fileprivate var _buffers = [Buffer]()
-    
+
     let deallocationBlock: UniformMapDeallocBlock?
-    
+
     init (device: MTLDevice, bufferSize: Int, deallocationBlock: UniformMapDeallocBlock?) {
-        
+
         self.bufferSize = bufferSize
         self.deallocationBlock = deallocationBlock
-        
+
         for _ in 0..<BufferSyncState.count {
             _buffers.append(Buffer(device: device, array: nil, componentDatatype: .byte, sizeInBytes: self.bufferSize))
         }
     }
-    
+
     func currentBuffer(_ index: BufferSyncState) -> Buffer {
         return _buffers[index.rawValue]
     }

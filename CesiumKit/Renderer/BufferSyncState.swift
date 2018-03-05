@@ -10,9 +10,9 @@ import Foundation
 
 enum BufferSyncState: Int {
     case zero = 0, one = 1, two = 2
-    
+
     static let count = 3
-    
+
     func advance() -> BufferSyncState {
         return BufferSyncState(rawValue: (self.rawValue + 1) % 3)!
     }
