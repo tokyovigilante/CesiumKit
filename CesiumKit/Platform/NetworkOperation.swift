@@ -8,7 +8,7 @@
 
 import Foundation
 
-//        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+// UIApplication.sharedApplication().networkActivityIndicatorVisible = false
 
 private let networkDelegateQueue: OperationQueue = {
     let queue = OperationQueue()
@@ -253,5 +253,4 @@ class ResourceSessionDelegate: NSObject, URLSessionDataDelegate {
         operation.error = error as NSError?
         operation.isFinished = true
     }
-
 }

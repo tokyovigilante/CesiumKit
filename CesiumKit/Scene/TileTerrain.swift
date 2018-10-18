@@ -89,7 +89,9 @@ class TileTerrain {
         self.state = .receiving
         var request: NetworkOperation?
         request = terrainProvider.requestTileGeometry(x: x, y: y, level: level, throttleRequests: true) { terrainData in
-            self._pendingRequests.removeObject(object: request!)
+            if let request = request {
+                self._pendingRequests.removeObject(object: request)
+            }
             if let terrainData = terrainData {
                 self.data = terrainData
                 self.state = .received
@@ -102,7 +104,9 @@ class TileTerrain {
                 logPrint(.error, message)
             }
         }
-        _pendingRequests.append(request!)
+        if let request = request {
+            _pendingRequests.append(request)
+        }
     }
     
     func processUpsampleStateMachine (frameState: FrameState, terrainProvider: TerrainProvider, x: Int, y: Int, level: Int) {
