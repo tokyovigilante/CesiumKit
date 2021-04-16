@@ -17,7 +17,7 @@ struct AvailableRange: Decodable {
 }
 
 struct TerrainProviderMetadata: Decodable {
-    var tilejson: String
+    var tilejson: String?
     var name: String
     var description: String
     var version: String
