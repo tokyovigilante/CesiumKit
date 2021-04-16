@@ -278,7 +278,7 @@ class QuadtreePrimitive {
                 _debug.maxDepth != _debug.lastMaxDepth ||
                 _debug.tilesWaitingForChildren != _debug.lastTilesWaitingForChildren {
                
-                debugDisplayString = "Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), Max Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)"
+                debugDisplayString = "Visited \(_debug.tilesVisited), Rendered: \(_debug.tilesRendered), Culled: \(_debug.tilesCulled), \nMax Depth: \(_debug.maxDepth), Waiting for children: \(_debug.tilesWaitingForChildren)"
                 _debug.lastTilesVisited = _debug.tilesVisited
                 _debug.lastTilesRendered = _debug.tilesRendered
                 _debug.lastTilesCulled = _debug.tilesCulled
