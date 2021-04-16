@@ -599,6 +599,10 @@
 		94FCEDC51C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */; };
 		94FCEDC61C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */; };
 		94FCF5AA1B6D95DA0095A86F /* CesiumKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF8300199A0A9100FB093D /* CesiumKit.swift */; };
+		B61156592629E52D00E356FD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61156582629E52D00E356FD /* Constants.swift */; };
+		B611565A2629E52D00E356FD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61156582629E52D00E356FD /* Constants.swift */; };
+		B611566A2629E5E600E356FD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61156582629E52D00E356FD /* Constants.swift */; };
+		B611566E2629E5E700E356FD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61156582629E52D00E356FD /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -982,6 +986,7 @@
 		94F501DB19E9395A00FFAD81 /* HeightmapTessellator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeightmapTessellator.swift; sourceTree = "<group>"; };
 		94F87F5419DAAA5400FFAD81 /* TileUniformMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileUniformMap.swift; sourceTree = "<group>"; };
 		94FCEDC41C300E3C0095A86F /* QuantizedMeshTerrainGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantizedMeshTerrainGenerator.swift; sourceTree = "<group>"; };
+		B61156582629E52D00E356FD /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1421,6 +1426,7 @@
 			isa = PBXGroup;
 			children = (
 				944A5EEB1EB5F137001A40C8 /* RectangleWithLevel.swift */,
+				B61156582629E52D00E356FD /* Constants.swift */,
 				9404C8681BBE9FF7001A40C8 /* glsl_optimizer_lib.xcodeproj */,
 				94DC79271918425300012DC4 /* CesiumKit */,
 				94DC793B1918425300012DC4 /* CesiumKitTests */,
@@ -1855,6 +1861,7 @@
 				940A5AEF1B6D54400095A86F /* CesiumViewController.swift in Sources */,
 				940A5AED1B6D54400095A86F /* AppDelegate.swift in Sources */,
 				9457D3FB1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */,
+				B611565A2629E52D00E356FD /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2042,6 +2049,7 @@
 				9413B8111A37B94500FFAD81 /* QuadtreeTileProvider.swift in Sources */,
 				9455EB831A7CF73D00FFAD81 /* NeverTileDiscardPolicy.swift in Sources */,
 				944A5EE91EB59117001A40C8 /* QuadtreeNode.swift in Sources */,
+				B611566A2629E5E600E356FD /* Constants.swift in Sources */,
 				944A5EEC1EB5F137001A40C8 /* RectangleWithLevel.swift in Sources */,
 				94C9E4F61CD4EB8A0095A86F /* Fog.swift in Sources */,
 				94889B8A1B286E990095A86F /* UniformBufferProvider.swift in Sources */,
@@ -2126,6 +2134,7 @@
 				947821201B5A2D7B0095A86F /* IntersectionTests.swift in Sources */,
 				947E32331BC0D485001A40C8 /* AttributeCompression.swift in Sources */,
 				947821211B5A2D7B0095A86F /* Interval.swift in Sources */,
+				B611566E2629E5E700E356FD /* Constants.swift in Sources */,
 				947821231B5A2D7B0095A86F /* KeyboardEventModifier.swift in Sources */,
 				94E9B5DC1C0170E7001A40C8 /* SceneTransforms.swift in Sources */,
 				9438E0DE1CCCF4350095A86F /* TerrainEncoding.swift in Sources */,
@@ -2320,6 +2329,7 @@
 				94985A701A38444C00FFAD81 /* CesiumViewController.swift in Sources */,
 				94985A6A1A38444C00FFAD81 /* AppDelegate.swift in Sources */,
 				9457D3FA1C3CFB14001A40C8 /* CesiumKitController.swift in Sources */,
+				B61156592629E52D00E356FD /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -148,7 +148,7 @@ class Globe {
         
         if terrain {
             terrainProvider = CesiumTerrainProvider(
-                url: "https://assets.cesium.com",
+                url: "https://assets.cesium.com/1",
                 requestVertexNormals: true,
                 requestWaterMask: true
             )

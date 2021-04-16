@@ -319,7 +319,7 @@ class CesiumTerrainProvider: TerrainProvider {
             metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);*/
         }
         
-        let metadataHeaders = ["Accept": "application/json"]
+        let metadataHeaders = ["Accept": "application/json", "Authorization": "Bearer " + Constants.CESIUM_ACCESS_TOKEN]
         
         let metadataOperation = NetworkOperation(url: metadataUrl, headers: metadataHeaders)
         
@@ -363,10 +363,10 @@ class CesiumTerrainProvider: TerrainProvider {
     
     fileprivate func getRequestHeader(_ extensionsList: [String]?) -> [String: String] {
         if extensionsList == nil || extensionsList!.count == 0 {
-            return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01"]
+            return ["Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9,*/*;q=0.01", "Authorization": "Bearer " + Constants.CESIUM_ACCESS_TOKEN]
         } else {
             let extensions = extensionsList!.joined(separator: "-")
-            return ["Accept" : "application/vnd.quantized-mesh;extensions=" + extensions + ",application/octet-stream;q=0.9,*/*;q=0.01"]
+            return ["Accept" : "application/vnd.quantized-mesh;extensions=" + extensions + ",application/octet-stream;q=0.9,*/*;q=0.01", "Authorization": "Bearer " + Constants.CESIUM_ACCESS_TOKEN]
         }
     }
 
