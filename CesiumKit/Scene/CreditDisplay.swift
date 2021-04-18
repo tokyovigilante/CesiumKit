@@ -179,9 +179,11 @@ class CreditDisplay {
     func endFrame () {
         //var textCredits = _defaultTextCredits.concat(this._currentFrameCredits.textCredits);
         //var imageCredits = _defaultImageCredits.concat(this._currentFrameCredits.imageCredits);
-        _creditRenderer.string = _currentFrameCredits.textCredits.values
-            .filter { $0.hasText }
-            .reduce("") { $0 + $1.text! + delimiter }
+        
+//        _creditRenderer.string = _currentFrameCredits.textCredits.values
+//            .filter { $0.hasText }
+//            .reduce("") { $0 + $1.text! + delimiter }
+        
         //displayTextCredits(_currentFrameCredits.textCredits)//textCredits)
         //displayImageCredits(imageCredits)
         

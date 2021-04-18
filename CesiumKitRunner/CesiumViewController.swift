@@ -19,7 +19,7 @@ class CesiumViewController: UIViewController {
         
         super.viewDidLoad()
 
-        view.contentScaleFactor = UIScreen.mainScreen().nativeScale
+        view.contentScaleFactor = UIScreen.main.nativeScale
         
         _cesiumKitController = CesiumKitController(view: _metalView)
         _metalView.delegate = _cesiumKitController
@@ -43,9 +43,9 @@ class CesiumViewController: UIViewController {
         
     }*/
 
-    override func prefersStatusBarHidden() -> Bool {
-        return true
-    }
+//    override func prefersStatusBarHidden() -> Bool {
+//        return true
+//    }
 }
 
 

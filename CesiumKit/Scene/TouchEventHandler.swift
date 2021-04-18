@@ -108,7 +108,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         _view.addGestureRecognizer(_pinchRecognizer)
     }
     
-    func handlePanGesture(_ recognizer: UIPanGestureRecognizer) {
+    @objc func handlePanGesture(_ recognizer: UIPanGestureRecognizer) {
         let location = recognizer.location(in: _view)
         let offset = recognizer.translation(in: _view)
         
@@ -150,7 +150,7 @@ class TouchEventHandler: NSObject, UIGestureRecognizerDelegate {
         }*/
     }
     
-    func handlePinchGesture(_ recognizer: UIPinchGestureRecognizer) {
+    @objc func handlePinchGesture(_ recognizer: UIPinchGestureRecognizer) {
         let fingerOne = recognizer.location(ofTouch: 0, in: _view)
         /*let fingerTwo = recognizer.locationOfTouch(1, inView: view)
         let diff = Cartesian2(x: Double(fingerOne.x), y: Double(fingerOne.x)).distance(Cartesian2(x: Double(fingerTwo.x), y: Double(fingerTwo.x)))*/
